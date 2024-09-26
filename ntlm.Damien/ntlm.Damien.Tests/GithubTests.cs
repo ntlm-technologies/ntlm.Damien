@@ -82,6 +82,26 @@ namespace ntlm.Damien.Tests
             Assert.AreEqual("ntlm", directory);
         }
 
+        [TestMethod]
+        public void Clone_with_branch()
+        {
+            // Given
+            var github = new Github(Directory, Token)
+            {
+                Settings = new GithubSettings()
+                {
+                    OrganizationUrl = "https://github.com/ntlm-technologies/",
+                    Branches = ["to-dotnet-8", "dev"]
+                }
+            };
+
+            // When
+            github.Clone("lgi.Time");
+
+            // Then
+            Assert.AreEqual(0, Github.Warnings.Count);
+        }
+
 
         [TestMethod]
         public void Clone_with_settings()
@@ -94,7 +114,6 @@ namespace ntlm.Damien.Tests
                     OrganizationUrl = "https://github.com/ntlm-technologies/",
                     UrlUrls = "https://raw.githubusercontent.com/ntlm-technologies/lgi.Repositories/refs/heads/main/repositories.txt",
                     Clients = [ "ntlm", "lgi" ]
-
                 }
             };
 

@@ -20,7 +20,8 @@ namespace ntlm.Damien.Win
         {
             Disable();
             var github = new Github(BasePath.Text, Token.Text) { 
-                Logger = new TextBoxWriter(EventConsole)
+                Logger = new TextBoxWriter(EventConsole),
+                Fetch = Fetch.Checked
             };
             github.ProgressChanged += ProgressChanged;
             github.Clone();

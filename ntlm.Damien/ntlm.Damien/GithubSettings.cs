@@ -33,5 +33,14 @@
         /// lgi.Wines is cloned in lgi, ntlm.Wines is cloned in ntlm.
         /// </summary>
         public string[] Clients { get; set; } = [];
+
+        /// <summary>
+        /// Branches.
+        /// 
+        /// Take ["dev", "dev2", "master"] 
+        /// 
+        /// Will try to checkout dev if exists. I not, dev2 if exists, etc.
+        /// </summary>
+        public string[] Branches { get; set; } = [];
     }
 }

@@ -11,7 +11,7 @@
     public class Github
     {
 
-        public Github(string basePath, string? token) 
+        public Github(string basePath, string? token)
         {
             BasePath = basePath;
             Token = token;
@@ -117,17 +117,51 @@
                 {
                     string repoName = GetRepositoryNameFromUrl(tUrl);
                     string repoPath = Path.Combine(
-                        BasePath, 
+                        BasePath,
                         GetClientDirectory(repoName),
                         repoName
                         );
 
+                    // Cloning
                     if (Directory.Exists(repoPath))
+                    { 
                         Log($"Le dépôt {repoName} existe déjà.");
+                        FetchAndUpdateRepository(repoPath);
+                    }
                     else
                     {
                         Repository.Clone(tUrl, repoPath, cloneOptions);
                         Log($"Cloné avec succès : {repoName}");
+                    }
+
+                    // Branching
+                    if (Settings?.Branches != null)
+                    {
+                        using (var repo = new Repository(repoPath))
+                        {
+
+                            // Si des fichiers sont modifiés, effectuer un stash
+                            if (repo.RetrieveStatus().IsDirty)
+                            {
+                                Log("Des modifications non validées détectées, création d'un stash...");
+                                repo.Stashes.Add(repo.Config.BuildSignature(DateTimeOffset.Now), "Sauvegarde temporaire");
+                            }
+
+                            foreach (var branchName in Settings.Branches)
+                            {
+                                // Vérifier si la branche existe localement
+                                var branch = repo.Branches.FirstOrDefault(x => x.FriendlyName == branchName);
+                                if (branch != null)
+                                {
+                                    // Effectuer le checkout sur la première branche trouvée
+                                    Commands.Checkout(repo, branch);
+                                    Log($"Branche trouvée et activée : {branch.FriendlyName}");
+                                    return; // On quitte dès que le checkout est fait
+                                }
+                            }
+                        }
+
+
                     }
 
                     i++;
@@ -142,11 +176,73 @@
         }
 
         /// <summary>
+        /// If true fetches repositories already cloned.
+        /// </summary>
+        public bool Fetch { get; set; }
+
+        /// <summary>
+        /// Fetches an updates a repository.
+        /// </summary>
+        /// <param name="repositoryPath"></param>
+        public void FetchAndUpdateRepository(string repositoryPath)
+        {
+            if (!Fetch) return;
+
+            // Vérifiez si le dossier contient un dépôt Git
+            if (!Repository.IsValid(repositoryPath))
+            {
+                Console.WriteLine("Le dossier spécifié n'est pas un dépôt Git.");
+                return;
+            }
+
+            using (var repo = new Repository(repositoryPath))
+            {
+                // Récupérer les dernières modifications depuis le dépôt distant
+                var remote = repo.Network.Remotes["origin"];
+                var fetchOptions = new FetchOptions
+                {
+                    CredentialsProvider = (_url, _user, _cred) =>
+                        new UsernamePasswordCredentials
+                        {
+                            Username = Token, 
+                            Password = string.Empty
+                        }
+                };
+
+                Log("Fetching updates from origin...");
+                Commands.Fetch(repo, remote.Name, remote.FetchRefSpecs.Select(x => x.Specification), fetchOptions, null);
+
+                Log("Fetch terminé.");
+
+                // Effectuer un pull pour intégrer les changements (si vous voulez directement pull)
+                var signature = new Signature("Your Name", "youremail@example.com", DateTimeOffset.Now);
+                var mergeResult = Commands.Pull(repo, signature, new PullOptions
+                {
+                    FetchOptions = fetchOptions
+                });
+
+                if (mergeResult.Status == MergeStatus.Conflicts)
+                {
+                    Log("Conflits détectés lors du pull.");
+                }
+                else if (mergeResult.Status == MergeStatus.UpToDate)
+                {
+                    Log("Le dépôt est déjà à jour.");
+                }
+                else
+                {
+                    Log("Mise à jour effectuée avec succès.");
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Transforms the url.
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public virtual string TransformUrl(string url) => 
+        public virtual string TransformUrl(string url) =>
             Settings?.OrganizationUrl != null ?
             Path.Combine(Settings.OrganizationUrl, url) :
             url;
@@ -157,9 +253,9 @@
         /// <param name="url"></param>
         /// <returns></returns>
         public virtual string GetClientDirectory(string repoName) =>
-            Settings != null && 
+            Settings != null &&
             Settings.Clients.Contains(repoName.Split('.')[0]) ?
-            repoName.Split('.')[0] : 
+            repoName.Split('.')[0] :
             string.Empty;
 
         /// <summary>

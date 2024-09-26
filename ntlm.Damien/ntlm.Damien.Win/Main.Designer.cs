@@ -39,6 +39,7 @@
             Clone = new Button();
             EventConsole = new TextBox();
             ProgressBar1 = new ProgressBar();
+            Fetch = new CheckBox();
             SuspendLayout();
             // 
             // label1
@@ -115,11 +116,22 @@
             ProgressBar1.Size = new Size(776, 29);
             ProgressBar1.TabIndex = 7;
             // 
+            // Fetch
+            // 
+            Fetch.AutoSize = true;
+            Fetch.Location = new Point(370, 202);
+            Fetch.Name = "Fetch";
+            Fetch.Size = new Size(250, 24);
+            Fetch.TabIndex = 8;
+            Fetch.Text = "Mettre à jour les dépôts existants";
+            Fetch.UseVisualStyleBackColor = true;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(Fetch);
             Controls.Add(ProgressBar1);
             Controls.Add(EventConsole);
             Controls.Add(Clone);
@@ -149,5 +161,6 @@
         private Button Clone;
         private TextBox EventConsole;
         private ProgressBar ProgressBar1;
+        private CheckBox Fetch;
     }
 }
