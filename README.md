@@ -1,2 +1,4 @@
-# ntlm.Damien
-Windows app to download batches of repositories
+# Todo
+
+- Fetch chaque repository
+- Passer chaque repository sur la branche dev
