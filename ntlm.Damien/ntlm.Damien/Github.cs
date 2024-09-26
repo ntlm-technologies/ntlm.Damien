@@ -22,6 +22,13 @@
         {
         }
 
+        public event EventHandler<int> ProgressChanged = delegate { };
+
+        protected virtual void OnProgressChanged(object sender, int progress)
+        {
+            ProgressChanged?.Invoke(sender, progress);
+        }
+
         /// <summary>
         /// Loads default settings if appSettings.json is found in root.
         /// </summary>
@@ -74,7 +81,7 @@
         }
 
         /// <summary>
-        /// Clones a repository to local directory.
+        /// Clones repositories to local directory.
         /// </summary>
         public void Clone()
         {
@@ -90,6 +97,8 @@
         /// <param name="urls">Urls of Github directories.</param>
         public void Clone(params string[] urls)
         {
+            OnProgressChanged(this, 0);
+
             var cloneOptions = new CloneOptions();
             cloneOptions.FetchOptions.CredentialsProvider =
                 (_url, _user, _cred) => new UsernamePasswordCredentials
@@ -97,6 +106,8 @@
                     Username = Token,
                     Password = string.Empty
                 };
+
+            int i = 0;
 
             foreach (var url in urls)
             {
@@ -112,19 +123,22 @@
                         );
 
                     if (Directory.Exists(repoPath))
-                        Console.WriteLine($"Le dépôt {repoName} existe déjà dans {repoPath}. Skipping clone.");
+                        Log($"Le dépôt {repoName} existe déjà.");
                     else
                     {
                         Repository.Clone(tUrl, repoPath, cloneOptions);
-                        Log($"Cloné avec succès : {tUrl} dans {repoPath}");
+                        Log($"Cloné avec succès : {repoName}");
                     }
+
+                    i++;
+                    OnProgressChanged(this, (i * 100) / urls.Length);
                 }
                 catch (Exception ex)
                 {
                     Warn($"Erreur lors du clonage de {tUrl}: {ex.Message}");
                 }
             }
-
+            Log("Terminé.");
         }
 
         /// <summary>

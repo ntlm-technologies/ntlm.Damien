@@ -9,7 +9,7 @@ namespace ntlm.Damien.Tests
     public class GithubTests
     {
 
-        public static readonly string Token = "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";
+        public static readonly string Token = "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";
         public static readonly string Directory = @"C:\Users\Dell\Desktop\ntlm.Damien\";
 
         [TestMethod]
@@ -71,7 +71,7 @@ namespace ntlm.Damien.Tests
             {
                 Settings = new GithubSettings()
                 {
-                    Clients = [ "ntlm" ]
+                    Clients = ["ntlm"]
                 }
             };
 
@@ -92,7 +92,9 @@ namespace ntlm.Damien.Tests
                 Settings = new GithubSettings()
                 {
                     OrganizationUrl = "https://github.com/ntlm-technologies/",
-                    UrlUrls = "https://raw.githubusercontent.com/ntlm-technologies/lgi.Repositories/refs/heads/main/repositories.txt"
+                    UrlUrls = "https://raw.githubusercontent.com/ntlm-technologies/lgi.Repositories/refs/heads/main/repositories.txt",
+                    Clients = [ "ntlm", "lgi" ]
+
                 }
             };
 
@@ -123,7 +125,7 @@ namespace ntlm.Damien.Tests
             };
 
             // When
-            github.LoadSettings("lgiSettings.json");
+            github.LoadSettings("appSettings.json");
 
             // Then
             Assert.IsNotNull(github.Settings);
