@@ -124,45 +124,18 @@
 
                     // Cloning
                     if (Directory.Exists(repoPath))
-                    { 
+                    {
                         Log($"Le dépôt {repoName} existe déjà.");
                         FetchAndUpdateRepository(repoPath);
                     }
                     else
                     {
                         Repository.Clone(tUrl, repoPath, cloneOptions);
+                        Checkout(repoPath);
                         Log($"Cloné avec succès : {repoName}");
                     }
 
-                    // Branching
-                    if (Settings?.Branches != null)
-                    {
-                        using (var repo = new Repository(repoPath))
-                        {
-
-                            // Si des fichiers sont modifiés, effectuer un stash
-                            if (repo.RetrieveStatus().IsDirty)
-                            {
-                                Log("Des modifications non validées détectées, création d'un stash...");
-                                repo.Stashes.Add(repo.Config.BuildSignature(DateTimeOffset.Now), "Sauvegarde temporaire");
-                            }
-
-                            foreach (var branchName in Settings.Branches)
-                            {
-                                // Vérifier si la branche existe localement
-                                var branch = repo.Branches.FirstOrDefault(x => x.FriendlyName == branchName);
-                                if (branch != null)
-                                {
-                                    // Effectuer le checkout sur la première branche trouvée
-                                    Commands.Checkout(repo, branch);
-                                    Log($"Branche trouvée et activée : {branch.FriendlyName}");
-                                    return; // On quitte dès que le checkout est fait
-                                }
-                            }
-                        }
-
-
-                    }
+                   
 
                     i++;
                     OnProgressChanged(this, (i * 100) / urls.Length);
@@ -175,6 +148,52 @@
             Log("Terminé.");
         }
 
+        public void Checkout(string repoPath)
+        {
+            // Branching
+            if (Settings?.Branches != null)
+            {
+                using (var repo = new Repository(repoPath))
+                {
+                    // Si des fichiers sont modifiés, effectuer un stash
+                    if (repo.RetrieveStatus().IsDirty)
+                    {
+                        Log("Des modifications non validées détectées, création d'un stash...");
+                        repo.Stashes.Add(repo.Config.BuildSignature(DateTimeOffset.Now), "Sauvegarde temporaire");
+                    }
+
+                    foreach (var branchName in Settings.Branches)
+                    {
+                        // Vérifier si la branche existe localement
+                        var branch = repo.Branches[branchName];
+
+                        if (branch == null)
+                        {
+                            // Si la branche n'existe pas localement, vérifiez si elle existe sur le dépôt distant
+                            var remoteBranch = repo.Branches[$"origin/{branchName}"];
+                            if (remoteBranch != null)
+                            {
+                                // Créer la branche locale à partir de la branche distante
+                                branch = repo.CreateBranch(branchName, remoteBranch.Tip);
+                                repo.Branches.Update(branch, b => b.TrackedBranch = remoteBranch.CanonicalName);
+                                Log($"Branche '{branchName}' créée localement à partir de la branche distante.");
+                            }
+                        }
+
+                        if (branch != null)
+                        {
+                            // Effectuer le checkout sur la branche
+                            Commands.Checkout(repo, branch);
+                            Log($"Branche trouvée et activée : {branch.FriendlyName}");
+                            return; // Quitter dès que le checkout est réussi
+                        }
+                    }
+
+                    Log("Aucune des branches spécifiées n'a été trouvée.");
+                }
+            }
+        }
+
         /// <summary>
         /// If true fetches repositories already cloned.
         /// </summary>
@@ -183,19 +202,19 @@
         /// <summary>
         /// Fetches an updates a repository.
         /// </summary>
-        /// <param name="repositoryPath"></param>
-        public void FetchAndUpdateRepository(string repositoryPath)
+        /// <param name="repoPath"></param>
+        public void FetchAndUpdateRepository(string repoPath)
         {
             if (!Fetch) return;
 
             // Vérifiez si le dossier contient un dépôt Git
-            if (!Repository.IsValid(repositoryPath))
+            if (!Repository.IsValid(repoPath))
             {
                 Console.WriteLine("Le dossier spécifié n'est pas un dépôt Git.");
                 return;
             }
 
-            using (var repo = new Repository(repositoryPath))
+            using (var repo = new Repository(repoPath))
             {
                 // Récupérer les dernières modifications depuis le dépôt distant
                 var remote = repo.Network.Remotes["origin"];
@@ -204,7 +223,7 @@
                     CredentialsProvider = (_url, _user, _cred) =>
                         new UsernamePasswordCredentials
                         {
-                            Username = Token, 
+                            Username = Token,
                             Password = string.Empty
                         }
                 };

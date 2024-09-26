@@ -45,12 +45,14 @@ namespace ntlm.Damien.Win
         {
             Clone.Enabled = true;
             Token.Enabled = true;
+            BasePath.Enabled = true;
         }
 
         private void Disable()
         {
             Clone.Enabled = false;
             Token.Enabled = false;
+            BasePath.Enabled = false;
         }
     }
 }
