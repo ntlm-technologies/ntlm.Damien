@@ -1,5 +1,4 @@
 # Todo
 
-- Fetch chaque repository
-- Passer chaque repository sur la branche dev
 - La reconnaissance après tant d'années... "ntlm.Damien", le plus beau des repos.
+- Joli coup de bol ! (Il y avait la St Côme aussi ce jour-là, mais ça aurait été vache.)
