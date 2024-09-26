@@ -33,19 +33,19 @@
             Token = new TextBox();
             FolderBrowserDialog1 = new FolderBrowserDialog();
             label2 = new Label();
-            BasePath = new Label();
             browseBasePath = new Button();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             Clone = new Button();
             EventConsole = new TextBox();
             ProgressBar1 = new ProgressBar();
             Fetch = new CheckBox();
+            BasePath = new TextBox();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(160, 76);
+            label1.Location = new Point(125, 22);
             label1.Name = "label1";
             label1.Size = new Size(96, 20);
             label1.TabIndex = 0;
@@ -53,33 +53,24 @@
             // 
             // Token
             // 
-            Token.Location = new Point(262, 73);
+            Token.Location = new Point(227, 19);
             Token.Name = "Token";
-            Token.Size = new Size(456, 27);
+            Token.Size = new Size(387, 27);
             Token.TabIndex = 1;
             Token.Text = "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";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(165, 125);
+            label2.Location = new Point(136, 64);
             label2.Name = "label2";
             label2.Size = new Size(85, 20);
             label2.TabIndex = 2;
             label2.Text = "Destination";
             // 
-            // BasePath
-            // 
-            BasePath.AutoSize = true;
-            BasePath.Location = new Point(262, 125);
-            BasePath.Name = "BasePath";
-            BasePath.Size = new Size(37, 20);
-            BasePath.TabIndex = 3;
-            BasePath.Text = "       ";
-            // 
             // browseBasePath
             // 
-            browseBasePath.Location = new Point(262, 148);
+            browseBasePath.Location = new Point(620, 59);
             browseBasePath.Name = "browseBasePath";
             browseBasePath.Size = new Size(94, 29);
             browseBasePath.TabIndex = 4;
@@ -90,7 +81,7 @@
             // Clone
             // 
             Clone.Enabled = false;
-            Clone.Location = new Point(262, 198);
+            Clone.Location = new Point(227, 104);
             Clone.Name = "Clone";
             Clone.Size = new Size(94, 29);
             Clone.TabIndex = 5;
@@ -100,18 +91,18 @@
             // 
             // EventConsole
             // 
-            EventConsole.Location = new Point(12, 251);
+            EventConsole.Location = new Point(12, 154);
             EventConsole.Multiline = true;
             EventConsole.Name = "EventConsole";
             EventConsole.ReadOnly = true;
             EventConsole.ScrollBars = ScrollBars.Vertical;
-            EventConsole.Size = new Size(776, 133);
+            EventConsole.Size = new Size(776, 159);
             EventConsole.TabIndex = 6;
             EventConsole.WordWrap = false;
             // 
             // ProgressBar1
             // 
-            ProgressBar1.Location = new Point(12, 390);
+            ProgressBar1.Location = new Point(12, 319);
             ProgressBar1.Name = "ProgressBar1";
             ProgressBar1.Size = new Size(776, 29);
             ProgressBar1.TabIndex = 7;
@@ -119,24 +110,31 @@
             // Fetch
             // 
             Fetch.AutoSize = true;
-            Fetch.Location = new Point(370, 202);
+            Fetch.Location = new Point(335, 108);
             Fetch.Name = "Fetch";
             Fetch.Size = new Size(250, 24);
             Fetch.TabIndex = 8;
             Fetch.Text = "Mettre à jour les dépôts existants";
             Fetch.UseVisualStyleBackColor = true;
             // 
+            // BasePath
+            // 
+            BasePath.Location = new Point(227, 61);
+            BasePath.Name = "BasePath";
+            BasePath.Size = new Size(387, 27);
+            BasePath.TabIndex = 9;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 358);
+            Controls.Add(BasePath);
             Controls.Add(Fetch);
             Controls.Add(ProgressBar1);
             Controls.Add(EventConsole);
             Controls.Add(Clone);
             Controls.Add(browseBasePath);
-            Controls.Add(BasePath);
             Controls.Add(label2);
             Controls.Add(Token);
             Controls.Add(label1);
@@ -155,12 +153,12 @@
         private TextBox Token;
         private FolderBrowserDialog FolderBrowserDialog1;
         private Label label2;
-        private Label BasePath;
         private Button browseBasePath;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private Button Clone;
         private TextBox EventConsole;
         private ProgressBar ProgressBar1;
         private CheckBox Fetch;
+        private TextBox BasePath;
     }
 }
