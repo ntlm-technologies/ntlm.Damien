@@ -46,6 +46,7 @@
             BasePathQuestionMark = new PictureBox();
             TokenToolTip = new ToolTip(components);
             BasePathToolTip = new ToolTip(components);
+            ShowWarnings = new Button();
             ((System.ComponentModel.ISupportInitialize)TokenQuestionMark).BeginInit();
             ((System.ComponentModel.ISupportInitialize)BasePathQuestionMark).BeginInit();
             SuspendLayout();
@@ -160,11 +161,23 @@
             BasePathQuestionMark.TabIndex = 12;
             BasePathQuestionMark.TabStop = false;
             // 
+            // ShowWarnings
+            // 
+            ShowWarnings.Enabled = false;
+            ShowWarnings.Location = new Point(348, 118);
+            ShowWarnings.Name = "ShowWarnings";
+            ShowWarnings.Size = new Size(99, 29);
+            ShowWarnings.TabIndex = 13;
+            ShowWarnings.Text = "Annuler";
+            ShowWarnings.UseVisualStyleBackColor = true;
+            ShowWarnings.Click += ShowWarnings_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(651, 358);
+            Controls.Add(ShowWarnings);
             Controls.Add(BasePathQuestionMark);
             Controls.Add(TokenQuestionMark);
             Controls.Add(Cancel);
@@ -207,5 +220,6 @@
         private PictureBox BasePathQuestionMark;
         private ToolTip TokenToolTip;
         private ToolTip BasePathToolTip;
+        private Button ShowWarnings;
     }
 }

@@ -23,6 +23,11 @@
         {
         }
 
+        public Github()
+        {
+            
+        }
+
         public event EventHandler<int> ProgressChanged = delegate { };
 
         protected virtual void OnProgressChanged(object sender, int progress)

@@ -7,11 +7,20 @@ namespace ntlm.Damien.Win
     {
         private CancellationTokenSource? cancellationTokenSource;
 
+        /// <summary>
+        /// Github service handling the clone operations.
+        /// </summary>
+        public Github Github { get; } = new Github();
+
         public Main()
         {
             InitializeComponent();
 
+            Github.Logger = new TextBoxWriter(EventConsole);
+
             HandleCloneVisibility();
+
+            ShowWarnings.Visible = false;
 
             BasePath.Text = LoadPathFromRegistry(nameof(BasePath));
             Token.Text = LoadPathFromRegistry(nameof(Token));
@@ -58,14 +67,12 @@ namespace ntlm.Damien.Win
         {
             SavePathToRegistry(nameof(Token), Token.Text);
             Disable();
-            var github = new Github(BasePath.Text, Token.Text)
-            {
-                Logger = new TextBoxWriter(EventConsole),
-                Fetch = Fetch.Checked
-            };
+            Github.BasePath = BasePath.Text;
+            Github.Token = Token.Text;
+            Github.Fetch = Fetch.Checked;
             cancellationTokenSource = new CancellationTokenSource();
-            github.ProgressChanged += ProgressChanged;
-            await github.CloneAsync(cancellationTokenSource.Token);
+            Github.ProgressChanged += ProgressChanged;
+            await Github.CloneAsync(cancellationTokenSource.Token);
             Enable();
         }
 
@@ -88,6 +95,7 @@ namespace ntlm.Damien.Win
             BasePath.Enabled = true;
             Cancel.Enabled = false;
             browseBasePath.Enabled = true;
+            ShowWarnings.Visible = true;
         }
 
         private void Disable()
@@ -155,5 +163,9 @@ namespace ntlm.Damien.Win
             return resizedImage;
         }
 
+        private void ShowWarnings_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
