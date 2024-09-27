@@ -5,7 +5,11 @@
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<ApplicationIcon>ntlm.ico</ApplicationIcon>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Content Include="ntlm.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\ntlm.Damien\ntlm.Damien.csproj" />
