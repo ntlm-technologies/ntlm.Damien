@@ -123,6 +123,8 @@
                     );
 
                 // Cloning
+                Log($"Clonage de {repoName}...");
+
                 if (Directory.Exists(repoPath))
                 {
                     Log($"Le dépôt {repoName} existe déjà.");
