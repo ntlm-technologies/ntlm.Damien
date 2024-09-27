@@ -87,6 +87,7 @@ namespace ntlm.Damien.Win
             Token.Enabled = true;
             BasePath.Enabled = true;
             Cancel.Enabled = false;
+            browseBasePath.Enabled = true;
         }
 
         private void Disable()
@@ -95,6 +96,7 @@ namespace ntlm.Damien.Win
             Token.Enabled = false;
             BasePath.Enabled = false;
             Cancel.Enabled = true;
+            browseBasePath.Enabled = false;
         }
 
         private void Cancel_Click(object sender, EventArgs e)
