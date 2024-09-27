@@ -323,11 +323,19 @@
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public virtual string GetClientDirectory(string repoName) =>
-            Settings != null &&
-            Settings.Clients.Contains(repoName.Split('.')[0]) ?
-            repoName.Split('.')[0] :
-            string.Empty;
+        public virtual string GetClientDirectory(string repoName)
+        {
+            if (Settings == null) return string.Empty;
+
+            if (Settings.Clients.Contains(repoName.Split('.')[0]))
+                return repoName.Split('.')[0];
+
+            if (Settings.Clients.Contains(repoName.Split('-')[0]))
+                return repoName.Split('-')[0];
+
+            return string.Empty;
+        }
+
 
         /// <summary>
         /// Transforms the directory.
