@@ -1,6 +1,6 @@
 {
   "AppSettings": {
-    "Name": "LGI People",
+    "Name": "lgi.people",
     "OrganizationUrl": "https://github.com/ntlm-technologies/",
     "UrlUrls": "https://raw.githubusercontent.com/ntlm-technologies/ntlm.Damien.Data/refs/heads/main/lgi.people.txt",
     "Clients": [ "ntlm", "lgi" ],

@@ -38,10 +38,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="lgi.people.settings.json">
+		<None Update="Settings\lgi.people.settings.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="lgi.settings.json">
+		<None Update="Settings\lgi.settings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
