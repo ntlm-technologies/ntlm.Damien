@@ -29,31 +29,31 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WarningDialog));
-            WarningList = new TextBox();
+            warningList = new TextBox();
             SuspendLayout();
             // 
-            // WarningList
+            // warningList
             // 
-            WarningList.ForeColor = Color.DarkOrange;
-            WarningList.Location = new Point(12, 12);
-            WarningList.Multiline = true;
-            WarningList.Name = "WarningList";
-            WarningList.ReadOnly = true;
-            WarningList.ScrollBars = ScrollBars.Vertical;
-            WarningList.Size = new Size(627, 229);
-            WarningList.TabIndex = 0;
+            warningList.ForeColor = Color.DarkOrange;
+            warningList.Location = new Point(12, 12);
+            warningList.Multiline = true;
+            warningList.Name = "warningList";
+            warningList.ReadOnly = true;
+            warningList.ScrollBars = ScrollBars.Vertical;
+            warningList.Size = new Size(627, 229);
+            warningList.TabIndex = 0;
             // 
-            // WarningForm
+            // WarningDialog
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(651, 253);
-            Controls.Add(WarningList);
+            Controls.Add(warningList);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "WarningForm";
+            Name = "WarningDialog";
             Text = "Avertissements";
             Load += Avertissements_Load;
             ResumeLayout(false);
@@ -62,6 +62,6 @@
 
         #endregion
 
-        private TextBox WarningList;
+        private TextBox warningList;
     }
 }

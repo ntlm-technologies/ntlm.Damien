@@ -31,29 +31,29 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             label1 = new Label();
-            Token = new TextBox();
-            FolderBrowserDialog1 = new FolderBrowserDialog();
+            token = new TextBox();
+            folderBrowserDialog1 = new FolderBrowserDialog();
             label2 = new Label();
-            BrowseBasePath = new Button();
+            browseBasePath = new Button();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            Clone = new Button();
-            EventConsole = new TextBox();
-            ProgressBar1 = new ProgressBar();
-            Fetch = new CheckBox();
-            BasePath = new TextBox();
-            Cancel = new Button();
-            TokenQuestionMark = new PictureBox();
-            BasePathQuestionMark = new PictureBox();
-            TokenToolTip = new ToolTip(components);
-            BasePathToolTip = new ToolTip(components);
-            ShowWarnings = new Button();
-            Profile = new ComboBox();
-            ProfileQuestionMark = new PictureBox();
+            clone = new Button();
+            eventConsole = new TextBox();
+            progressBar1 = new ProgressBar();
+            fetch = new CheckBox();
+            basePath = new TextBox();
+            cancel = new Button();
+            tokenQuestionMark = new PictureBox();
+            basePathQuestionMark = new PictureBox();
+            tokenToolTip = new ToolTip(components);
+            basePathToolTip = new ToolTip(components);
+            showWarnings = new Button();
+            profile = new ComboBox();
+            profileQuestionMark = new PictureBox();
             label3 = new Label();
-            ProfileToolTip = new ToolTip(components);
-            ((System.ComponentModel.ISupportInitialize)TokenQuestionMark).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)BasePathQuestionMark).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ProfileQuestionMark).BeginInit();
+            profileToolTip = new ToolTip(components);
+            ((System.ComponentModel.ISupportInitialize)tokenQuestionMark).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)basePathQuestionMark).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)profileQuestionMark).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -67,11 +67,11 @@
             // 
             // Token
             // 
-            Token.Location = new Point(143, 13);
-            Token.Name = "Token";
-            Token.Size = new Size(392, 27);
-            Token.TabIndex = 1;
-            Token.Text = "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";
+            token.Location = new Point(143, 13);
+            token.Name = "Token";
+            token.Size = new Size(392, 27);
+            token.TabIndex = 1;
+            token.Text = "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";
             // 
             // label2
             // 
@@ -84,119 +84,119 @@
             // 
             // BrowseBasePath
             // 
-            BrowseBasePath.Location = new Point(536, 44);
-            BrowseBasePath.Name = "BrowseBasePath";
-            BrowseBasePath.Size = new Size(99, 29);
-            BrowseBasePath.TabIndex = 4;
-            BrowseBasePath.Text = "Parcourir";
-            BrowseBasePath.UseVisualStyleBackColor = true;
-            BrowseBasePath.Click += BrowseBasePath_Click;
+            browseBasePath.Location = new Point(536, 44);
+            browseBasePath.Name = "BrowseBasePath";
+            browseBasePath.Size = new Size(99, 29);
+            browseBasePath.TabIndex = 4;
+            browseBasePath.Text = "Parcourir";
+            browseBasePath.UseVisualStyleBackColor = true;
+            browseBasePath.Click += BrowseBasePath_Click;
             // 
             // Clone
             // 
-            Clone.Enabled = false;
-            Clone.Location = new Point(143, 143);
-            Clone.Name = "Clone";
-            Clone.Size = new Size(99, 29);
-            Clone.TabIndex = 5;
-            Clone.Text = "Cloner";
-            Clone.UseVisualStyleBackColor = true;
-            Clone.Click += Clone_Click;
+            clone.Enabled = false;
+            clone.Location = new Point(143, 143);
+            clone.Name = "Clone";
+            clone.Size = new Size(99, 29);
+            clone.TabIndex = 5;
+            clone.Text = "Cloner";
+            clone.UseVisualStyleBackColor = true;
+            clone.Click += Clone_Click;
             // 
             // EventConsole
             // 
-            EventConsole.Location = new Point(12, 178);
-            EventConsole.Multiline = true;
-            EventConsole.Name = "EventConsole";
-            EventConsole.ReadOnly = true;
-            EventConsole.ScrollBars = ScrollBars.Vertical;
-            EventConsole.Size = new Size(623, 208);
-            EventConsole.TabIndex = 6;
-            EventConsole.WordWrap = false;
+            eventConsole.Location = new Point(12, 178);
+            eventConsole.Multiline = true;
+            eventConsole.Name = "EventConsole";
+            eventConsole.ReadOnly = true;
+            eventConsole.ScrollBars = ScrollBars.Vertical;
+            eventConsole.Size = new Size(623, 208);
+            eventConsole.TabIndex = 6;
+            eventConsole.WordWrap = false;
             // 
             // ProgressBar1
             // 
-            ProgressBar1.Location = new Point(12, 392);
-            ProgressBar1.Name = "ProgressBar1";
-            ProgressBar1.Size = new Size(623, 29);
-            ProgressBar1.TabIndex = 7;
+            progressBar1.Location = new Point(12, 392);
+            progressBar1.Name = "ProgressBar1";
+            progressBar1.Size = new Size(623, 29);
+            progressBar1.TabIndex = 7;
             // 
             // Fetch
             // 
-            Fetch.AutoSize = true;
-            Fetch.Location = new Point(143, 113);
-            Fetch.Name = "Fetch";
-            Fetch.Size = new Size(250, 24);
-            Fetch.TabIndex = 8;
-            Fetch.Text = "Mettre à jour les dépôts existants";
-            Fetch.UseVisualStyleBackColor = true;
+            fetch.AutoSize = true;
+            fetch.Location = new Point(143, 113);
+            fetch.Name = "Fetch";
+            fetch.Size = new Size(250, 24);
+            fetch.TabIndex = 8;
+            fetch.Text = "Mettre à jour les dépôts existants";
+            fetch.UseVisualStyleBackColor = true;
             // 
             // BasePath
             // 
-            BasePath.Location = new Point(143, 46);
-            BasePath.Name = "BasePath";
-            BasePath.Size = new Size(392, 27);
-            BasePath.TabIndex = 9;
-            BasePath.Text = "C:\\Users\\Dell\\Desktop\\ntlm.Damien";
+            basePath.Location = new Point(143, 46);
+            basePath.Name = "BasePath";
+            basePath.Size = new Size(392, 27);
+            basePath.TabIndex = 9;
+            basePath.Text = "C:\\Users\\Dell\\Desktop\\ntlm.Damien";
             // 
             // Cancel
             // 
-            Cancel.Enabled = false;
-            Cancel.Location = new Point(243, 143);
-            Cancel.Name = "Cancel";
-            Cancel.Size = new Size(99, 29);
-            Cancel.TabIndex = 10;
-            Cancel.Text = "Annuler";
-            Cancel.UseVisualStyleBackColor = true;
-            Cancel.Click += Cancel_Click;
+            cancel.Enabled = false;
+            cancel.Location = new Point(243, 143);
+            cancel.Name = "Cancel";
+            cancel.Size = new Size(99, 29);
+            cancel.TabIndex = 10;
+            cancel.Text = "Annuler";
+            cancel.UseVisualStyleBackColor = true;
+            cancel.Click += Cancel_Click;
             // 
             // TokenQuestionMark
             // 
-            TokenQuestionMark.Location = new Point(108, 15);
-            TokenQuestionMark.Name = "TokenQuestionMark";
-            TokenQuestionMark.Size = new Size(29, 21);
-            TokenQuestionMark.TabIndex = 11;
-            TokenQuestionMark.TabStop = false;
+            tokenQuestionMark.Location = new Point(108, 15);
+            tokenQuestionMark.Name = "TokenQuestionMark";
+            tokenQuestionMark.Size = new Size(29, 21);
+            tokenQuestionMark.TabIndex = 11;
+            tokenQuestionMark.TabStop = false;
             // 
             // BasePathQuestionMark
             // 
-            BasePathQuestionMark.Location = new Point(108, 48);
-            BasePathQuestionMark.Name = "BasePathQuestionMark";
-            BasePathQuestionMark.Size = new Size(29, 21);
-            BasePathQuestionMark.TabIndex = 12;
-            BasePathQuestionMark.TabStop = false;
+            basePathQuestionMark.Location = new Point(108, 48);
+            basePathQuestionMark.Name = "BasePathQuestionMark";
+            basePathQuestionMark.Size = new Size(29, 21);
+            basePathQuestionMark.TabIndex = 12;
+            basePathQuestionMark.TabStop = false;
             // 
             // ShowWarnings
             // 
-            ShowWarnings.AutoEllipsis = true;
-            ShowWarnings.BackColor = SystemColors.Control;
-            ShowWarnings.Enabled = false;
-            ShowWarnings.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            ShowWarnings.ForeColor = Color.DarkOrange;
-            ShowWarnings.Location = new Point(348, 143);
-            ShowWarnings.Name = "ShowWarnings";
-            ShowWarnings.Size = new Size(187, 29);
-            ShowWarnings.TabIndex = 13;
-            ShowWarnings.Text = "Avertissement";
-            ShowWarnings.UseVisualStyleBackColor = false;
-            ShowWarnings.Click += ShowWarnings_Click;
+            showWarnings.AutoEllipsis = true;
+            showWarnings.BackColor = SystemColors.Control;
+            showWarnings.Enabled = false;
+            showWarnings.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            showWarnings.ForeColor = Color.DarkOrange;
+            showWarnings.Location = new Point(348, 143);
+            showWarnings.Name = "ShowWarnings";
+            showWarnings.Size = new Size(187, 29);
+            showWarnings.TabIndex = 13;
+            showWarnings.Text = "Avertissement";
+            showWarnings.UseVisualStyleBackColor = false;
+            showWarnings.Click += ShowWarnings_Click;
             // 
             // ProfileSelector
             // 
-            Profile.DropDownStyle = ComboBoxStyle.DropDownList;
-            Profile.FormattingEnabled = true;
-            Profile.Location = new Point(143, 79);
-            Profile.Name = "ProfileSelector";
-            Profile.Size = new Size(151, 28);
-            Profile.TabIndex = 14;
+            profile.DropDownStyle = ComboBoxStyle.DropDownList;
+            profile.FormattingEnabled = true;
+            profile.Location = new Point(143, 79);
+            profile.Name = "ProfileSelector";
+            profile.Size = new Size(151, 28);
+            profile.TabIndex = 14;
             // 
             // ProfileQuestionMark
             // 
-            ProfileQuestionMark.Location = new Point(108, 82);
-            ProfileQuestionMark.Name = "ProfileQuestionMark";
-            ProfileQuestionMark.Size = new Size(29, 21);
-            ProfileQuestionMark.TabIndex = 16;
-            ProfileQuestionMark.TabStop = false;
+            profileQuestionMark.Location = new Point(108, 82);
+            profileQuestionMark.Name = "ProfileQuestionMark";
+            profileQuestionMark.Size = new Size(29, 21);
+            profileQuestionMark.TabIndex = 16;
+            profileQuestionMark.TabStop = false;
             // 
             // label3
             // 
@@ -212,21 +212,21 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(651, 434);
-            Controls.Add(ProfileQuestionMark);
+            Controls.Add(profileQuestionMark);
             Controls.Add(label3);
-            Controls.Add(Profile);
-            Controls.Add(ShowWarnings);
-            Controls.Add(BasePathQuestionMark);
-            Controls.Add(TokenQuestionMark);
-            Controls.Add(Cancel);
-            Controls.Add(BasePath);
-            Controls.Add(Fetch);
-            Controls.Add(ProgressBar1);
-            Controls.Add(EventConsole);
-            Controls.Add(Clone);
-            Controls.Add(BrowseBasePath);
+            Controls.Add(profile);
+            Controls.Add(showWarnings);
+            Controls.Add(basePathQuestionMark);
+            Controls.Add(tokenQuestionMark);
+            Controls.Add(cancel);
+            Controls.Add(basePath);
+            Controls.Add(fetch);
+            Controls.Add(progressBar1);
+            Controls.Add(eventConsole);
+            Controls.Add(clone);
+            Controls.Add(browseBasePath);
             Controls.Add(label2);
-            Controls.Add(Token);
+            Controls.Add(token);
             Controls.Add(label1);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -235,9 +235,9 @@
             Name = "Main";
             Text = "Ntlm Github Cloner";
             Load += Main_Load;
-            ((System.ComponentModel.ISupportInitialize)TokenQuestionMark).EndInit();
-            ((System.ComponentModel.ISupportInitialize)BasePathQuestionMark).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ProfileQuestionMark).EndInit();
+            ((System.ComponentModel.ISupportInitialize)tokenQuestionMark).EndInit();
+            ((System.ComponentModel.ISupportInitialize)basePathQuestionMark).EndInit();
+            ((System.ComponentModel.ISupportInitialize)profileQuestionMark).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -245,25 +245,25 @@
         #endregion
 
         private Label label1;
-        private TextBox Token;
-        private FolderBrowserDialog FolderBrowserDialog1;
+        private TextBox token;
+        private FolderBrowserDialog folderBrowserDialog1;
         private Label label2;
-        private Button BrowseBasePath;
+        private Button browseBasePath;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private Button Clone;
-        private TextBox EventConsole;
-        private ProgressBar ProgressBar1;
-        private CheckBox Fetch;
-        private TextBox BasePath;
-        private Button Cancel;
-        private PictureBox TokenQuestionMark;
-        private PictureBox BasePathQuestionMark;
-        private ToolTip TokenToolTip;
-        private ToolTip BasePathToolTip;
-        private Button ShowWarnings;
-        private ComboBox Profile;
-        private PictureBox ProfileQuestionMark;
+        private Button clone;
+        private TextBox eventConsole;
+        private ProgressBar progressBar1;
+        private CheckBox fetch;
+        private TextBox basePath;
+        private Button cancel;
+        private PictureBox tokenQuestionMark;
+        private PictureBox basePathQuestionMark;
+        private ToolTip tokenToolTip;
+        private ToolTip basePathToolTip;
+        private Button showWarnings;
+        private ComboBox profile;
+        private PictureBox profileQuestionMark;
         private Label label3;
-        private ToolTip ProfileToolTip;
+        private ToolTip profileToolTip;
     }
 }

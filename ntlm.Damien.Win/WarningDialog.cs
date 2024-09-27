@@ -23,7 +23,7 @@ namespace ntlm.Damien.Win
         {
             InitializeComponent();
 
-            WarningList.Text = string.Join(Environment.NewLine, warnings);
+            warningList.Text = string.Join(Environment.NewLine, warnings);
 
         }
 

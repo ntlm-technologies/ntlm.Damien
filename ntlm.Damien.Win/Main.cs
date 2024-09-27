@@ -21,26 +21,26 @@ namespace ntlm.Damien.Win
         {
             InitializeComponent();
 
-            Github.Logger = new TextBoxWriter(EventConsole);
+            Github.Logger = new TextBoxWriter(eventConsole);
             Github.ProgressChanged += ProgressChanged;
 
             HandleCloneVisibility();
             BindSettings();
             InitializeProfileSelector();
 
-            ShowWarnings.Visible = false;
+            showWarnings.Visible = false;
 
-            BasePath.Text = GetFromRegistry(nameof(BasePath));
-            Token.Text = GetFromRegistry(nameof(Token));
+            basePath.Text = GetFromRegistry(nameof(basePath));
+            token.Text = GetFromRegistry(nameof(token));
 
             Image reducedQuestionMark = ResizeImage(SystemIcons.Question.ToBitmap(), 20, 20);
 
-            TokenQuestionMark.Image = reducedQuestionMark;
-            BasePathQuestionMark.Image = reducedQuestionMark;
-            ProfileQuestionMark.Image = reducedQuestionMark;
+            tokenQuestionMark.Image = reducedQuestionMark;
+            basePathQuestionMark.Image = reducedQuestionMark;
+            profileQuestionMark.Image = reducedQuestionMark;
 
 
-            TokenToolTip.SetToolTip(TokenQuestionMark, string.Join(Environment.NewLine, new[] {
+            tokenToolTip.SetToolTip(tokenQuestionMark, string.Join(Environment.NewLine, new[] {
                 "Un 'personal access token' Github est nécessaire pour cloner les dépôts.",
                 "Pour en générer un :",
                 "- Github.com,",
@@ -55,9 +55,9 @@ namespace ntlm.Damien.Win
                 "- copier le token ici.",
             }));
 
-            BasePathToolTip.SetToolTip(BasePathQuestionMark, "Le répertoire local où seront clonés les dépôts.");
+            basePathToolTip.SetToolTip(basePathQuestionMark, "Le répertoire local où seront clonés les dépôts.");
 
-            BasePathToolTip.SetToolTip(ProfileQuestionMark, "Un profil fait référence à un projet donné et une liste de dépôt à cloner.");
+            basePathToolTip.SetToolTip(profileQuestionMark, "Un profil fait référence à un projet donné et une liste de dépôt à cloner.");
 
         }
 
@@ -67,25 +67,25 @@ namespace ntlm.Damien.Win
         private void InitializeProfileSelector()
         {
             // Définir la source de données du ComboBox comme la liste des settings
-            Profile.DataSource = Settings;
+            profile.DataSource = Settings;
 
             // Spécifier le champ à afficher dans le ComboBox (ici "Name" de GithubSettings)
-            Profile.DisplayMember = "Name";
+            profile.DisplayMember = "Name";
 
             // Gérer l'événement de sélection pour mettre à jour le clone manager
-            Profile.SelectedIndexChanged += ProfileSelector_SelectedIndexChanged;
+            profile.SelectedIndexChanged += ProfileSelector_SelectedIndexChanged;
 
-            var registry = GetFromRegistry(nameof(Profile));
+            var registry = GetFromRegistry(nameof(profile));
             var registrySetting = Settings.FirstOrDefault(x => x.Name == registry);
 
             if (registrySetting != null)
-                Profile.SelectedItem = registrySetting;
+                profile.SelectedItem = registrySetting;
             else
-                Profile.SelectedIndex = 0;
+                profile.SelectedIndex = 0;
 
 
             Github.Setting = 
-                Profile.SelectedItem as GithubSettings
+                profile.SelectedItem as GithubSettings
                 ;
         }
 
@@ -97,13 +97,13 @@ namespace ntlm.Damien.Win
         private void ProfileSelector_SelectedIndexChanged(object? sender, EventArgs e)
         {
             // Récupérer le setting sélectionné
-            GithubSettings? selectedSetting = Profile.SelectedItem as GithubSettings;
+            GithubSettings? selectedSetting = profile.SelectedItem as GithubSettings;
 
             if (selectedSetting != null)
             {
                 // Mettre à jour la propriété Settings du clone manager avec le setting sélectionné
                 Github.Setting = selectedSetting;
-                SaveToRegistry(nameof(Profile), selectedSetting.Name);
+                SaveToRegistry(nameof(profile), selectedSetting.Name);
             }
         }
 
@@ -132,24 +132,24 @@ namespace ntlm.Damien.Win
 
         private void BrowseBasePath_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog1.ShowDialog();
-            BasePath.Text = FolderBrowserDialog1.SelectedPath;
-            SaveToRegistry(nameof(BasePath), BasePath.Text);
+            folderBrowserDialog1.ShowDialog();
+            basePath.Text = folderBrowserDialog1.SelectedPath;
+            SaveToRegistry(nameof(basePath), basePath.Text);
             HandleCloneVisibility();
         }
 
         private void HandleCloneVisibility()
         {
-            Clone.Enabled = !string.IsNullOrWhiteSpace(BasePath.Text);
+            clone.Enabled = !string.IsNullOrWhiteSpace(basePath.Text);
         }
 
         private async void Clone_Click(object sender, EventArgs e)
         {
-            SaveToRegistry(nameof(Token), Token.Text);
+            SaveToRegistry(nameof(token), token.Text);
             Disable();
-            Github.BasePath = BasePath.Text;
-            Github.Token = Token.Text;
-            Github.Fetch = Fetch.Checked;
+            Github.BasePath = basePath.Text;
+            Github.Token = token.Text;
+            Github.Fetch = fetch.Checked;
             cancellationTokenSource = new CancellationTokenSource();
             await Github.CloneAsync(cancellationTokenSource.Token);
             Enable();
@@ -159,9 +159,9 @@ namespace ntlm.Damien.Win
         private void ShowWarningsVisibility()
         {
             var c = Github.Warnings.Count();
-            ShowWarnings.Visible = c > 0;
-            ShowWarnings.Enabled = c > 0;
-            ShowWarnings.Text = string.Format("Avertissement{0} ({1})", c > 1 ? "s" : string.Empty, c);
+            showWarnings.Visible = c > 0;
+            showWarnings.Enabled = c > 0;
+            showWarnings.Text = string.Format("Avertissement{0} ({1})", c > 1 ? "s" : string.Empty, c);
         }
 
         private void ProgressChanged(object? sender, int progress)
@@ -169,30 +169,30 @@ namespace ntlm.Damien.Win
             ShowWarningsVisibility();
             if (InvokeRequired)
             {
-                Invoke(new Action(() => ProgressBar1.Value = progress));
+                Invoke(new Action(() => progressBar1.Value = progress));
             }
             else
             {
-                ProgressBar1.Value = progress;
+                progressBar1.Value = progress;
             }
         }
 
         private void Enable()
         {
-            Clone.Enabled = true;
-            Token.Enabled = true;
-            BasePath.Enabled = true;
-            Cancel.Enabled = false;
-            BrowseBasePath.Enabled = true;
+            clone.Enabled = true;
+            token.Enabled = true;
+            basePath.Enabled = true;
+            cancel.Enabled = false;
+            browseBasePath.Enabled = true;
         }
 
         private void Disable()
         {
-            Clone.Enabled = false;
-            Token.Enabled = false;
-            BasePath.Enabled = false;
-            Cancel.Enabled = true;
-            BrowseBasePath.Enabled = false;
+            clone.Enabled = false;
+            token.Enabled = false;
+            basePath.Enabled = false;
+            cancel.Enabled = true;
+            browseBasePath.Enabled = false;
         }
 
         private void Cancel_Click(object sender, EventArgs e)
