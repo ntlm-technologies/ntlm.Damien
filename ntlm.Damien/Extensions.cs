@@ -8,12 +8,15 @@
         /// </summary>
         /// <param name="fileUrl"></param>
         /// <returns></returns>
-        public static string[] GetRepositoryListFromFile(this string fileUrl)
+        public static string[] GetRepositoryListFromFile(this string fileUrl, string? token)
         {
             using (HttpClient client = new HttpClient())
             {
                 try
                 {
+                    // Ajouter le token dans les en-têtes de la requête HTTP
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                     // Télécharge le contenu du fichier de manière synchrone
                     string fileContent = client.GetStringAsync(fileUrl).GetAwaiter().GetResult();
 

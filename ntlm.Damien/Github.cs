@@ -102,7 +102,7 @@
                 await CloneAsync(
                     Settings
                         .UrlUrls
-                        .GetRepositoryListFromFile()
+                        .GetRepositoryListFromFile(Token)
                         .GroupBy(x => x)
                         .Select(x => x.Key)
                         .ToArray()
