@@ -144,7 +144,7 @@
             // cancel
             // 
             cancel.Enabled = false;
-            cancel.Location = new Point(243, 143);
+            cancel.Location = new Point(248, 143);
             cancel.Name = "cancel";
             cancel.Size = new Size(99, 29);
             cancel.TabIndex = 10;
@@ -181,9 +181,9 @@
             showWarnings.Enabled = false;
             showWarnings.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             showWarnings.ForeColor = Color.DarkOrange;
-            showWarnings.Location = new Point(348, 143);
+            showWarnings.Location = new Point(353, 143);
             showWarnings.Name = "showWarnings";
-            showWarnings.Size = new Size(187, 29);
+            showWarnings.Size = new Size(109, 29);
             showWarnings.TabIndex = 13;
             showWarnings.Text = "Avertissement";
             showWarnings.UseVisualStyleBackColor = false;
