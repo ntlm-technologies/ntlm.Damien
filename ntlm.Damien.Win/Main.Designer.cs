@@ -167,6 +167,12 @@
             basePathQuestionMark.TabIndex = 12;
             basePathQuestionMark.TabStop = false;
             // 
+            // tokenToolTip
+            // 
+            tokenToolTip.AutoPopDelay = 20000;
+            tokenToolTip.InitialDelay = 500;
+            tokenToolTip.ReshowDelay = 100;
+            // 
             // showWarnings
             // 
             showWarnings.AutoEllipsis = true;
