@@ -84,7 +84,7 @@
             // 
             // browseBasePath
             // 
-            browseBasePath.Location = new Point(536, 44);
+            browseBasePath.Location = new Point(536, 45);
             browseBasePath.Name = "browseBasePath";
             browseBasePath.Size = new Size(99, 29);
             browseBasePath.TabIndex = 4;
