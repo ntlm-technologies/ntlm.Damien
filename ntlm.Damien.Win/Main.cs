@@ -1,6 +1,7 @@
 namespace ntlm.Damien.Win
 {
     using System.Runtime.CompilerServices;
+    using Microsoft.Win32;
 
     public partial class Main : Form
     {
@@ -11,12 +12,15 @@ namespace ntlm.Damien.Win
             InitializeComponent();
 
             HandleCloneVisibility();
+
+            BasePath.Text = LoadPathFromRegistry();
         }
 
         private void BrowseBasePath_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog1.ShowDialog();
             BasePath.Text = FolderBrowserDialog1.SelectedPath;
+            SavePathToRegistry(BasePath.Text);
             HandleCloneVisibility();
         }
 
@@ -71,6 +75,39 @@ namespace ntlm.Damien.Win
         {
             cancellationTokenSource?.Cancel();
         }
+
+        public const string RegistryKey = @"Software\ntlm.Damien";
+
+        public void SavePathToRegistry(string path)
+        {
+            // Ouvrir ou créer une sous-clé spécifique à l'application dans le registre
+            RegistryKey key = Registry.CurrentUser.CreateSubKey(RegistryKey);
+
+            // Enregistrer le chemin dans cette clé
+            key.SetValue("LastPath", path);
+
+            // Fermer la clé après utilisation
+            key.Close();
+        }
+
+        public string? LoadPathFromRegistry()
+        {
+            // Ouvrir la sous-clé où le chemin est stocké
+            RegistryKey? key = Registry.CurrentUser.OpenSubKey(RegistryKey);
+
+            if (key != null)
+            {
+                // Lire la valeur du chemin (ou renvoyer une chaîne vide si elle n'existe pas)
+                object path = key.GetValue("LastPath", string.Empty);
+                key.Close();
+                return path?.ToString();
+            }
+
+            return string.Empty; // Retourne une valeur par défaut si la clé n'existe pas
+        }
+
+
+
 
         private void Main_Load(object sender, EventArgs e)
         {
