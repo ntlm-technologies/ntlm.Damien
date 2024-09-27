@@ -186,6 +186,7 @@ namespace ntlm.Damien.Win
             basePath.Enabled = true;
             cancel.Enabled = false;
             browseBasePath.Enabled = true;
+            profile.Enabled = true;
         }
 
         private void Disable()
@@ -195,6 +196,7 @@ namespace ntlm.Damien.Win
             basePath.Enabled = false;
             cancel.Enabled = true;
             browseBasePath.Enabled = false;
+            profile.Enabled = false;
         }
 
         private void Cancel_Click(object sender, EventArgs e)
