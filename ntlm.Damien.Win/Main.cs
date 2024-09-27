@@ -17,6 +17,7 @@ namespace ntlm.Damien.Win
             InitializeComponent();
 
             Github.Logger = new TextBoxWriter(EventConsole);
+            Github.ProgressChanged += ProgressChanged;
 
             HandleCloneVisibility();
 
@@ -71,13 +72,22 @@ namespace ntlm.Damien.Win
             Github.Token = Token.Text;
             Github.Fetch = Fetch.Checked;
             cancellationTokenSource = new CancellationTokenSource();
-            Github.ProgressChanged += ProgressChanged;
             await Github.CloneAsync(cancellationTokenSource.Token);
             Enable();
+            ShowWarningsVisibility();
+        }
+
+        private void ShowWarningsVisibility()
+        {
+            var c = Github.Warnings.Count();
+            ShowWarnings.Visible = c > 0;
+            ShowWarnings.Enabled = c > 0;
+            ShowWarnings.Text = string.Format("Avertissement{0} ({1})", c > 1 ? "s" : string.Empty, c);
         }
 
         private void ProgressChanged(object? sender, int progress)
         {
+            ShowWarningsVisibility();
             if (InvokeRequired)
             {
                 Invoke(new Action(() => ProgressBar1.Value = progress));
@@ -94,8 +104,7 @@ namespace ntlm.Damien.Win
             Token.Enabled = true;
             BasePath.Enabled = true;
             Cancel.Enabled = false;
-            browseBasePath.Enabled = true;
-            ShowWarnings.Visible = true;
+            BrowseBasePath.Enabled = true;
         }
 
         private void Disable()
@@ -104,7 +113,7 @@ namespace ntlm.Damien.Win
             Token.Enabled = false;
             BasePath.Enabled = false;
             Cancel.Enabled = true;
-            browseBasePath.Enabled = false;
+            BrowseBasePath.Enabled = false;
         }
 
         private void Cancel_Click(object sender, EventArgs e)
@@ -165,7 +174,8 @@ namespace ntlm.Damien.Win
 
         private void ShowWarnings_Click(object sender, EventArgs e)
         {
-
+            var warnings = new WarningDialog(Github.Warnings.ToArray());
+            warnings.ShowDialog();
         }
     }
 }

@@ -23,9 +23,8 @@
         {
         }
 
-        public Github()
+        public Github() : this(Directory.GetCurrentDirectory())
         {
-            
         }
 
         public event EventHandler<int> ProgressChanged = delegate { };
@@ -33,6 +32,13 @@
         protected virtual void OnProgressChanged(object sender, int progress)
         {
             ProgressChanged?.Invoke(sender, progress);
+        }
+
+        public event EventHandler<string> Warned = delegate { };
+
+        protected virtual void OnWarned(object sender, string text)
+        {
+            Warned?.Invoke(sender, text);
         }
 
         /// <summary>
@@ -159,6 +165,8 @@
         /// <param name="urls">Urls of Github directories.</param>
         public async Task CloneAsync(string[] urls, CancellationToken ct)
         {
+            Warnings.Clear();
+
             OnProgressChanged(this, 0);
 
             int i = 0;
@@ -360,7 +368,7 @@
         /// <summary>
         /// The warnings.
         /// </summary>
-        public static List<string> Warnings => [];
+        public static List<string> Warnings { get; } = [];
 
         /// <summary>
         /// Warns.
@@ -370,6 +378,7 @@
         {
             Log(text);
             Warnings.Add(text);
+            OnWarned(this, text);
         }
 
         /// <summary>

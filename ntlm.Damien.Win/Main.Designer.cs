@@ -34,7 +34,7 @@
             Token = new TextBox();
             FolderBrowserDialog1 = new FolderBrowserDialog();
             label2 = new Label();
-            browseBasePath = new Button();
+            BrowseBasePath = new Button();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             Clone = new Button();
             EventConsole = new TextBox();
@@ -77,15 +77,15 @@
             label2.TabIndex = 2;
             label2.Text = "Destination";
             // 
-            // browseBasePath
+            // BrowseBasePath
             // 
-            browseBasePath.Location = new Point(536, 53);
-            browseBasePath.Name = "browseBasePath";
-            browseBasePath.Size = new Size(99, 29);
-            browseBasePath.TabIndex = 4;
-            browseBasePath.Text = "Parcourir";
-            browseBasePath.UseVisualStyleBackColor = true;
-            browseBasePath.Click += BrowseBasePath_Click;
+            BrowseBasePath.Location = new Point(536, 53);
+            BrowseBasePath.Name = "BrowseBasePath";
+            BrowseBasePath.Size = new Size(99, 29);
+            BrowseBasePath.TabIndex = 4;
+            BrowseBasePath.Text = "Parcourir";
+            BrowseBasePath.UseVisualStyleBackColor = true;
+            BrowseBasePath.Click += BrowseBasePath_Click;
             // 
             // Clone
             // 
@@ -163,13 +163,17 @@
             // 
             // ShowWarnings
             // 
+            ShowWarnings.AutoEllipsis = true;
+            ShowWarnings.BackColor = SystemColors.Control;
             ShowWarnings.Enabled = false;
+            ShowWarnings.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            ShowWarnings.ForeColor = Color.DarkOrange;
             ShowWarnings.Location = new Point(348, 118);
             ShowWarnings.Name = "ShowWarnings";
-            ShowWarnings.Size = new Size(99, 29);
+            ShowWarnings.Size = new Size(187, 29);
             ShowWarnings.TabIndex = 13;
-            ShowWarnings.Text = "Annuler";
-            ShowWarnings.UseVisualStyleBackColor = true;
+            ShowWarnings.Text = "Avertissement";
+            ShowWarnings.UseVisualStyleBackColor = false;
             ShowWarnings.Click += ShowWarnings_Click;
             // 
             // Main
@@ -186,13 +190,14 @@
             Controls.Add(ProgressBar1);
             Controls.Add(EventConsole);
             Controls.Add(Clone);
-            Controls.Add(browseBasePath);
+            Controls.Add(BrowseBasePath);
             Controls.Add(label2);
             Controls.Add(Token);
             Controls.Add(label1);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
+            MinimizeBox = false;
             Name = "Main";
             Text = "Ntlm Github Cloner";
             Load += Main_Load;
@@ -208,7 +213,7 @@
         private TextBox Token;
         private FolderBrowserDialog FolderBrowserDialog1;
         private Label label2;
-        private Button browseBasePath;
+        private Button BrowseBasePath;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private Button Clone;
         private TextBox EventConsole;
