@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             label1 = new Label();
             Token = new TextBox();
@@ -41,12 +42,18 @@
             Fetch = new CheckBox();
             BasePath = new TextBox();
             Cancel = new Button();
+            TokenQuestionMark = new PictureBox();
+            BasePathQuestionMark = new PictureBox();
+            TokenToolTip = new ToolTip(components);
+            BasePathToolTip = new ToolTip(components);
+            ((System.ComponentModel.ISupportInitialize)TokenQuestionMark).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)BasePathQuestionMark).BeginInit();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(125, 22);
+            label1.Location = new Point(6, 15);
             label1.Name = "label1";
             label1.Size = new Size(96, 20);
             label1.TabIndex = 0;
@@ -54,16 +61,16 @@
             // 
             // Token
             // 
-            Token.Location = new Point(227, 19);
+            Token.Location = new Point(143, 13);
             Token.Name = "Token";
-            Token.Size = new Size(387, 27);
+            Token.Size = new Size(392, 27);
             Token.TabIndex = 1;
             Token.Text = "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";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(136, 64);
+            label2.Location = new Point(17, 57);
             label2.Name = "label2";
             label2.Size = new Size(85, 20);
             label2.TabIndex = 2;
@@ -71,9 +78,9 @@
             // 
             // browseBasePath
             // 
-            browseBasePath.Location = new Point(620, 59);
+            browseBasePath.Location = new Point(536, 53);
             browseBasePath.Name = "browseBasePath";
-            browseBasePath.Size = new Size(94, 29);
+            browseBasePath.Size = new Size(99, 29);
             browseBasePath.TabIndex = 4;
             browseBasePath.Text = "Parcourir";
             browseBasePath.UseVisualStyleBackColor = true;
@@ -82,9 +89,9 @@
             // Clone
             // 
             Clone.Enabled = false;
-            Clone.Location = new Point(227, 124);
+            Clone.Location = new Point(143, 118);
             Clone.Name = "Clone";
-            Clone.Size = new Size(94, 29);
+            Clone.Size = new Size(99, 29);
             Clone.TabIndex = 5;
             Clone.Text = "Cloner";
             Clone.UseVisualStyleBackColor = true;
@@ -97,7 +104,7 @@
             EventConsole.Name = "EventConsole";
             EventConsole.ReadOnly = true;
             EventConsole.ScrollBars = ScrollBars.Vertical;
-            EventConsole.Size = new Size(776, 133);
+            EventConsole.Size = new Size(623, 133);
             EventConsole.TabIndex = 6;
             EventConsole.WordWrap = false;
             // 
@@ -105,13 +112,13 @@
             // 
             ProgressBar1.Location = new Point(12, 319);
             ProgressBar1.Name = "ProgressBar1";
-            ProgressBar1.Size = new Size(776, 29);
+            ProgressBar1.Size = new Size(623, 29);
             ProgressBar1.TabIndex = 7;
             // 
             // Fetch
             // 
             Fetch.AutoSize = true;
-            Fetch.Location = new Point(227, 94);
+            Fetch.Location = new Point(143, 88);
             Fetch.Name = "Fetch";
             Fetch.Size = new Size(250, 24);
             Fetch.TabIndex = 8;
@@ -120,28 +127,46 @@
             // 
             // BasePath
             // 
-            BasePath.Location = new Point(227, 61);
+            BasePath.Location = new Point(143, 55);
             BasePath.Name = "BasePath";
-            BasePath.Size = new Size(387, 27);
+            BasePath.Size = new Size(392, 27);
             BasePath.TabIndex = 9;
             BasePath.Text = "C:\\Users\\Dell\\Desktop\\ntlm.Damien";
             // 
             // Cancel
             // 
             Cancel.Enabled = false;
-            Cancel.Location = new Point(327, 124);
+            Cancel.Location = new Point(243, 118);
             Cancel.Name = "Cancel";
-            Cancel.Size = new Size(94, 29);
+            Cancel.Size = new Size(99, 29);
             Cancel.TabIndex = 10;
             Cancel.Text = "Annuler";
             Cancel.UseVisualStyleBackColor = true;
             Cancel.Click += Cancel_Click;
             // 
+            // TokenQuestionMark
+            // 
+            TokenQuestionMark.Location = new Point(108, 15);
+            TokenQuestionMark.Name = "TokenQuestionMark";
+            TokenQuestionMark.Size = new Size(29, 21);
+            TokenQuestionMark.TabIndex = 11;
+            TokenQuestionMark.TabStop = false;
+            // 
+            // BasePathQuestionMark
+            // 
+            BasePathQuestionMark.Location = new Point(108, 57);
+            BasePathQuestionMark.Name = "BasePathQuestionMark";
+            BasePathQuestionMark.Size = new Size(29, 21);
+            BasePathQuestionMark.TabIndex = 12;
+            BasePathQuestionMark.TabStop = false;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 358);
+            ClientSize = new Size(651, 358);
+            Controls.Add(BasePathQuestionMark);
+            Controls.Add(TokenQuestionMark);
             Controls.Add(Cancel);
             Controls.Add(BasePath);
             Controls.Add(Fetch);
@@ -158,6 +183,8 @@
             Name = "Main";
             Text = "Ntlm Github Cloner";
             Load += Main_Load;
+            ((System.ComponentModel.ISupportInitialize)TokenQuestionMark).EndInit();
+            ((System.ComponentModel.ISupportInitialize)BasePathQuestionMark).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -176,5 +203,9 @@
         private CheckBox Fetch;
         private TextBox BasePath;
         private Button Cancel;
+        private PictureBox TokenQuestionMark;
+        private PictureBox BasePathQuestionMark;
+        private ToolTip TokenToolTip;
+        private ToolTip BasePathToolTip;
     }
 }

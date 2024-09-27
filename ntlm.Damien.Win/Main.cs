@@ -15,6 +15,30 @@ namespace ntlm.Damien.Win
 
             BasePath.Text = LoadPathFromRegistry(nameof(BasePath));
             Token.Text = LoadPathFromRegistry(nameof(Token));
+
+            Image reducedQuestionMark = ResizeImage(SystemIcons.Question.ToBitmap(), 20, 20);
+
+            TokenQuestionMark.Image = reducedQuestionMark;
+            BasePathQuestionMark.Image = reducedQuestionMark;
+
+
+            TokenToolTip.SetToolTip(TokenQuestionMark, string.Join(Environment.NewLine, new[] {
+                "Un personal access token Github est nécessaire pour cloner les dépôts.",
+                "Pour en générer un :",
+                "- Github.com,",
+                "- icône utilisateur en haut à droite,",
+                "- Settings,",
+                "- Developer settings,",
+                "- Personal access tokens,",
+                "- Tokens (classic),",
+                "- Generate new token (classic),",
+                "- attrtibuer un nom,",
+                "- attribuer le scope repo,",
+                "- copier le token ici.",
+            }));
+
+            BasePathToolTip.SetToolTip(BasePathQuestionMark, "Le répertoire local où seront clonés les dépôts.");
+
         }
 
         private void BrowseBasePath_Click(object sender, EventArgs e)
@@ -114,5 +138,20 @@ namespace ntlm.Damien.Win
         private void Main_Load(object sender, EventArgs e)
         {
         }
+        private Image ResizeImage(Image image, int width, int height)
+        {
+            // Créer une nouvelle Bitmap avec les dimensions spécifiées
+            Bitmap resizedImage = new Bitmap(width, height);
+
+            // Utiliser Graphics pour dessiner l'image redimensionnée
+            using (Graphics graphics = Graphics.FromImage(resizedImage))
+            {
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.DrawImage(image, 0, 0, width, height);
+            }
+
+            return resizedImage;
+        }
+
     }
 }
