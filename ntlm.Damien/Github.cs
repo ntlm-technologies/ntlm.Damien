@@ -281,10 +281,10 @@
                 CredentialsProvider = GetCredentialsHandler()
             };
 
-            Log("Fetching updates from origin...");
+            Log("Récupération des mises à jour depuis l'origine...");
             Commands.Fetch(repo, remote.Name, remote.FetchRefSpecs.Select(x => x.Specification), fetchOptions, null);
 
-            Log("Fetch terminé.");
+            Log("Récupération terminée.");
 
             // Effectuer un pull pour intégrer les changements (si vous voulez directement pull)
             var signature = new Signature("Your Name", "youremail@example.com", DateTimeOffset.Now);

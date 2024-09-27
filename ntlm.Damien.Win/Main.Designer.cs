@@ -183,7 +183,7 @@
             showWarnings.ForeColor = Color.DarkOrange;
             showWarnings.Location = new Point(353, 143);
             showWarnings.Name = "showWarnings";
-            showWarnings.Size = new Size(109, 29);
+            showWarnings.Size = new Size(182, 29);
             showWarnings.TabIndex = 13;
             showWarnings.Text = "Avertissement";
             showWarnings.UseVisualStyleBackColor = false;
