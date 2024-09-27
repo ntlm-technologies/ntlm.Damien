@@ -6,6 +6,10 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ApplicationIcon>ntlm.ico</ApplicationIcon>
+		<SelfContained>true</SelfContained>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<PublishSingleFile>true</PublishSingleFile>
+		<PublishTrimmed>false</PublishTrimmed>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Content Include="ntlm.ico" />
