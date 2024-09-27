@@ -2,6 +2,7 @@
 {
 
     using LibGit2Sharp;
+    using LibGit2Sharp.Handlers;
     using Microsoft.Extensions.Configuration;
     using System;
 
@@ -80,117 +81,151 @@
             }
         }
 
+
         /// <summary>
-        /// Clones repositories to local directory.
+        /// Clones repositories to local directory analysing settings.
         /// </summary>
-        public void Clone()
+        public async Task CloneAsync(CancellationToken ct)
         {
             if (Settings?.UrlUrls != null)
-                Clone(Settings.UrlUrls.GetRepositoryListFromFile());
+                await CloneAsync(Settings.UrlUrls.GetRepositoryListFromFile(), ct);
             else
                 Warn("Aucun fichier txt distant configuré pour obtenir la liste des url à cloner.");
         }
 
         /// <summary>
+        /// Clones repositories to local directory analysing settings.
+        /// </summary>
+        public void Clone() =>
+            CloneAsync(CancellationToken.None).GetAwaiter().GetResult();
+
+        /// <summary>
         /// Clones a repository to local directory.
         /// </summary>
         /// <param name="urls">Urls of Github directories.</param>
-        public void Clone(params string[] urls)
+        public void Clone(string url)
+        {
+            var tUrl = TransformUrl(url);
+            try
+            {
+                string repoName = GetRepositoryNameFromUrl(tUrl);
+                string repoPath = Path.Combine(
+                    BasePath,
+                    GetClientDirectory(repoName),
+                    repoName
+                    );
+
+                // Cloning
+                if (Directory.Exists(repoPath))
+                {
+                    Log($"Le dépôt {repoName} existe déjà.");
+                    FetchAndUpdateRepository(repoPath);
+                }
+                else
+                {
+                    var cloneOptions = new CloneOptions();
+                    cloneOptions.FetchOptions.CredentialsProvider = GetCredentialsHandler();
+
+                    Repository.Clone(tUrl, repoPath, cloneOptions);
+                    Checkout(repoPath);
+                    Log($"Cloné avec succès : {repoName}");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Warn($"Erreur lors du clonage de {tUrl}: {ex.Message}");
+            }
+
+        }
+
+        /// <summary>
+        /// Clones a list repositories to local directory.
+        /// </summary>
+        /// <param name="urls">Urls of Github directories.</param>
+        public async Task CloneAsync(string[] urls, CancellationToken ct)
         {
             OnProgressChanged(this, 0);
 
-            var cloneOptions = new CloneOptions();
-            cloneOptions.FetchOptions.CredentialsProvider =
-                (_url, _user, _cred) => new UsernamePasswordCredentials
-                {
-                    Username = Token,
-                    Password = string.Empty
-                };
-
             int i = 0;
 
-            foreach (var url in urls)
+            try
             {
-                var tUrl = TransformUrl(url);
-
-                try
+                foreach (var url in urls)
                 {
-                    string repoName = GetRepositoryNameFromUrl(tUrl);
-                    string repoPath = Path.Combine(
-                        BasePath,
-                        GetClientDirectory(repoName),
-                        repoName
-                        );
+                    ct.ThrowIfCancellationRequested();
 
-                    // Cloning
-                    if (Directory.Exists(repoPath))
-                    {
-                        Log($"Le dépôt {repoName} existe déjà.");
-                        FetchAndUpdateRepository(repoPath);
-                    }
-                    else
-                    {
-                        Repository.Clone(tUrl, repoPath, cloneOptions);
-                        Checkout(repoPath);
-                        Log($"Cloné avec succès : {repoName}");
-                    }
-
-                   
+                    await Task.Run(() => Clone(url));
 
                     i++;
                     OnProgressChanged(this, (i * 100) / urls.Length);
                 }
-                catch (Exception ex)
-                {
-                    Warn($"Erreur lors du clonage de {tUrl}: {ex.Message}");
-                }
+            }
+            catch (OperationCanceledException)
+            {
+                Log("Clonage annulé par l'utilisateur.");
+            }
+            catch (Exception ex)
+            {
+                Log($"Erreur lors du clonage : {ex.Message}");
             }
             Log("Terminé.");
         }
 
+        /// <summary>
+        /// Clones a list repositories to local directory.
+        /// </summary>
+        /// <param name="urls">Urls of Github directories.</param>
+        public void Clone(params string[] urls) =>
+            CloneAsync(urls, CancellationToken.None).GetAwaiter().GetResult();
+
+        /// <summary>
+        /// Checks out a repo to the most preferred branch.
+        /// </summary>
+        /// <param name="repoPath"></param>
         public void Checkout(string repoPath)
         {
             // Branching
             if (Settings?.Branches != null)
             {
-                using (var repo = new Repository(repoPath))
+                var repo = new Repository(repoPath);
+
+                // Si des fichiers sont modifiés, effectuer un stash
+                if (repo.RetrieveStatus().IsDirty)
                 {
-                    // Si des fichiers sont modifiés, effectuer un stash
-                    if (repo.RetrieveStatus().IsDirty)
-                    {
-                        Log("Des modifications non validées détectées, création d'un stash...");
-                        repo.Stashes.Add(repo.Config.BuildSignature(DateTimeOffset.Now), "Sauvegarde temporaire");
-                    }
-
-                    foreach (var branchName in Settings.Branches)
-                    {
-                        // Vérifier si la branche existe localement
-                        var branch = repo.Branches[branchName];
-
-                        if (branch == null)
-                        {
-                            // Si la branche n'existe pas localement, vérifiez si elle existe sur le dépôt distant
-                            var remoteBranch = repo.Branches[$"origin/{branchName}"];
-                            if (remoteBranch != null)
-                            {
-                                // Créer la branche locale à partir de la branche distante
-                                branch = repo.CreateBranch(branchName, remoteBranch.Tip);
-                                repo.Branches.Update(branch, b => b.TrackedBranch = remoteBranch.CanonicalName);
-                                Log($"Branche '{branchName}' créée localement à partir de la branche distante.");
-                            }
-                        }
-
-                        if (branch != null)
-                        {
-                            // Effectuer le checkout sur la branche
-                            Commands.Checkout(repo, branch);
-                            Log($"Branche trouvée et activée : {branch.FriendlyName}");
-                            return; // Quitter dès que le checkout est réussi
-                        }
-                    }
-
-                    Log("Aucune des branches spécifiées n'a été trouvée.");
+                    Log("Des modifications non validées détectées, création d'un stash...");
+                    repo.Stashes.Add(repo.Config.BuildSignature(DateTimeOffset.Now), "Sauvegarde temporaire");
                 }
+
+                foreach (var branchName in Settings.Branches)
+                {
+                    // Vérifier si la branche existe localement
+                    var branch = repo.Branches[branchName];
+
+                    if (branch == null)
+                    {
+                        // Si la branche n'existe pas localement, vérifiez si elle existe sur le dépôt distant
+                        var remoteBranch = repo.Branches[$"origin/{branchName}"];
+                        if (remoteBranch != null)
+                        {
+                            // Créer la branche locale à partir de la branche distante
+                            branch = repo.CreateBranch(branchName, remoteBranch.Tip);
+                            repo.Branches.Update(branch, b => b.TrackedBranch = remoteBranch.CanonicalName);
+                            Log($"Branche '{branchName}' créée localement à partir de la branche distante.");
+                        }
+                    }
+
+                    if (branch != null)
+                    {
+                        // Effectuer le checkout sur la branche
+                        Commands.Checkout(repo, branch);
+                        Log($"Branche trouvée et activée : {branch.FriendlyName}");
+                        return; // Quitter dès que le checkout est réussi
+                    }
+                }
+
+                Log("Aucune des branches spécifiées n'a été trouvée.");
+
             }
         }
 
@@ -214,46 +249,54 @@
                 return;
             }
 
-            using (var repo = new Repository(repoPath))
+            var repo = new Repository(repoPath);
+
+            // Récupérer les dernières modifications depuis le dépôt distant
+            var remote = repo.Network.Remotes["origin"];
+
+            var fetchOptions = new FetchOptions
             {
-                // Récupérer les dernières modifications depuis le dépôt distant
-                var remote = repo.Network.Remotes["origin"];
-                var fetchOptions = new FetchOptions
-                {
-                    CredentialsProvider = (_url, _user, _cred) =>
-                        new UsernamePasswordCredentials
-                        {
-                            Username = Token,
-                            Password = string.Empty
-                        }
-                };
+                CredentialsProvider = GetCredentialsHandler()
+            };
 
-                Log("Fetching updates from origin...");
-                Commands.Fetch(repo, remote.Name, remote.FetchRefSpecs.Select(x => x.Specification), fetchOptions, null);
+            Log("Fetching updates from origin...");
+            Commands.Fetch(repo, remote.Name, remote.FetchRefSpecs.Select(x => x.Specification), fetchOptions, null);
 
-                Log("Fetch terminé.");
+            Log("Fetch terminé.");
 
-                // Effectuer un pull pour intégrer les changements (si vous voulez directement pull)
-                var signature = new Signature("Your Name", "youremail@example.com", DateTimeOffset.Now);
-                var mergeResult = Commands.Pull(repo, signature, new PullOptions
-                {
-                    FetchOptions = fetchOptions
-                });
+            // Effectuer un pull pour intégrer les changements (si vous voulez directement pull)
+            var signature = new Signature("Your Name", "youremail@example.com", DateTimeOffset.Now);
+            var mergeResult = Commands.Pull(repo, signature, new PullOptions
+            {
+                FetchOptions = fetchOptions
+            });
 
-                if (mergeResult.Status == MergeStatus.Conflicts)
-                {
-                    Log("Conflits détectés lors du pull.");
-                }
-                else if (mergeResult.Status == MergeStatus.UpToDate)
-                {
-                    Log("Le dépôt est déjà à jour.");
-                }
-                else
-                {
-                    Log("Mise à jour effectuée avec succès.");
-                }
+            if (mergeResult.Status == MergeStatus.Conflicts)
+            {
+                Log("Conflits détectés lors du pull.");
             }
+            else if (mergeResult.Status == MergeStatus.UpToDate)
+            {
+                Log("Le dépôt est déjà à jour.");
+            }
+            else
+            {
+                Log("Mise à jour effectuée avec succès.");
+            }
+
         }
+
+        /// <summary>
+        /// Returns a credentila handler.
+        /// </summary>
+        /// <returns></returns>
+        public virtual CredentialsHandler GetCredentialsHandler() =>
+            (_url, _user, _cred) =>
+                new UsernamePasswordCredentials
+                {
+                    Username = Token,
+                    Password = string.Empty
+                };
 
 
         /// <summary>

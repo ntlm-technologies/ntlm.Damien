@@ -40,6 +40,7 @@
             ProgressBar1 = new ProgressBar();
             Fetch = new CheckBox();
             BasePath = new TextBox();
+            Cancel = new Button();
             SuspendLayout();
             // 
             // label1
@@ -76,12 +77,12 @@
             browseBasePath.TabIndex = 4;
             browseBasePath.Text = "Parcourir";
             browseBasePath.UseVisualStyleBackColor = true;
-            browseBasePath.Click += browseBasePath_Click;
+            browseBasePath.Click += BrowseBasePath_Click;
             // 
             // Clone
             // 
             Clone.Enabled = false;
-            Clone.Location = new Point(227, 104);
+            Clone.Location = new Point(227, 124);
             Clone.Name = "Clone";
             Clone.Size = new Size(94, 29);
             Clone.TabIndex = 5;
@@ -91,12 +92,12 @@
             // 
             // EventConsole
             // 
-            EventConsole.Location = new Point(12, 154);
+            EventConsole.Location = new Point(12, 180);
             EventConsole.Multiline = true;
             EventConsole.Name = "EventConsole";
             EventConsole.ReadOnly = true;
             EventConsole.ScrollBars = ScrollBars.Vertical;
-            EventConsole.Size = new Size(776, 159);
+            EventConsole.Size = new Size(776, 133);
             EventConsole.TabIndex = 6;
             EventConsole.WordWrap = false;
             // 
@@ -110,7 +111,7 @@
             // Fetch
             // 
             Fetch.AutoSize = true;
-            Fetch.Location = new Point(335, 108);
+            Fetch.Location = new Point(227, 94);
             Fetch.Name = "Fetch";
             Fetch.Size = new Size(250, 24);
             Fetch.TabIndex = 8;
@@ -123,12 +124,25 @@
             BasePath.Name = "BasePath";
             BasePath.Size = new Size(387, 27);
             BasePath.TabIndex = 9;
+            BasePath.Text = "C:\\Users\\Dell\\Desktop\\ntlm.Damien";
+            // 
+            // Cancel
+            // 
+            Cancel.Enabled = false;
+            Cancel.Location = new Point(327, 124);
+            Cancel.Name = "Cancel";
+            Cancel.Size = new Size(94, 29);
+            Cancel.TabIndex = 10;
+            Cancel.Text = "Annuler";
+            Cancel.UseVisualStyleBackColor = true;
+            Cancel.Click += Cancel_Click;
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 358);
+            Controls.Add(Cancel);
             Controls.Add(BasePath);
             Controls.Add(Fetch);
             Controls.Add(ProgressBar1);
@@ -143,6 +157,7 @@
             MaximizeBox = false;
             Name = "Main";
             Text = "Ntlm Github Cloner";
+            Load += Main_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -160,5 +175,6 @@
         private ProgressBar ProgressBar1;
         private CheckBox Fetch;
         private TextBox BasePath;
+        private Button Cancel;
     }
 }

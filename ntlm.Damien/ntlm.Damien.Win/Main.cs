@@ -1,30 +1,41 @@
-using System.Runtime.CompilerServices;
-
 namespace ntlm.Damien.Win
 {
+    using System.Runtime.CompilerServices;
+
     public partial class Main : Form
     {
+        private CancellationTokenSource? cancellationTokenSource;
+
         public Main()
         {
             InitializeComponent();
+
+            HandleCloneVisibility();
         }
 
-        private void browseBasePath_Click(object sender, EventArgs e)
+        private void BrowseBasePath_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog1.ShowDialog();
             BasePath.Text = FolderBrowserDialog1.SelectedPath;
-            Clone.Enabled = !string.IsNullOrWhiteSpace(FolderBrowserDialog1.SelectedPath);
+            HandleCloneVisibility();
         }
 
-        private void Clone_Click(object sender, EventArgs e)
+        private void HandleCloneVisibility()
+        {
+            Clone.Enabled = !string.IsNullOrWhiteSpace(BasePath.Text);
+        }
+
+        private async void Clone_Click(object sender, EventArgs e)
         {
             Disable();
-            var github = new Github(BasePath.Text, Token.Text) { 
+            var github = new Github(BasePath.Text, Token.Text)
+            {
                 Logger = new TextBoxWriter(EventConsole),
                 Fetch = Fetch.Checked
             };
+            cancellationTokenSource = new CancellationTokenSource();
             github.ProgressChanged += ProgressChanged;
-            github.Clone();
+            await github.CloneAsync(cancellationTokenSource.Token);
             Enable();
         }
 
@@ -40,12 +51,12 @@ namespace ntlm.Damien.Win
             }
         }
 
-
         private void Enable()
         {
             Clone.Enabled = true;
             Token.Enabled = true;
             BasePath.Enabled = true;
+            Cancel.Enabled = false;
         }
 
         private void Disable()
@@ -53,6 +64,16 @@ namespace ntlm.Damien.Win
             Clone.Enabled = false;
             Token.Enabled = false;
             BasePath.Enabled = false;
+            Cancel.Enabled = true;
+        }
+
+        private void Cancel_Click(object sender, EventArgs e)
+        {
+            cancellationTokenSource?.Cancel();
+        }
+
+        private void Main_Load(object sender, EventArgs e)
+        {
         }
     }
 }
