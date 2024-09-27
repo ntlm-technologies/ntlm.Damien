@@ -28,6 +28,8 @@ namespace ntlm.Damien.Win
             BindSettings();
             InitializeProfileSelector();
 
+            fetch.Checked = bool.TryParse(GetFromRegistry(nameof(fetch)), out bool isChecked) && isChecked;
+
             showWarnings.Visible = false;
 
             basePath.Text = GetFromRegistry(nameof(basePath));
@@ -84,7 +86,7 @@ namespace ntlm.Damien.Win
                 profile.SelectedIndex = 0;
 
 
-            Github.Setting = 
+            Github.Setting =
                 profile.SelectedItem as GithubSettings
                 ;
         }
@@ -267,6 +269,9 @@ namespace ntlm.Damien.Win
                 SearchOption.AllDirectories
                 );
 
-
+        private void Fetch_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveToRegistry(nameof(fetch), fetch.Checked.ToString());
+        }
     }
 }

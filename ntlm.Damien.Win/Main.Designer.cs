@@ -65,10 +65,10 @@
             label1.TabIndex = 0;
             label1.Text = "Github Token";
             // 
-            // Token
+            // token
             // 
             token.Location = new Point(143, 13);
-            token.Name = "Token";
+            token.Name = "token";
             token.Size = new Size(392, 27);
             token.TabIndex = 1;
             token.Text = "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";
@@ -82,91 +82,92 @@
             label2.TabIndex = 2;
             label2.Text = "Destination";
             // 
-            // BrowseBasePath
+            // browseBasePath
             // 
             browseBasePath.Location = new Point(536, 44);
-            browseBasePath.Name = "BrowseBasePath";
+            browseBasePath.Name = "browseBasePath";
             browseBasePath.Size = new Size(99, 29);
             browseBasePath.TabIndex = 4;
             browseBasePath.Text = "Parcourir";
             browseBasePath.UseVisualStyleBackColor = true;
             browseBasePath.Click += BrowseBasePath_Click;
             // 
-            // Clone
+            // clone
             // 
             clone.Enabled = false;
             clone.Location = new Point(143, 143);
-            clone.Name = "Clone";
+            clone.Name = "clone";
             clone.Size = new Size(99, 29);
             clone.TabIndex = 5;
             clone.Text = "Cloner";
             clone.UseVisualStyleBackColor = true;
             clone.Click += Clone_Click;
             // 
-            // EventConsole
+            // eventConsole
             // 
             eventConsole.Location = new Point(12, 178);
             eventConsole.Multiline = true;
-            eventConsole.Name = "EventConsole";
+            eventConsole.Name = "eventConsole";
             eventConsole.ReadOnly = true;
             eventConsole.ScrollBars = ScrollBars.Vertical;
             eventConsole.Size = new Size(623, 208);
             eventConsole.TabIndex = 6;
             eventConsole.WordWrap = false;
             // 
-            // ProgressBar1
+            // progressBar1
             // 
             progressBar1.Location = new Point(12, 392);
-            progressBar1.Name = "ProgressBar1";
+            progressBar1.Name = "progressBar1";
             progressBar1.Size = new Size(623, 29);
             progressBar1.TabIndex = 7;
             // 
-            // Fetch
+            // fetch
             // 
             fetch.AutoSize = true;
             fetch.Location = new Point(143, 113);
-            fetch.Name = "Fetch";
+            fetch.Name = "fetch";
             fetch.Size = new Size(250, 24);
             fetch.TabIndex = 8;
             fetch.Text = "Mettre à jour les dépôts existants";
             fetch.UseVisualStyleBackColor = true;
+            fetch.CheckedChanged += Fetch_CheckedChanged;
             // 
-            // BasePath
+            // basePath
             // 
             basePath.Location = new Point(143, 46);
-            basePath.Name = "BasePath";
+            basePath.Name = "basePath";
             basePath.Size = new Size(392, 27);
             basePath.TabIndex = 9;
             basePath.Text = "C:\\Users\\Dell\\Desktop\\ntlm.Damien";
             // 
-            // Cancel
+            // cancel
             // 
             cancel.Enabled = false;
             cancel.Location = new Point(243, 143);
-            cancel.Name = "Cancel";
+            cancel.Name = "cancel";
             cancel.Size = new Size(99, 29);
             cancel.TabIndex = 10;
             cancel.Text = "Annuler";
             cancel.UseVisualStyleBackColor = true;
             cancel.Click += Cancel_Click;
             // 
-            // TokenQuestionMark
+            // tokenQuestionMark
             // 
             tokenQuestionMark.Location = new Point(108, 15);
-            tokenQuestionMark.Name = "TokenQuestionMark";
+            tokenQuestionMark.Name = "tokenQuestionMark";
             tokenQuestionMark.Size = new Size(29, 21);
             tokenQuestionMark.TabIndex = 11;
             tokenQuestionMark.TabStop = false;
             // 
-            // BasePathQuestionMark
+            // basePathQuestionMark
             // 
             basePathQuestionMark.Location = new Point(108, 48);
-            basePathQuestionMark.Name = "BasePathQuestionMark";
+            basePathQuestionMark.Name = "basePathQuestionMark";
             basePathQuestionMark.Size = new Size(29, 21);
             basePathQuestionMark.TabIndex = 12;
             basePathQuestionMark.TabStop = false;
             // 
-            // ShowWarnings
+            // showWarnings
             // 
             showWarnings.AutoEllipsis = true;
             showWarnings.BackColor = SystemColors.Control;
@@ -174,26 +175,26 @@
             showWarnings.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             showWarnings.ForeColor = Color.DarkOrange;
             showWarnings.Location = new Point(348, 143);
-            showWarnings.Name = "ShowWarnings";
+            showWarnings.Name = "showWarnings";
             showWarnings.Size = new Size(187, 29);
             showWarnings.TabIndex = 13;
             showWarnings.Text = "Avertissement";
             showWarnings.UseVisualStyleBackColor = false;
             showWarnings.Click += ShowWarnings_Click;
             // 
-            // ProfileSelector
+            // profile
             // 
             profile.DropDownStyle = ComboBoxStyle.DropDownList;
             profile.FormattingEnabled = true;
             profile.Location = new Point(143, 79);
-            profile.Name = "ProfileSelector";
+            profile.Name = "profile";
             profile.Size = new Size(151, 28);
             profile.TabIndex = 14;
             // 
-            // ProfileQuestionMark
+            // profileQuestionMark
             // 
             profileQuestionMark.Location = new Point(108, 82);
-            profileQuestionMark.Name = "ProfileQuestionMark";
+            profileQuestionMark.Name = "profileQuestionMark";
             profileQuestionMark.Size = new Size(29, 21);
             profileQuestionMark.TabIndex = 16;
             profileQuestionMark.TabStop = false;
