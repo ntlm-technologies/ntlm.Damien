@@ -1,6 +1,6 @@
 namespace ntlm.Damien.Win
 {
-    using System.Runtime.CompilerServices;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Win32;
 
     public partial class Main : Form
@@ -12,6 +12,11 @@ namespace ntlm.Damien.Win
         /// </summary>
         public Github Github { get; } = new Github();
 
+        /// <summary>
+        /// All the available settings.
+        /// </summary>
+        public GithubSettings[] Settings { get; private set; } = [];
+
         public Main()
         {
             InitializeComponent();
@@ -20,20 +25,23 @@ namespace ntlm.Damien.Win
             Github.ProgressChanged += ProgressChanged;
 
             HandleCloneVisibility();
+            BindSettings();
+            InitializeProfileSelector();
 
             ShowWarnings.Visible = false;
 
-            BasePath.Text = LoadPathFromRegistry(nameof(BasePath));
-            Token.Text = LoadPathFromRegistry(nameof(Token));
+            BasePath.Text = GetFromRegistry(nameof(BasePath));
+            Token.Text = GetFromRegistry(nameof(Token));
 
             Image reducedQuestionMark = ResizeImage(SystemIcons.Question.ToBitmap(), 20, 20);
 
             TokenQuestionMark.Image = reducedQuestionMark;
             BasePathQuestionMark.Image = reducedQuestionMark;
+            ProfileQuestionMark.Image = reducedQuestionMark;
 
 
             TokenToolTip.SetToolTip(TokenQuestionMark, string.Join(Environment.NewLine, new[] {
-                "Un personal access token Github est nécessaire pour cloner les dépôts.",
+                "Un 'personal access token' Github est nécessaire pour cloner les dépôts.",
                 "Pour en générer un :",
                 "- Github.com,",
                 "- icône utilisateur en haut à droite,",
@@ -49,13 +57,84 @@ namespace ntlm.Damien.Win
 
             BasePathToolTip.SetToolTip(BasePathQuestionMark, "Le répertoire local où seront clonés les dépôts.");
 
+            BasePathToolTip.SetToolTip(ProfileQuestionMark, "Un profil fait référence à un projet donné et une liste de dépôt à cloner.");
+
+        }
+
+        /// <summary>
+        /// Init profile selector.
+        /// </summary>
+        private void InitializeProfileSelector()
+        {
+            // Définir la source de données du ComboBox comme la liste des settings
+            Profile.DataSource = Settings;
+
+            // Spécifier le champ à afficher dans le ComboBox (ici "Name" de GithubSettings)
+            Profile.DisplayMember = "Name";
+
+            // Gérer l'événement de sélection pour mettre à jour le clone manager
+            Profile.SelectedIndexChanged += ProfileSelector_SelectedIndexChanged;
+
+            var registry = GetFromRegistry(nameof(Profile));
+            var registrySetting = Settings.FirstOrDefault(x => x.Name == registry);
+
+            if (registrySetting != null)
+                Profile.SelectedItem = registrySetting;
+            else
+                Profile.SelectedIndex = 0;
+
+
+            Github.Setting = 
+                Profile.SelectedItem as GithubSettings
+                ;
+        }
+
+        /// <summary>
+        /// When profile is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ProfileSelector_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            // Récupérer le setting sélectionné
+            GithubSettings? selectedSetting = Profile.SelectedItem as GithubSettings;
+
+            if (selectedSetting != null)
+            {
+                // Mettre à jour la propriété Settings du clone manager avec le setting sélectionné
+                Github.Setting = selectedSetting;
+                SaveToRegistry(nameof(Profile), selectedSetting.Name);
+            }
+        }
+
+
+        /// <summary>
+        /// Explores the *.sesttings.json of the projects and populates Settings.
+        /// </summary>
+        private void BindSettings()
+        {
+            Settings = GetSettings()
+                .Select(file =>
+                {
+                    var builder = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile(file, optional: false, reloadOnChange: true)
+                        .Build();
+                    return builder
+                    .GetSection("AppSettings")
+                    .Get<GithubSettings>()
+                    ?? new GithubSettings();
+                    ;
+                })
+                .Where(x => x != null)
+                .ToArray();
         }
 
         private void BrowseBasePath_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog1.ShowDialog();
             BasePath.Text = FolderBrowserDialog1.SelectedPath;
-            SavePathToRegistry(nameof(BasePath), BasePath.Text);
+            SaveToRegistry(nameof(BasePath), BasePath.Text);
             HandleCloneVisibility();
         }
 
@@ -66,7 +145,7 @@ namespace ntlm.Damien.Win
 
         private async void Clone_Click(object sender, EventArgs e)
         {
-            SavePathToRegistry(nameof(Token), Token.Text);
+            SaveToRegistry(nameof(Token), Token.Text);
             Disable();
             Github.BasePath = BasePath.Text;
             Github.Token = Token.Text;
@@ -123,19 +202,19 @@ namespace ntlm.Damien.Win
 
         public const string RegistryKey = @"Software\ntlm.Damien";
 
-        public void SavePathToRegistry(string key, string path)
+        public void SaveToRegistry(string key, string? value)
         {
             // Ouvrir ou créer une sous-clé spécifique à l'application dans le registre
             RegistryKey rKey = Registry.CurrentUser.CreateSubKey(RegistryKey);
 
             // Enregistrer le chemin dans cette clé
-            rKey.SetValue(key, path);
+            rKey.SetValue(key, value);
 
             // Fermer la clé après utilisation
             rKey.Close();
         }
 
-        public string? LoadPathFromRegistry(string key)
+        public string? GetFromRegistry(string key)
         {
             // Ouvrir la sous-clé où le chemin est stocké
             RegistryKey? rKey = Registry.CurrentUser.OpenSubKey(RegistryKey);
@@ -177,5 +256,18 @@ namespace ntlm.Damien.Win
             var warnings = new WarningDialog(Github.Warnings.ToArray());
             warnings.ShowDialog();
         }
+
+        /// <summary>
+        /// Returns all the settings available in project.
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetSettings()
+            => Directory.GetFiles(
+                Directory.GetCurrentDirectory()
+                , "*.settings.json",
+                SearchOption.AllDirectories
+                );
+
+
     }
 }

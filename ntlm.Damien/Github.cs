@@ -54,7 +54,7 @@
         /// <summary>
         /// The settings.
         /// </summary>
-        public GithubSettings? Settings { get; set; }
+        public GithubSettings? Setting { get; set; }
 
         /// <summary>
         /// Logger.
@@ -83,7 +83,7 @@
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile(filePath, optional: false, reloadOnChange: true)
                     .Build();
-                Settings = builder.GetSection("AppSettings").Get<GithubSettings>();
+                Setting = builder.GetSection("AppSettings").Get<GithubSettings>();
             }
             catch (Exception ex)
             {
@@ -98,9 +98,9 @@
         /// </summary>
         public async Task CloneAsync(CancellationToken ct)
         {
-            if (Settings?.UrlUrls != null)
+            if (Setting?.UrlUrls != null)
                 await CloneAsync(
-                    Settings
+                    Setting
                         .UrlUrls
                         .GetRepositoryListFromFile(Token)
                         .GroupBy(x => x)
@@ -208,7 +208,7 @@
         public void Checkout(string repoPath)
         {
             // Branching
-            if (Settings?.Branches != null)
+            if (Setting?.Branches != null)
             {
                 var repo = new Repository(repoPath);
 
@@ -219,7 +219,7 @@
                     repo.Stashes.Add(repo.Config.BuildSignature(DateTimeOffset.Now), "Sauvegarde temporaire");
                 }
 
-                foreach (var branchName in Settings.Branches)
+                foreach (var branchName in Setting.Branches)
                 {
                     // Vérifier si la branche existe localement
                     var branch = repo.Branches[branchName];
@@ -327,8 +327,8 @@
         /// <param name="url"></param>
         /// <returns></returns>
         public virtual string TransformUrl(string url) =>
-            Settings?.OrganizationUrl != null ?
-            Path.Combine(Settings.OrganizationUrl, url) :
+            Setting?.OrganizationUrl != null ?
+            Path.Combine(Setting.OrganizationUrl, url) :
             url;
 
         /// <summary>
@@ -338,12 +338,12 @@
         /// <returns></returns>
         public virtual string GetClientDirectory(string repoName)
         {
-            if (Settings == null) return string.Empty;
+            if (Setting == null) return string.Empty;
 
-            if (Settings.Clients.Contains(repoName.Split('.')[0]))
+            if (Setting.Clients.Contains(repoName.Split('.')[0]))
                 return repoName.Split('.')[0];
 
-            if (Settings.Clients.Contains(repoName.Split('-')[0]))
+            if (Setting.Clients.Contains(repoName.Split('-')[0]))
                 return repoName.Split('-')[0];
 
             return string.Empty;

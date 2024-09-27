@@ -8,6 +8,11 @@
     {
 
         /// <summary>
+        /// Name of the setting.
+        /// </summary>
+        public string? Name { get; set; }
+
+        /// <summary>
         /// Url of txt files listing the urls of repositories to clone.
         /// </summary>
         public string? UrlUrls { get; set; }
@@ -42,5 +47,7 @@
         /// Will try to checkout dev if exists. I not, dev2 if exists, etc.
         /// </summary>
         public string[] Branches { get; set; } = [];
+
+        public override string ToString() => Name ?? string.Empty;
     }
 }

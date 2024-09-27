@@ -49,7 +49,7 @@ namespace ntlm.Damien.Tests
             // Given
             var github = new Github(Directory, Token)
             {
-                Settings = new GithubSettings()
+                Setting = new GithubSettings()
                 {
                     OrganizationUrl = "https://github.com/ntlm-technologies/"
                 }
@@ -69,7 +69,7 @@ namespace ntlm.Damien.Tests
             // Given
             var github = new Github(Directory, Token)
             {
-                Settings = new GithubSettings()
+                Setting = new GithubSettings()
                 {
                     Clients = ["ntlm"]
                 }
@@ -88,7 +88,7 @@ namespace ntlm.Damien.Tests
             // Given
             var github = new Github(Directory, Token)
             {
-                Settings = new GithubSettings()
+                Setting = new GithubSettings()
                 {
                     OrganizationUrl = "https://github.com/ntlm-technologies/",
                     Branches = ["to-dotnet-8", "dev"]
@@ -109,7 +109,7 @@ namespace ntlm.Damien.Tests
             // Given
             var github = new Github(Directory, Token)
             {
-                Settings = new GithubSettings()
+                Setting = new GithubSettings()
                 {
                     OrganizationUrl = "https://github.com/ntlm-technologies/",
                     UrlUrls = "https://raw.githubusercontent.com/ntlm-technologies/lgi.Repositories/refs/heads/main/repositories.txt",
@@ -131,7 +131,7 @@ namespace ntlm.Damien.Tests
             var github = new Github(Directory, Token);
 
             // Then
-            Assert.IsNotNull(github.Settings);
+            Assert.IsNotNull(github.Setting);
         }
 
         [TestMethod]
@@ -140,14 +140,14 @@ namespace ntlm.Damien.Tests
             // Given
             var github = new Github(Directory, Token)
             {
-                Settings = null
+                Setting = null
             };
 
             // When
             github.LoadSettings("appSettings.json");
 
             // Then
-            Assert.IsNotNull(github.Settings);
+            Assert.IsNotNull(github.Setting);
         }
 
         [TestMethod]

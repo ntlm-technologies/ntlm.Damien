@@ -1,0 +1,9 @@
+{
+  "AppSettings": {
+    "Name": "LGI People",
+    "OrganizationUrl": "https://github.com/ntlm-technologies/",
+    "UrlUrls": "https://raw.githubusercontent.com/ntlm-technologies/ntlm.Damien.Data/refs/heads/main/lgi.people.txt",
+    "Clients": [ "ntlm", "lgi" ],
+    "Branches": [ "to-dotnet-8", "dev", "test" ]
+  }
+}
