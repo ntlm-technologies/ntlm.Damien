@@ -1,10 +1,5 @@
 # Todo
 
-- commit
-- camel case des controls
-- liste d'erreurs : 11 messages
-
-- Drop down avec les différents settinngs.
 - La reconnaissance après tant d'années... "ntlm.Damien", le plus beau des repos.
 - Joli coup de bol ! (Il y avait la St Côme aussi ce jour-là, mais ça aurait été vache.)
 

@@ -19,7 +19,7 @@ namespace ntlm.Damien.Win
 
         }
 
-        public WarningDialog(string[] warnings)
+        public WarningDialog(IEnumerable<string> warnings)
         {
             InitializeComponent();
 

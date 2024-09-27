@@ -40,7 +40,7 @@ namespace ntlm.Damien.Win
             profileQuestionMark.Image = reducedQuestionMark;
 
 
-            tokenToolTip.SetToolTip(tokenQuestionMark, string.Join(Environment.NewLine, new[] {
+            tokenToolTip.SetToolTip(tokenQuestionMark, string.Join(Environment.NewLine, [
                 "Un 'personal access token' Github est nécessaire pour cloner les dépôts.",
                 "Pour en générer un :",
                 "- Github.com,",
@@ -53,7 +53,7 @@ namespace ntlm.Damien.Win
                 "- attrtibuer un nom,",
                 "- attribuer le scope repo,",
                 "- copier le token ici.",
-            }));
+            ]));
 
             basePathToolTip.SetToolTip(basePathQuestionMark, "Le répertoire local où seront clonés les dépôts.");
 
@@ -97,9 +97,8 @@ namespace ntlm.Damien.Win
         private void ProfileSelector_SelectedIndexChanged(object? sender, EventArgs e)
         {
             // Récupérer le setting sélectionné
-            GithubSettings? selectedSetting = profile.SelectedItem as GithubSettings;
 
-            if (selectedSetting != null)
+            if (profile.SelectedItem is GithubSettings selectedSetting)
             {
                 // Mettre à jour la propriété Settings du clone manager avec le setting sélectionné
                 Github.Setting = selectedSetting;
@@ -158,7 +157,7 @@ namespace ntlm.Damien.Win
 
         private void ShowWarningsVisibility()
         {
-            var c = Github.Warnings.Count();
+            var c = Github.Warnings.Count;
             showWarnings.Visible = c > 0;
             showWarnings.Enabled = c > 0;
             showWarnings.Text = string.Format("Avertissement{0} ({1})", c > 1 ? "s" : string.Empty, c);
@@ -202,19 +201,19 @@ namespace ntlm.Damien.Win
 
         public const string RegistryKey = @"Software\ntlm.Damien";
 
-        public void SaveToRegistry(string key, string? value)
+        public static void SaveToRegistry(string key, string? value)
         {
             // Ouvrir ou créer une sous-clé spécifique à l'application dans le registre
             RegistryKey rKey = Registry.CurrentUser.CreateSubKey(RegistryKey);
 
             // Enregistrer le chemin dans cette clé
-            rKey.SetValue(key, value);
+            rKey.SetValue(key, value ?? string.Empty);
 
             // Fermer la clé après utilisation
             rKey.Close();
         }
 
-        public string? GetFromRegistry(string key)
+        public static string? GetFromRegistry(string key)
         {
             // Ouvrir la sous-clé où le chemin est stocké
             RegistryKey? rKey = Registry.CurrentUser.OpenSubKey(RegistryKey);
@@ -236,10 +235,10 @@ namespace ntlm.Damien.Win
         private void Main_Load(object sender, EventArgs e)
         {
         }
-        private Image ResizeImage(Image image, int width, int height)
+        private static Bitmap ResizeImage(Image image, int width, int height)
         {
             // Créer une nouvelle Bitmap avec les dimensions spécifiées
-            Bitmap resizedImage = new Bitmap(width, height);
+            Bitmap resizedImage = new(width, height);
 
             // Utiliser Graphics pour dessiner l'image redimensionnée
             using (Graphics graphics = Graphics.FromImage(resizedImage))
@@ -253,7 +252,7 @@ namespace ntlm.Damien.Win
 
         private void ShowWarnings_Click(object sender, EventArgs e)
         {
-            var warnings = new WarningDialog(Github.Warnings.ToArray());
+            var warnings = new WarningDialog(Github.Warnings);
             warnings.ShowDialog();
         }
 
@@ -261,7 +260,7 @@ namespace ntlm.Damien.Win
         /// Returns all the settings available in project.
         /// </summary>
         /// <returns></returns>
-        public string[] GetSettings()
+        public static string[] GetSettings()
             => Directory.GetFiles(
                 Directory.GetCurrentDirectory()
                 , "*.settings.json",
