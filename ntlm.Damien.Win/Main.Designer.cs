@@ -69,6 +69,7 @@
             // 
             token.Location = new Point(143, 13);
             token.Name = "token";
+            token.PasswordChar = '*';
             token.Size = new Size(392, 27);
             token.TabIndex = 1;
             token.Text = "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";

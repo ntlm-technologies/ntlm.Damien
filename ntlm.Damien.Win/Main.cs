@@ -60,6 +60,7 @@ namespace ntlm.Damien.Win
             basePathToolTip.SetToolTip(basePathQuestionMark, "Le répertoire local où seront clonés les dépôts.");
 
             basePathToolTip.SetToolTip(profileQuestionMark, "Un profil fait référence à un projet donné et une liste de dépôts à cloner.");
+            clone.Focus();
 
         }
 
