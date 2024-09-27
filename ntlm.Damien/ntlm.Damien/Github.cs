@@ -88,7 +88,14 @@
         public async Task CloneAsync(CancellationToken ct)
         {
             if (Settings?.UrlUrls != null)
-                await CloneAsync(Settings.UrlUrls.GetRepositoryListFromFile(), ct);
+                await CloneAsync(
+                    Settings
+                        .UrlUrls
+                        .GetRepositoryListFromFile()
+                        .GroupBy(x => x)
+                        .Select(x => x.Key)
+                        .ToArray()
+                    , ct);
             else
                 Warn("Aucun fichier txt distant configuré pour obtenir la liste des url à cloner.");
         }
