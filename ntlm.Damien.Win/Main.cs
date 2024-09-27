@@ -13,14 +13,15 @@ namespace ntlm.Damien.Win
 
             HandleCloneVisibility();
 
-            BasePath.Text = LoadPathFromRegistry();
+            BasePath.Text = LoadPathFromRegistry(nameof(BasePath));
+            Token.Text = LoadPathFromRegistry(nameof(Token));
         }
 
         private void BrowseBasePath_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog1.ShowDialog();
             BasePath.Text = FolderBrowserDialog1.SelectedPath;
-            SavePathToRegistry(BasePath.Text);
+            SavePathToRegistry(nameof(BasePath), BasePath.Text);
             HandleCloneVisibility();
         }
 
@@ -31,6 +32,7 @@ namespace ntlm.Damien.Win
 
         private async void Clone_Click(object sender, EventArgs e)
         {
+            SavePathToRegistry(nameof(Token), Token.Text);
             Disable();
             var github = new Github(BasePath.Text, Token.Text)
             {
@@ -78,28 +80,28 @@ namespace ntlm.Damien.Win
 
         public const string RegistryKey = @"Software\ntlm.Damien";
 
-        public void SavePathToRegistry(string path)
+        public void SavePathToRegistry(string key, string path)
         {
             // Ouvrir ou créer une sous-clé spécifique à l'application dans le registre
-            RegistryKey key = Registry.CurrentUser.CreateSubKey(RegistryKey);
+            RegistryKey rKey = Registry.CurrentUser.CreateSubKey(RegistryKey);
 
             // Enregistrer le chemin dans cette clé
-            key.SetValue("LastPath", path);
+            rKey.SetValue(key, path);
 
             // Fermer la clé après utilisation
-            key.Close();
+            rKey.Close();
         }
 
-        public string? LoadPathFromRegistry()
+        public string? LoadPathFromRegistry(string key)
         {
             // Ouvrir la sous-clé où le chemin est stocké
-            RegistryKey? key = Registry.CurrentUser.OpenSubKey(RegistryKey);
+            RegistryKey? rKey = Registry.CurrentUser.OpenSubKey(RegistryKey);
 
-            if (key != null)
+            if (rKey != null)
             {
                 // Lire la valeur du chemin (ou renvoyer une chaîne vide si elle n'existe pas)
-                object path = key.GetValue("LastPath", string.Empty);
-                key.Close();
+                object path = rKey.GetValue(key, string.Empty);
+                rKey.Close();
                 return path?.ToString();
             }
 
