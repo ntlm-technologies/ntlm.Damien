@@ -69,7 +69,7 @@ namespace ntlm.Damien.Win
             Enable();
         }
 
-        private void ProgressChanged(object sender, int progress)
+        private void ProgressChanged(object? sender, int progress)
         {
             if (InvokeRequired)
             {
