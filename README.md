@@ -36,3 +36,6 @@ Il suffit de créer des équipes {client}.dev ou {client}.admin puis de relancer
 Pour publier un unique .exe : 
 dotnet publish -c Release -r win-x64 --self-contained
 
+# Token
+
+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
