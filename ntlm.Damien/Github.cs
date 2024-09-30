@@ -12,6 +12,8 @@
     public class Github
     {
 
+        #region Init
+
         public Github(string basePath, string? token)
         {
             BasePath = basePath;
@@ -25,20 +27,6 @@
 
         public Github() : this(Directory.GetCurrentDirectory())
         {
-        }
-
-        public event EventHandler<int> ProgressChanged = delegate { };
-
-        protected virtual void OnProgressChanged(object sender, int progress)
-        {
-            ProgressChanged?.Invoke(sender, progress);
-        }
-
-        public event EventHandler<string> Warned = delegate { };
-
-        protected virtual void OnWarned(object sender, string text)
-        {
-            Warned?.Invoke(sender, text);
         }
 
         /// <summary>
@@ -57,11 +45,6 @@
         public GithubSettings? Setting { get; set; }
 
         /// <summary>
-        /// Logger.
-        /// </summary>
-        public TextWriter Logger { get; set; } = Console.Out;
-
-        /// <summary>
         /// Github personal access token.
         /// </summary>
         public string? Token { get; set; }
@@ -70,6 +53,8 @@
         /// Local directory.
         /// </summary>
         public string BasePath { get; set; }
+
+
 
         /// <summary>
         /// Loads settings.
@@ -92,6 +77,57 @@
             }
         }
 
+
+        #endregion
+
+        #region Progress
+
+        public event EventHandler<int> ProgressChanged = delegate { };
+
+        protected virtual void OnProgressChanged(object sender, int progress)
+        {
+            ProgressChanged?.Invoke(sender, progress);
+        }
+
+        public event EventHandler<string> Warned = delegate { };
+
+        #endregion
+
+        #region Log
+
+        /// <summary>
+        /// The warnings.
+        /// </summary>
+        public static List<string> Warnings { get; } = [];
+
+        /// <summary>
+        /// Warns.
+        /// </summary>
+        /// <param name="text"></param>
+        public void Warn(string text)
+        {
+            Log(text);
+            Warnings.Add(text);
+        }
+
+        /// <summary>
+        /// Log progress.
+        /// </summary>
+        /// <param name="text"></param>
+        public void Log(string text)
+            => Logger?.WriteLine(text);
+
+
+        /// <summary>
+        /// Logger.
+        /// </summary>
+        public TextWriter Logger { get; set; } = Console.Out;
+
+
+
+        #endregion
+
+        #region Clone
 
         /// <summary>
         /// Clones repositories to local directory analysing settings.
@@ -365,30 +401,8 @@
         static string GetRepositoryNameFromUrl(string repoUrl)
             => repoUrl[(repoUrl.LastIndexOf('/') + 1)..];
 
-        /// <summary>
-        /// The warnings.
-        /// </summary>
-        public static List<string> Warnings { get; } = [];
 
-        /// <summary>
-        /// Warns.
-        /// </summary>
-        /// <param name="text"></param>
-        public void Warn(string text)
-        {
-            Log(text);
-            Warnings.Add(text);
-            OnWarned(this, text);
-        }
-
-        /// <summary>
-        /// Log progress.
-        /// </summary>
-        /// <param name="text"></param>
-        public void Log(string text)
-            => Logger?.WriteLine(text);
-
-
+        #endregion
 
     }
 }
