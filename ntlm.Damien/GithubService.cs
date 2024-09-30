@@ -749,6 +749,8 @@
                     OnProgressChanged(this, (i * 100) / repositories.Length);
                 }
 
+                Log("Terminé.");
+
             }
             catch (OperationCanceledException)
             {
