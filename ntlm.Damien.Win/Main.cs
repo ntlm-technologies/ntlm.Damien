@@ -120,23 +120,31 @@ namespace ntlm.Damien.Win
         private void Done()
         {
             Cursor = Cursors.Default;
+            connect.Enabled = true;
             teams.Enabled = true;
             clone.Enabled = true;
             token.Enabled = true;
             basePath.Enabled = true;
             cancel.Enabled = false;
             browseBasePath.Enabled = true;
+            branches.Enabled = true;
+            clients.Enabled = true;
+            fetch.Enabled = true;
         }
 
         private void Work()
         {
             Cursor = Cursors.WaitCursor;
+            connect.Enabled = false;
             teams.Enabled = false;
             clone.Enabled = false;
             token.Enabled = false;
             basePath.Enabled = false;
             cancel.Enabled = true;
             browseBasePath.Enabled = false;
+            branches.Enabled = false;
+            clients.Enabled = false;
+            fetch.Enabled = false;
         }
 
         private void Cancel_Click(object sender, EventArgs e)
