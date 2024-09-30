@@ -1,5 +1,6 @@
 # Todo
 
+- Les repositories LGI n'ont pas été traités !
 - Tester avec un nouvel utilisateur Github que LGI : est-ce que la liste des clients ne contient que ntlm et lgi ?
 - Traiter les commentaires VS.
 - La reconnaissance après tant d'années... "ntlm.Damien", le plus beau des repos.
