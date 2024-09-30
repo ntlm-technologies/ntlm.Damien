@@ -234,6 +234,7 @@ namespace ntlm.Damien.Win
             connect.Enabled = false;
             Cursor = Cursors.WaitCursor;
             var r = await Github.ValidateToken(token.Text);
+            SaveToRegistry(nameof(token), token.Text);
             if (r)
             {
                 await BindClients();
