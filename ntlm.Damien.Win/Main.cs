@@ -1,32 +1,28 @@
 namespace ntlm.Damien.Win
 {
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Win32;
+    using System.Linq;
 
     public partial class Main : Form
     {
-        private CancellationTokenSource? cancellationTokenSource;
+        private CancellationTokenSource cancellationTokenSource = new();
 
         /// <summary>
         /// Github service handling the clone operations.
         /// </summary>
-        public Github Github { get; } = new Github();
-
-        /// <summary>
-        /// All the available settings.
-        /// </summary>
-        public GithubSettings[] Settings { get; private set; } = [];
+        public GithubService Github { get; } = new GithubService();
 
         public Main()
         {
             InitializeComponent();
 
+            mainPanel.Visible = false;
+            teams.Visible = false;
+
             Github.Logger = new TextBoxWriter(eventConsole);
             Github.ProgressChanged += ProgressChanged;
 
             HandleCloneVisibility();
-            BindSettings();
-            InitializeProfileSelector();
 
             fetch.Checked = bool.TryParse(GetFromRegistry(nameof(fetch)), out bool isChecked) && isChecked;
 
@@ -34,12 +30,14 @@ namespace ntlm.Damien.Win
 
             basePath.Text = GetFromRegistry(nameof(basePath));
             token.Text = GetFromRegistry(nameof(token));
+            branches.Text = GetFromRegistry(nameof(branches), "to-dotnet-8, dev, test");
+
 
             Image reducedQuestionMark = ResizeImage(SystemIcons.Question.ToBitmap(), 20, 20);
 
             tokenQuestionMark.Image = reducedQuestionMark;
             basePathQuestionMark.Image = reducedQuestionMark;
-            profileQuestionMark.Image = reducedQuestionMark;
+            branchesQuestionMark.Image = reducedQuestionMark;
 
 
             tokenToolTip.SetToolTip(tokenQuestionMark, string.Join(Environment.NewLine, [
@@ -59,77 +57,11 @@ namespace ntlm.Damien.Win
 
             basePathToolTip.SetToolTip(basePathQuestionMark, "Le répertoire local où seront clonés les dépôts.");
 
-            basePathToolTip.SetToolTip(profileQuestionMark, "Un profil fait référence à un projet donné et une liste de dépôts à cloner.");
+            branchesToolTip.SetToolTip(branchesQuestionMark, "Liste de noms de branches séparées par des virgules. Le programme tentera un checkout selon cette priorité.");
+            clientsToolTip.SetToolTip(clientsQuestionMark, "Cochez les clients dont vous souhaitez cloner les repositories.");
+
             clone.Focus();
 
-        }
-
-        /// <summary>
-        /// Init profile selector.
-        /// </summary>
-        private void InitializeProfileSelector()
-        {
-            // Définir la source de données du ComboBox comme la liste des settings
-            profile.DataSource = Settings;
-
-            // Spécifier le champ à afficher dans le ComboBox (ici "Name" de GithubSettings)
-            profile.DisplayMember = "Name";
-
-            // Gérer l'événement de sélection pour mettre à jour le clone manager
-            profile.SelectedIndexChanged += ProfileSelector_SelectedIndexChanged;
-
-            var registry = GetFromRegistry(nameof(profile));
-            var registrySetting = Settings.FirstOrDefault(x => x.Name == registry);
-
-            if (registrySetting != null)
-                profile.SelectedItem = registrySetting;
-            else
-                profile.SelectedIndex = 0;
-
-
-            Github.Setting =
-                profile.SelectedItem as GithubSettings
-                ;
-        }
-
-        /// <summary>
-        /// When profile is changed.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ProfileSelector_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            // Récupérer le setting sélectionné
-
-            if (profile.SelectedItem is GithubSettings selectedSetting)
-            {
-                // Mettre à jour la propriété Settings du clone manager avec le setting sélectionné
-                Github.Setting = selectedSetting;
-                SaveToRegistry(nameof(profile), selectedSetting.Name);
-            }
-        }
-
-
-        /// <summary>
-        /// Explores the *.sesttings.json of the projects and populates Settings.
-        /// </summary>
-        private void BindSettings()
-        {
-            Settings = GetSettings()
-                .Select(file =>
-                {
-                    var builder = new ConfigurationBuilder()
-                        .SetBasePath(Directory.GetCurrentDirectory())
-                        .AddJsonFile(file, optional: false, reloadOnChange: true)
-                        .Build();
-                    return builder
-                    .GetSection("AppSettings")
-                    .Get<GithubSettings>()
-                    ?? new GithubSettings();
-                    ;
-                })
-                .Where(x => x != null)
-                .ToArray();
         }
 
         private void BrowseBasePath_Click(object sender, EventArgs e)
@@ -145,22 +77,28 @@ namespace ntlm.Damien.Win
             clone.Enabled = !string.IsNullOrWhiteSpace(basePath.Text);
         }
 
-        private async void Clone_Click(object sender, EventArgs e)
+        private async void clone_Click(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
             SaveToRegistry(nameof(token), token.Text);
-            Disable();
+            SaveToRegistry(nameof(branches), branches.Text);
+            Work();
             Github.BasePath = basePath.Text;
             Github.Token = token.Text;
             Github.Fetch = fetch.Checked;
-            cancellationTokenSource = new CancellationTokenSource();
-            await Github.CloneAsync(cancellationTokenSource.Token);
-            Enable();
+            Github.Branches = branches.Text.Split(',').Select(b => b.Trim()).ToArray();
+            await Github.CloneClientsAsync(
+                clients.CheckedItems.Cast<string>().ToArray(),
+                cancellationTokenSource.Token
+                );
+            Done();
             ShowWarningsVisibility();
+            Cursor = Cursors.Default;
         }
 
         private void ShowWarningsVisibility()
         {
-            var c = Github.Warnings.Count;
+            var c = GithubService.Warnings.Count;
             showWarnings.Visible = c > 0;
             showWarnings.Enabled = c > 0;
             showWarnings.Text = string.Format("Avertissement{0} ({1})", c > 1 ? "s" : string.Empty, c);
@@ -179,24 +117,26 @@ namespace ntlm.Damien.Win
             }
         }
 
-        private void Enable()
+        private void Done()
         {
+            Cursor = Cursors.Default;
+            teams.Enabled = true;
             clone.Enabled = true;
             token.Enabled = true;
             basePath.Enabled = true;
             cancel.Enabled = false;
             browseBasePath.Enabled = true;
-            profile.Enabled = true;
         }
 
-        private void Disable()
+        private void Work()
         {
+            Cursor = Cursors.WaitCursor;
+            teams.Enabled = false;
             clone.Enabled = false;
             token.Enabled = false;
             basePath.Enabled = false;
             cancel.Enabled = true;
             browseBasePath.Enabled = false;
-            profile.Enabled = false;
         }
 
         private void Cancel_Click(object sender, EventArgs e)
@@ -218,7 +158,7 @@ namespace ntlm.Damien.Win
             rKey.Close();
         }
 
-        public static string? GetFromRegistry(string key)
+        public static string? GetFromRegistry(string key, string? d = null)
         {
             // Ouvrir la sous-clé où le chemin est stocké
             RegistryKey? rKey = Registry.CurrentUser.OpenSubKey(RegistryKey);
@@ -226,12 +166,15 @@ namespace ntlm.Damien.Win
             if (rKey != null)
             {
                 // Lire la valeur du chemin (ou renvoyer une chaîne vide si elle n'existe pas)
-                object path = rKey.GetValue(key, string.Empty);
+                object value = rKey.GetValue(key, string.Empty);
                 rKey.Close();
-                return path?.ToString();
+                return
+                    string.IsNullOrWhiteSpace(value.ToString()) ?
+                    d :
+                    value?.ToString();
             }
 
-            return string.Empty; // Retourne une valeur par défaut si la clé n'existe pas
+            return d;
         }
 
 
@@ -257,7 +200,7 @@ namespace ntlm.Damien.Win
 
         private void ShowWarnings_Click(object sender, EventArgs e)
         {
-            var warnings = new WarningDialog(Github.Warnings);
+            var warnings = new WarningDialog(GithubService.Warnings);
             warnings.ShowDialog();
         }
 
@@ -275,6 +218,52 @@ namespace ntlm.Damien.Win
         private void Fetch_CheckedChanged(object sender, EventArgs e)
         {
             SaveToRegistry(nameof(fetch), fetch.Checked.ToString());
+        }
+
+        private async void connect_Click(object sender, EventArgs e)
+        {
+            token.Enabled = false;
+            connect.Enabled = false;
+            Cursor = Cursors.WaitCursor;
+            var r = await Github.ValidateToken(token.Text);
+            if (r)
+            {
+                await BindClients();
+                mainPanel.Visible = true;
+                teams.Visible = true;
+            }
+            else
+            {
+                mainPanel.Visible = false;
+                teams.Visible = false;
+            }
+            token.Enabled = true;
+            connect.Enabled = true;
+            Cursor = Cursors.Default;
+        }
+
+        private async Task BindClients()
+        {
+            clients.Items.Clear();
+            var clientList = await Github.GetClientsAsync();
+            var teamList = await Github.GetTeamsAsync();
+            var isNtlm = teamList.Any(t => t.IsNtlm());
+            foreach (var client in clientList)
+            {
+                if (isNtlm || client.HasTeam(teamList))
+                {
+                    var i = clients.Items.Add(client.Name);
+                    if (client.HasTeam(teamList))
+                        clients.SetItemChecked(i, true);
+                }
+            }
+        }
+
+        private async void teams_Click(object sender, EventArgs e)
+        {
+            Work();
+            await Github.ApplyPermissionsAsync(cancellationTokenSource.Token);
+            Done();
         }
     }
 }

@@ -7,6 +7,9 @@
     public class GithubSettings
     {
 
+        public string? Organization { get; set; }
+
+
         /// <summary>
         /// Name of the setting.
         /// </summary>
