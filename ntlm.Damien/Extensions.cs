@@ -52,7 +52,7 @@
             else if (name.Contains("-"))
                 return name.Split('-')[0] == client;
             else
-                return false;
+                return name == client;
         }
 
         /// <summary>
