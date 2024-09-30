@@ -9,7 +9,7 @@ namespace ntlm.Damien.Tests
     public class GithubServiceTests
     {
 
-        public static readonly string Token = "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";
+        public static readonly string Token = "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";
         public static readonly string Directory = Environment.CurrentDirectory;
         public static readonly string Organization = "ntlm-technologies";
 

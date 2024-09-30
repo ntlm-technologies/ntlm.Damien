@@ -30,7 +30,7 @@
             var urls = url.GetRepositoryListFromFile(GithubServiceTests.Token);
 
             // Then
-            Assert.IsTrue(urls.Count() > 0);
+            Assert.IsTrue(urls.Length > 0);
         }
 
 
