@@ -14,22 +14,6 @@ namespace ntlm.Damien.Tests
         public static readonly string Organization = "ntlm-technologies";
 
         [TestMethod]
-        public async Task ApplyPermissionsAsync_Full()
-        {
-            // Given
-            var github = new GithubService(Directory, Token);
-
-            // When
-            await github.ApplyPermissionsAsync(
-                "ntlm",
-                "ntlm.Nancy",
-                "lgi.Products",
-                "LesBellesLettres.Export"
-                );
-        }
-
-
-        [TestMethod]
         public async Task GetClientsAsync()
         {
             // Given

@@ -3,18 +3,13 @@
     /// <summary>
     /// Represents a client.
     /// </summary>
-    public class Client
+    public class Client(string name)
     {
-        public Client(string name)
-        {
-            Name = name;
-            ExtraRepositories = [];
-        }
 
         /// <summary>
         /// Name of the client.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = name;
 
         /// <summary>
         /// The extra repositories.
@@ -22,7 +17,7 @@
         /// (ie LGI has access to LGI.Wines, LGI.Wines.Web, etc.)
         /// and some extra repositories (ie ntlm.Wines, ntlm.Wines.Web, etc.)
         /// </summary>
-        public string[] ExtraRepositories { get; set; }
+        public string[] ExtraRepositories { get; set; } = [];
 
         /// <summary>
         /// Name of the dev team.

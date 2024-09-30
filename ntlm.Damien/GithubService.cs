@@ -13,7 +13,7 @@
     /// <summary>
     /// Represents a github service to clone repositories to local drive.
     /// </summary>
-    public class GithubService
+    public class GithubService(string basePath, string? token)
     {
 
         #region Init
@@ -32,12 +32,6 @@
         /// Github repository to store client's settings.
         /// </summary>
         public const string ClientSettingsRepository = "https://raw.githubusercontent.com/ntlm-technologies/ntlm.Damien.Data/refs/heads/main/";
-
-        public GithubService(string basePath, string? token)
-        {
-            BasePath = basePath;
-            Token = token;
-        }
 
         public GithubService(string basePath) : this(basePath, null)
         {
@@ -60,12 +54,12 @@
         /// <summary>
         /// Github personal access token.
         /// </summary>
-        public string? Token { get; set; }
+        public string? Token { get; set; } = token;
 
         /// <summary>
         /// Local directory.
         /// </summary>
-        public string BasePath { get; set; }
+        public string BasePath { get; set; } = basePath;
 
 
 
@@ -210,7 +204,7 @@
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    await Task.Run(() => Clone(url));
+                    await Task.Run(() => Clone(url), ct);
 
                     i++;
                     OnProgressChanged(this, (i * 100) / urls.Length);
@@ -393,7 +387,7 @@
             if (teams == null)
             {
                 var client = GetGitHubClient();
-                teams = (await client.Organization.Team.GetAll(Organization)).ToArray();
+                teams = [.. (await client.Organization.Team.GetAll(Organization))];
             }
             return teams;
         }
@@ -404,13 +398,10 @@
         /// <returns></returns>
         public GitHubClient GetGitHubClient()
         {
-            if (gitHubClient == null)
-            {
-                gitHubClient = new GitHubClient(new O.ProductHeaderValue("ntlm.Damien"))
+            gitHubClient ??= new GitHubClient(new O.ProductHeaderValue("ntlm.Damien"))
                 {
                     Credentials = new O.Credentials(Token)
                 };
-            }
             return gitHubClient;
         }
 
@@ -462,10 +453,10 @@
                 Warn($"Erreur : {ex.Message}");
             }
 
-            return userTeams.ToArray();
+            return [.. userTeams];
         }
 
-        private Dictionary<string, string[]> teamRepositories = [];
+        private readonly Dictionary<string, string[]> teamRepositories = [];
 
         /// <summary>
         /// Returns the repositories of a team.
@@ -474,10 +465,10 @@
         /// <returns></returns>
         public async Task<string[]> GetTeamRepositoriesAsync(string teamName)
         {
-            if (!teamRepositories.ContainsKey(teamName))
+            if (!teamRepositories.TryGetValue(teamName, out string[]? value))
             {
                 var team = await GetTeam(teamName);
-                string[] repos = Array.Empty<string>() ;
+                string[] repos = [];
                 if (team != null)
                 {
                     var client = GetGitHubClient();
@@ -496,7 +487,7 @@
             }
             else
             {
-                return teamRepositories[teamName];
+                return value;
             }
         }
 
@@ -638,7 +629,7 @@
 
                 try
                 {
-                    repositories = (await client.Repository.GetAllForOrg(Organization)).ToArray();
+                    repositories = [.. (await client.Repository.GetAllForOrg(Organization))];
 
                 }
                 catch (Exception ex)
@@ -682,14 +673,12 @@
         /// <returns></returns>
         public async Task<Client[]> GetClientsAsync()
         {
-            if (clients == null)
-            {
-                clients = (await GetRepositoriesAsync())
+            clients ??= (await GetRepositoriesAsync())
                 .Select(x =>
                 {
-                    if (x.Name.Contains("."))
+                    if (x.Name.Contains('.'))
                         return x.Name.Split('.')[0];
-                    else if (x.Name.Contains("-"))
+                    else if (x.Name.Contains('-'))
                         return x.Name.Split('-')[0];
                     else
                         return null;
@@ -703,7 +692,6 @@
                     ExtraRepositories = GetClientExtraRepositories(x)
                 })
                 .ToArray();
-            }
             return clients;
         }
 

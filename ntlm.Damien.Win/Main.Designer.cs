@@ -111,7 +111,7 @@
             clone.TabIndex = 5;
             clone.Text = "Cloner";
             clone.UseVisualStyleBackColor = true;
-            clone.Click += clone_Click;
+            clone.Click += Clone_Click;
             // 
             // eventConsole
             // 
@@ -247,7 +247,7 @@
             connect.TabIndex = 21;
             connect.Text = "Connecter";
             connect.UseVisualStyleBackColor = true;
-            connect.Click += connect_Click;
+            connect.Click += Connect_Click;
             // 
             // mainPanel
             // 
@@ -283,7 +283,7 @@
             teams.TabIndex = 22;
             teams.Text = "Équipes";
             teams.UseVisualStyleBackColor = true;
-            teams.Click += teams_Click;
+            teams.Click += Teams_Click;
             // 
             // clients
             // 

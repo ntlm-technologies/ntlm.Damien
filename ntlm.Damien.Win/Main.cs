@@ -5,7 +5,7 @@ namespace ntlm.Damien.Win
 
     public partial class Main : Form
     {
-        private CancellationTokenSource cancellationTokenSource = new();
+        private readonly CancellationTokenSource cancellationTokenSource = new();
 
         /// <summary>
         /// Github service handling the clone operations.
@@ -77,7 +77,7 @@ namespace ntlm.Damien.Win
             clone.Enabled = !string.IsNullOrWhiteSpace(basePath.Text);
         }
 
-        private async void clone_Click(object sender, EventArgs e)
+        private async void Clone_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
             SaveToRegistry(nameof(token), token.Text);
@@ -228,7 +228,7 @@ namespace ntlm.Damien.Win
             SaveToRegistry(nameof(fetch), fetch.Checked.ToString());
         }
 
-        private async void connect_Click(object sender, EventArgs e)
+        private async void Connect_Click(object sender, EventArgs e)
         {
             token.Enabled = false;
             connect.Enabled = false;
@@ -268,7 +268,7 @@ namespace ntlm.Damien.Win
             }
         }
 
-        private async void teams_Click(object sender, EventArgs e)
+        private async void Teams_Click(object sender, EventArgs e)
         {
             Work();
             await Github.ApplyPermissionsAsync(cancellationTokenSource.Token);
