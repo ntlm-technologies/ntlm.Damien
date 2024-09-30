@@ -281,7 +281,7 @@
             teams.Name = "teams";
             teams.Size = new Size(94, 29);
             teams.TabIndex = 22;
-            teams.Text = "Equipes";
+            teams.Text = "Équipes";
             teams.UseVisualStyleBackColor = true;
             teams.Click += teams_Click;
             // 

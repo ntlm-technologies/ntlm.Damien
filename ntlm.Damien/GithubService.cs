@@ -465,42 +465,39 @@
             return userTeams.ToArray();
         }
 
+        private Dictionary<string, string[]> teamRepositories = [];
+
         /// <summary>
         /// Returns the repositories of a team.
         /// </summary>
         /// <param name="teamName"></param>
         /// <returns></returns>
-        public async Task<O.Repository[]> GetTeamRepositoriesAsync(string teamName)
+        public async Task<string[]> GetTeamRepositoriesAsync(string teamName)
         {
-            O.Repository[] repositories = Array.Empty<O.Repository>();
-
-            var client = GetGitHubClient();
-
-            try
+            if (!teamRepositories.ContainsKey(teamName))
             {
                 var team = await GetTeam(teamName);
-
+                string[] repos = Array.Empty<string>() ;
                 if (team != null)
                 {
-                    Log($"Équipe : {team.Name}");
-
-                    // Récupérer les dépôts associés à l'équipe
-                    repositories = (await client.Organization.Team.GetAllRepositories(team.Id)).ToArray();
-
-                    // Afficher les dépôts et leurs permissions
-                    foreach (var repo in repositories)
+                    var client = GetGitHubClient();
+                    try
                     {
-                        // Affiche le nom du dépôt et les permissions de l'équipe
-                        Log($"  - Dépôt : {repo.Name} (Permissions : {repo.Permissions})");
+                        repos = (await client.Organization.Team.GetAllRepositories(team.Id)).Select(x => x.Name).ToArray();
                     }
+                    catch (Exception ex)
+                    {
+                        Warn($"Erreur : {ex.Message}");
+                    }
+                    
                 }
+                teamRepositories[teamName] = repos;
+                return repos;
             }
-            catch (Exception ex)
+            else
             {
-                Warn($"Erreur : {ex.Message}");
+                return teamRepositories[teamName];
             }
-
-            return repositories;
         }
 
         /// <summary>
@@ -585,6 +582,7 @@
             params string[] repositories)
         {
             var client = GetGitHubClient();
+            var teamRepos = await GetTeamRepositoriesAsync(teamName);
 
             try
             {
@@ -596,10 +594,8 @@
                     return;
                 }
 
-                Log($"Retrait des dépôts à l'équipe : {team.Name}");
-
                 // Pour chaque repository, ajouter l'équipe avec les permissions spécifiées
-                foreach (var repoName in repositories)
+                foreach (var repoName in repositories.Where(x => teamRepos.Contains(x)))
                 {
                     try
                     {
