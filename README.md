@@ -15,9 +15,10 @@
 - Après la validation du token, l'application découvre les équipes auxquelles appartient l'utilisateur.
 - Ces équipes ont une liste de dépôts. Ainsi l'application à l'utilisateur propose pour le clonage les clients de ces dépôts.
 
-## Equipes
+## Équipes
 
 - Cette fonctionnalité permet de distribuer les dépôts dans chaque équipe.
+- Elle n'est disponible que pour les utilisateurs appartenant à une équipe ntlm.
 - On place un utilisateur dans une équipe via l'interface Github.
 - L'équipe ntlm.dev a la permission écriture sur tous les dépôts.
 - L'équipe ntlm.admin a la permission admin sur tous les dépôts.
