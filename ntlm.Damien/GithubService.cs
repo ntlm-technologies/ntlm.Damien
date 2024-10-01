@@ -140,6 +140,8 @@
             try
             {
                 string repoName = GetRepositoryNameFromUrl(tUrl);
+                if (repoName.Equals("ntlm.damien", StringComparison.CurrentCultureIgnoreCase))
+                    return;
                 string repoPath = Path.Combine(
                     BasePath,
                     repoName.GetClient(),
@@ -160,9 +162,9 @@
                     cloneOptions.FetchOptions.CredentialsProvider = GetCredentialsHandler();
 
                     L.Repository.Clone(tUrl, repoPath, cloneOptions);
-                    Checkout(repoPath);
                     Log($"Cloné avec succès : {repoName}");
                 }
+                Checkout(repoPath);
 
             }
             catch (Exception ex)
