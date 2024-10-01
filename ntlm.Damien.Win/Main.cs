@@ -243,6 +243,7 @@ namespace ntlm.Damien.Win
             }
             else
             {
+                MessageBox.Show("Token invalide.");
                 mainPanel.Visible = false;
                 teams.Visible = false;
             }
