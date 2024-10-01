@@ -756,7 +756,7 @@
         /// <param name="clients"></param>
         /// <param name="teams"></param>
         /// <returns></returns>
-        private async Task ApplyPermissionsToRepositoryAsync(string repo)
+        public async Task ApplyPermissionsToRepositoryAsync(string repo)
         {
             var clients = await GetClientsAsync();
             var teams = await GetTeamsAsync();

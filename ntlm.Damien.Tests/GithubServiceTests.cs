@@ -13,6 +13,18 @@ namespace ntlm.Damien.Tests
         public static readonly string Directory = Environment.CurrentDirectory;
         public static readonly string Organization = "ntlm-technologies";
 
+
+        [TestMethod]
+        public async Task ApplyPermissionsToRepositoryAsync()
+        {
+            // Given
+            var github = new GithubService(Directory, Token);
+
+            // When
+            await github.ApplyPermissionsToRepositoryAsync("ntlm");
+        }
+
+
         [TestMethod]
         public async Task GetClientsAsync()
         {
