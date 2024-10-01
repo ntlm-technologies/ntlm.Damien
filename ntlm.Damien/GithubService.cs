@@ -581,7 +581,7 @@
 
                 if (team == null)
                 {
-                    Warn($"Équipe avec le slug '{teamName}' introuvable.");
+                    Warn($"Équipe '{teamName}' introuvable.");
                     return;
                 }
 
