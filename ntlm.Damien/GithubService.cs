@@ -134,9 +134,9 @@
         /// Clones a repository to local directory.
         /// </summary>
         /// <param name="urls">Urls of Github directories.</param>
-        public void Clone(string url)
+        public void Clone(string repo)
         {
-            var tUrl = TransformUrl(url);
+            var tUrl = TransformUrl(repo);
             try
             {
                 string repoName = GetRepositoryNameFromUrl(tUrl);
@@ -191,8 +191,8 @@
         /// <summary>
         /// Clones a list repositories to local directory.
         /// </summary>
-        /// <param name="urls">Urls of Github directories.</param>
-        public async Task CloneAsync(string[] urls, CancellationToken ct)
+        /// <param name="repos">Urls of Github directories.</param>
+        public async Task CloneAsync(string[] repos, CancellationToken ct)
         {
             Warnings.Clear();
 
@@ -202,14 +202,14 @@
 
             try
             {
-                foreach (var url in urls)
+                foreach (var repo in repos)
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    await Task.Run(() => Clone(url), ct);
+                    await Task.Run(() => Clone(repo), ct);
 
                     i++;
-                    OnProgressChanged(this, (i * 100) / urls.Length);
+                    OnProgressChanged(this, (i * 100) / repos.Length);
                 }
             }
             catch (OperationCanceledException)
