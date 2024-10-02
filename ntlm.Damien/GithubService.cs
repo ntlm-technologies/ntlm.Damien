@@ -170,6 +170,8 @@
             catch (Exception ex)
             {
                 Warn($"Erreur lors du clonage de {tUrl}: {ex.Message}");
+                if (ex.InnerException != null)
+                    Warn($"Détails : {ex.InnerException.Message}");
             }
 
         }

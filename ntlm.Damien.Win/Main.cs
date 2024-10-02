@@ -32,6 +32,8 @@ namespace ntlm.Damien.Win
             token.Text = GetFromRegistry(nameof(token));
             branches.Text = GetFromRegistry(nameof(branches), "to-dotnet-8, dev, test");
 
+            if (!string.IsNullOrWhiteSpace(token.Text))
+                connect.PerformClick();
 
             Image reducedQuestionMark = ResizeImage(SystemIcons.Question.ToBitmap(), 20, 20);
 
