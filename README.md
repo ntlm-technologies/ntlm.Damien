@@ -33,6 +33,11 @@ Il suffit de créer des équipes {client}.dev ou {client}.admin puis de relancer
 
 # Publish
 
+- Publier ntlm.Damien.Data.
+- Zipper C:\Deploy\ntlm\ntlm.Damien
+- 
+## Obsolète
+
 Pour publier un unique .exe : 
 dotnet publish -c Release -r win-x64 --self-contained
 
