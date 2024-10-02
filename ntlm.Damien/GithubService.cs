@@ -256,7 +256,9 @@
                     if (branch == null)
                     {
                         // Si la branche n'existe pas localement, vérifiez si elle existe sur le dépôt distant
-                        var remoteBranch = repo.Branches[$"origin/{branchName}"];
+                        var remoteBranch = repo
+                            .Branches
+                            .FirstOrDefault(x => x.FriendlyName == $"origin/{branchName}");
                         if (remoteBranch != null)
                         {
                             // Créer la branche locale à partir de la branche distante

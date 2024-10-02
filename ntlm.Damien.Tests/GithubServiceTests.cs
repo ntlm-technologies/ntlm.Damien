@@ -132,7 +132,7 @@ namespace ntlm.Damien.Tests
             var github = new GithubService(Directory, Token);
 
             // When
-            github.Clone("ntlm.def");
+            github.Clone("lgi.people");
 
             // Then
             Assert.AreEqual(0, GithubService.Warnings.Count);
