@@ -291,7 +291,7 @@
             userName.AutoSize = true;
             userName.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             userName.ForeColor = Color.RoyalBlue;
-            userName.Location = new Point(182, 17);
+            userName.Location = new Point(182, 14);
             userName.Name = "userName";
             userName.Size = new Size(51, 20);
             userName.TabIndex = 23;

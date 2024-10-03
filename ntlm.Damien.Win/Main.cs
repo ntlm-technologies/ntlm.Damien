@@ -15,11 +15,25 @@ namespace ntlm.Damien.Win
         /// <summary>
         /// Github service handling the clone operations.
         /// </summary>
-        public GithubService Github { get; private set; } = new GithubService();
+        public GithubService Github { get; private set; }
+
+        public GithubService InitGithub()
+        {
+            var gs = Github = new GithubService()
+            {
+                Logger = new TextBoxWriter(eventConsole)
+            };
+            Github.ProgressChanged += ProgressChanged;
+            return gs;
+        }
+
+
 
         public Main()
         {
             InitializeComponent();
+
+            Github = InitGithub();
 
             userName.Visible = false;
             mainPanel.Visible = false;
@@ -30,9 +44,6 @@ namespace ntlm.Damien.Win
             avatar.SizeMode = PictureBoxSizeMode.StretchImage; // Ajuste l'image exactement aux dimensions spécifiées
             avatar.BorderStyle = BorderStyle.FixedSingle; // Ajout d'une bordure pour visualiser les dimensions
             avatar.Dock = DockStyle.None; // Empêche le PictureBox de prendre toute la place du formulaire
-
-            Github.Logger = new TextBoxWriter(eventConsole);
-            Github.ProgressChanged += ProgressChanged;
 
             HandleCloneVisibility();
 
@@ -246,9 +257,7 @@ namespace ntlm.Damien.Win
         private async void Connect_Click(object sender, EventArgs e)
         {
             mainPanel.Visible = false;
-            Github = new GithubService() {
-                Logger = new TextBoxWriter(eventConsole)
-            };
+            Github = InitGithub();
 
             token.Enabled = false;
             connect.Enabled = false;
