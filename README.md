@@ -43,4 +43,8 @@ dotnet publish -c Release -r win-x64 --self-contained
 
 # Token
 
-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
+mambojoel
+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
+
+mambojoel2
+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
