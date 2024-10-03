@@ -84,6 +84,7 @@ namespace ntlm.Damien.Win
             Cursor = Cursors.WaitCursor;
             SaveToRegistry(nameof(token), token.Text);
             SaveToRegistry(nameof(branches), branches.Text);
+            SaveToRegistry(nameof(basePath), basePath.Text);
             Work();
             Github.BasePath = basePath.Text;
             Github.Token = token.Text;

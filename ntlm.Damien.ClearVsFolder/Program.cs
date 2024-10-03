@@ -66,6 +66,8 @@ class Program
         }
     }
 
+
+
     static bool EnsureVsFolderIgnored(string gitignorePath)
     {
         bool isUpdated = false;

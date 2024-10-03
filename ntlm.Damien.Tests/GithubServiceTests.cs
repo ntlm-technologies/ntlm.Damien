@@ -21,7 +21,7 @@ namespace ntlm.Damien.Tests
             var github = new GithubService(Directory, Token);
 
             // When
-            await github.ApplyPermissionsToRepositoryAsync("ntlm");
+            await github.ApplyPermissionsToRepositoryAsync("waybis-common");
         }
 
 
