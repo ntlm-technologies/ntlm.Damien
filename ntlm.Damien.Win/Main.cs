@@ -1,7 +1,12 @@
 namespace ntlm.Damien.Win
 {
     using Microsoft.Win32;
+    using Octokit;
+    using System.IO;
     using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Windows.Forms;
 
     public partial class Main : Form
     {
@@ -10,14 +15,21 @@ namespace ntlm.Damien.Win
         /// <summary>
         /// Github service handling the clone operations.
         /// </summary>
-        public GithubService Github { get; } = new GithubService();
+        public GithubService Github { get; private set; } = new GithubService();
 
         public Main()
         {
             InitializeComponent();
 
+            userName.Visible = false;
             mainPanel.Visible = false;
             teams.Visible = false;
+            avatar.Visible = false;
+
+
+            avatar.SizeMode = PictureBoxSizeMode.StretchImage; // Ajuste l'image exactement aux dimensions spécifiées
+            avatar.BorderStyle = BorderStyle.FixedSingle; // Ajout d'une bordure pour visualiser les dimensions
+            avatar.Dock = DockStyle.None; // Empêche le PictureBox de prendre toute la place du formulaire
 
             Github.Logger = new TextBoxWriter(eventConsole);
             Github.ProgressChanged += ProgressChanged;
@@ -233,6 +245,11 @@ namespace ntlm.Damien.Win
 
         private async void Connect_Click(object sender, EventArgs e)
         {
+            mainPanel.Visible = false;
+            Github = new GithubService() {
+                Logger = new TextBoxWriter(eventConsole)
+            };
+
             token.Enabled = false;
             connect.Enabled = false;
             Cursor = Cursors.WaitCursor;
@@ -242,7 +259,15 @@ namespace ntlm.Damien.Win
             {
                 await BindClients();
                 mainPanel.Visible = true;
-                teams.Visible = true;
+                teams.Visible =
+                    ((await Github.GetUserTeamsAsync()).IsNtlm())
+                    ;
+                var user = await Github.GetUser();
+                userName.Text = user?.Login;
+                userName.Visible = true;
+                LoadAvatar(user);
+                avatar.Visible = true;
+                mainPanel.Visible = true;
             }
             else
             {
@@ -254,6 +279,27 @@ namespace ntlm.Damien.Win
             connect.Enabled = true;
             Cursor = Cursors.Default;
         }
+
+        private async void LoadAvatar(User? user)
+        {
+            if (user == null) return;
+            try
+            {
+                var httpClient = new HttpClient();
+
+                // Télécharger les données de l'image avec HttpClient
+                var imageBytes = await httpClient.GetByteArrayAsync(user.AvatarUrl);
+
+                // Convertir les données en un flux d'image
+                using var ms = new System.IO.MemoryStream(imageBytes);
+                avatar.Image = Image.FromStream(ms);
+            }
+            catch (Exception)
+            {
+                //MessageBox.Show($"Erreur lors du chargement de l'image : {ex.Message}");
+            }
+        }
+
 
         private async Task BindClients()
         {

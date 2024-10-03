@@ -6,6 +6,7 @@
     using Microsoft.Extensions.Configuration;
     using Octokit;
     using System;
+    using System.Collections.Generic;
     using System.Net.Http.Headers;
     using L = LibGit2Sharp;
     using O = Octokit;
@@ -405,11 +406,13 @@
         public GitHubClient GetGitHubClient()
         {
             gitHubClient ??= new GitHubClient(new O.ProductHeaderValue("ntlm.Damien"))
-                {
-                    Credentials = new O.Credentials(Token)
-                };
+            {
+                Credentials = new O.Credentials(Token)
+            };
             return gitHubClient;
         }
+
+        private Team[]? userTeams;
 
         /// <summary>
         /// Returns the teams of a user.
@@ -418,49 +421,138 @@
         /// <returns></returns>
         public async Task<Team[]> GetUserTeamsAsync(string userName)
         {
-            var userTeams = new List<Team>();
-
-            var client = GetGitHubClient();
-
-            try
+            if (userTeams == null)
             {
-                // Récupérer toutes les équipes de l'organisation
-                var organizationTeams = await client.Organization.Team.GetAll(Organization);
+                var list = new List<Team>();
 
-                // Utilisation de HttpClient pour effectuer des requêtes API manuelles
-                using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Organization, "1.0"));
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+                var client = GetGitHubClient();
 
-                foreach (var team in organizationTeams)
+                try
                 {
-                    // Construire l'URL pour vérifier l'appartenance de l'utilisateur à une équipe
-                    var requestUrl = $"https://api.github.com/teams/{team.Id}/memberships/{userName}";
+                    // Récupérer toutes les équipes de l'organisation
+                    var organizationTeams = await client.Organization.Team.GetAll(Organization);
 
-                    // Envoyer la requête GET pour vérifier l'appartenance de l'utilisateur
-                    var response = await httpClient.GetAsync(requestUrl);
+                    // Utilisation de HttpClient pour effectuer des requêtes API manuelles
+                    using var httpClient = new HttpClient();
+                    httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Organization, "1.0"));
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
 
-                    // Vérifier si la réponse indique que l'utilisateur est membre de l'équipe
-                    if (response.IsSuccessStatusCode)
+                    foreach (var team in organizationTeams)
                     {
-                        userTeams.Add(team);
+                        // Construire l'URL pour vérifier l'appartenance de l'utilisateur à une équipe
+                        var requestUrl = $"https://api.github.com/teams/{team.Id}/memberships/{userName}";
+
+                        // Envoyer la requête GET pour vérifier l'appartenance de l'utilisateur
+                        var response = await httpClient.GetAsync(requestUrl);
+
+                        // Vérifier si la réponse indique que l'utilisateur est membre de l'équipe
+                        if (response.IsSuccessStatusCode)
+                        {
+                            list.Add(team);
+                        }
+                    }
+
+                    // Afficher les équipes
+                    Log($"L'utilisateur {userName} appartient aux équipes suivantes dans l'organisation {Organization} :");
+                    foreach (var team in list)
+                    {
+                        Log($"- {team.Name}");
                     }
                 }
-
-                // Afficher les équipes
-                Log($"L'utilisateur {userName} appartient aux équipes suivantes dans l'organisation {Organization} :");
-                foreach (var team in userTeams)
+                catch (Exception ex)
                 {
-                    Log($"- {team.Name}");
+                    Warn($"Erreur : {ex.Message}");
                 }
-            }
-            catch (Exception ex)
-            {
-                Warn($"Erreur : {ex.Message}");
+
+                userTeams = [.. list];
             }
 
-            return [.. userTeams];
+
+            return userTeams;
         }
+
+
+        /// <summary>
+        /// Returns the teams of a user from its token.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<Team[]> GetUserTeamsAsync()
+        {
+            if (userTeams == null && Token != null)
+            {
+                var list = new List<Team>();
+
+                var client = GetGitHubClient();
+
+                var userLogin = (await GetUser())?.Login;
+
+                try
+                {
+                    // Récupération des équipes de l'organisation
+                    var teams = await client.Organization.Team.GetAll(Organization);
+
+                    // Filtrer les équipes auxquelles appartient l'utilisateur
+                    foreach (var team in teams)
+                    {
+                        var allMembers = await client.Organization.Team.GetAllMembers(team.Id);
+
+                        // Vérification si l'utilisateur appartient à l'équipe
+                        if (allMembers.Any(member => member.Login.Equals(userLogin, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            list.Add(team);
+                        }
+                    }
+
+                    Log($"Vous appartenez {(teams.Count > 1 ? "aux équipes" : "à l'équipe")} suivante{(teams.Count > 1 ? "s" : "")}:");
+                    foreach (var team in list)
+                        Log($" - {team.Name}");
+                }
+                catch (Exception ex)
+                {
+                    Warn($"Erreur : {ex.Message}");
+                }
+
+                userTeams = [.. list];
+            }
+            else
+            {
+                userTeams = [];
+            }
+
+
+            return userTeams;
+        }
+
+        private User? user;
+
+        /// <summary>
+        /// Returns the user name.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<User?> GetUser()
+        {
+            if (user == null)
+            {
+                var client = GetGitHubClient();
+
+                try
+                {
+                    // Récupération de l'utilisateur courant basé sur le token
+                    user = await client.User.Current();
+
+                    Log($"Bienvenue {user.Login} !");
+                }
+                catch (Exception ex)
+                {
+                    Warn($"Erreur : {ex.Message}");
+                }
+                
+            }
+            return user;
+        }
+
 
         private readonly Dictionary<string, string[]> teamRepositories = [];
 

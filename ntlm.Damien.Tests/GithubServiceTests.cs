@@ -9,10 +9,38 @@ namespace ntlm.Damien.Tests
     public class GithubServiceTests
     {
 
-        public static readonly string Token = "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";
+        public static readonly string Token = "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";
+        public static readonly string Token2 = "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";
         public static readonly string Directory = Environment.CurrentDirectory;
         public static readonly string Organization = "ntlm-technologies";
 
+
+        [TestMethod]
+        public async Task GetUser()
+        {
+            // Given
+            var github = new GithubService(Directory, Token);
+
+            // When
+            var user = await github.GetUser();
+
+            // Then
+            Assert.IsNotNull(user);
+        }
+
+
+        [TestMethod]
+        public async Task GetUserTeams()
+        {
+            // Given
+            var github = new GithubService(Directory, Token2);
+
+            // When
+            var teams = await github.GetUserTeamsAsync();
+
+            // Then
+            Assert.IsNotNull(teams);
+        }
 
         [TestMethod]
         public async Task ApplyPermissionsToRepositoryAsync()

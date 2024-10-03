@@ -5,7 +5,7 @@ using System.IO;
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
         // Chemin de base à parcourir
         string baseDirectory = @"C:\Users\mambo\OneDrive\Desktop\ntlm.Damien"; ; // À adapter
@@ -36,34 +36,32 @@ class Program
 
         Console.WriteLine($"Traitement du repository: {repoPath}");
 
-        using (var repo = new Repository(repoPath))
+        using var repo = new Repository(repoPath);
+        // Vérification et mise à jour du fichier .gitignore
+        string gitignorePath = Path.Combine(repoPath, ".gitignore");
+        bool gitignoreUpdated = EnsureVsFolderIgnored(gitignorePath);
+
+        // Si le fichier .gitignore a été mis à jour, commit et push
+        if (gitignoreUpdated)
         {
-            // Vérification et mise à jour du fichier .gitignore
-            string gitignorePath = Path.Combine(repoPath, ".gitignore");
-            bool gitignoreUpdated = EnsureVsFolderIgnored(gitignorePath);
+            // Ajouter et commit le fichier .gitignore mis à jour
+            Commands.Stage(repo, gitignorePath);
+            repo.Commit("Ignore .vs", new Signature("Automated Script", "script@example.com", DateTimeOffset.Now), new Signature("Automated Script", "script@example.com", DateTimeOffset.Now));
 
-            // Si le fichier .gitignore a été mis à jour, commit et push
-            if (gitignoreUpdated)
-            {
-                // Ajouter et commit le fichier .gitignore mis à jour
-                Commands.Stage(repo, gitignorePath);
-                repo.Commit("Ignore .vs", new Signature("Automated Script", "script@example.com", DateTimeOffset.Now), new Signature("Automated Script", "script@example.com", DateTimeOffset.Now));
-
-                // Push la branche courante avec le nouveau .gitignore
-                var currentBranchName = repo.Head.FriendlyName;
-                RunGitCommand(repoPath, $"push origin {currentBranchName}");
-                Console.WriteLine($"Modifications du .gitignore poussées sur la branche {currentBranchName}");
-            }
-
-            // Supprimer le dossier .vs/ du suivi
-            RunGitCommand(repoPath, "rm -r --cached .vs/");
-
-            // Committer le retrait des fichiers .vs/
-            RunGitCommand(repoPath, "commit -m \"Retire le dossier .vs/ du suivi de version\"");
-
-            // Pousser la branche courante
-            RunGitCommand(repoPath, $"push origin {repo.Head.FriendlyName}");
+            // Push la branche courante avec le nouveau .gitignore
+            var currentBranchName = repo.Head.FriendlyName;
+            RunGitCommand(repoPath, $"push origin {currentBranchName}");
+            Console.WriteLine($"Modifications du .gitignore poussées sur la branche {currentBranchName}");
         }
+
+        // Supprimer le dossier .vs/ du suivi
+        RunGitCommand(repoPath, "rm -r --cached .vs/");
+
+        // Committer le retrait des fichiers .vs/
+        RunGitCommand(repoPath, "commit -m \"Retire le dossier .vs/ du suivi de version\"");
+
+        // Pousser la branche courante
+        RunGitCommand(repoPath, $"push origin {repo.Head.FriendlyName}");
     }
 
 
@@ -95,7 +93,7 @@ class Program
 
     static void RunGitCommand(string repoPath, string arguments)
     {
-        ProcessStartInfo startInfo = new ProcessStartInfo
+        ProcessStartInfo startInfo = new()
         {
             FileName = "git",
             Arguments = arguments,
@@ -106,10 +104,11 @@ class Program
             CreateNoWindow = true
         };
 
-        using (var process = Process.Start(startInfo))
+        using var process = Process.Start(startInfo);
+        if (process != null)
         {
             process.WaitForExit();
-            string output = process.StandardOutput.ReadToEnd();
+            //string output = process.StandardOutput.ReadToEnd();
             string error = process.StandardError.ReadToEnd();
 
             if (process.ExitCode == 0)

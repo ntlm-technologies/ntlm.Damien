@@ -109,6 +109,13 @@
         public static bool IsAdmin(this Team team) => team.IsRole("admin");
 
         /// <summary>
+        /// If at least a team is an ntlm team.
+        /// </summary>
+        /// <param name="team"></param>
+        /// <returns></returns>
+        public static bool IsNtlm(this IEnumerable<Team> teams) => teams.Any(x => x.IsNtlm());
+
+        /// <summary>
         /// If the team is an ntlm team.
         /// </summary>
         /// <param name="team"></param>

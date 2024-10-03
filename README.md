@@ -35,7 +35,7 @@ Il suffit de créer des équipes {client}.dev ou {client}.admin puis de relancer
 
 - Publier ntlm.Damien.Data.
 - Zipper C:\Deploy\ntlm\ntlm.Damien
-- 
+
 ## Obsolète
 
 Pour publier un unique .exe : 
