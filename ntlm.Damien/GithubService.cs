@@ -400,7 +400,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Warn($"Erreur lors de l'importation des équipes : {ex.Message}")
+                    Warn($"Erreur lors de l'importation des équipes : {ex.Message}");
                     throw;
                 }
             }
