@@ -393,8 +393,16 @@
 
             if (teams == null)
             {
-                var client = GetGitHubClient();
-                teams = [.. (await client.Organization.Team.GetAll(Organization))];
+                try
+                {
+                    var client = GetGitHubClient();
+                    teams = [.. (await client.Organization.Team.GetAll(Organization))];
+                }
+                catch (Exception ex)
+                {
+                    Warn($"Erreur lors de l'importation des équipes : {ex.Message}")
+                    throw;
+                }
             }
             return teams;
         }
