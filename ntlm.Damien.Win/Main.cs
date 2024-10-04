@@ -53,7 +53,9 @@ namespace ntlm.Damien.Win
 
             basePath.Text = GetFromRegistry(nameof(basePath));
             token.Text = GetFromRegistry(nameof(token));
-            branches.Text = GetFromRegistry(nameof(branches), "to-dotnet-8, dev, test");
+            branches.Text = GetFromRegistry(nameof(branches), 
+                string.Join(',', Github.Branches)
+                );
 
             if (!string.IsNullOrWhiteSpace(token.Text))
                 connect.PerformClick();

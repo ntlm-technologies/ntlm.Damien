@@ -49,7 +49,12 @@
         /// 
         /// Will try to checkout dev if exists. I not, dev2 if exists, etc.
         /// </summary>
-        public string[] Branches { get; set; } = ["to-dotnet-8", "dev", "test"];
+        public string[] Branches { get; set; } = 
+            [
+            "to-dotnet-8", 
+            "dev", 
+            "test"
+            ];
 
 
         /// <summary>
