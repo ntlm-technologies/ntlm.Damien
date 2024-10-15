@@ -97,7 +97,7 @@
             // 
             // browseBasePath
             // 
-            browseBasePath.Location = new Point(524, 51);
+            browseBasePath.Location = new Point(525, 49);
             browseBasePath.Name = "browseBasePath";
             browseBasePath.Size = new Size(99, 33);
             browseBasePath.TabIndex = 4;
@@ -301,9 +301,9 @@
             // 
             teams.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             teams.ForeColor = Color.Red;
-            teams.Location = new Point(529, 249);
+            teams.Location = new Point(524, 8);
             teams.Name = "teams";
-            teams.Size = new Size(94, 33);
+            teams.Size = new Size(99, 33);
             teams.TabIndex = 22;
             teams.Text = "Équipes";
             teams.UseVisualStyleBackColor = true;
