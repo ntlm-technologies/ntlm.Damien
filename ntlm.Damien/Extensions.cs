@@ -145,7 +145,7 @@
         /// <returns></returns>
         public static string[] GetRepositoryListFromFile(this string fileUrl, string? token)
         {
-            using HttpClient client = new ();
+            using HttpClient client = new();
             try
             {
                 // Ajouter le token dans les en-têtes de la requête HTTP
@@ -162,7 +162,7 @@
             catch (Exception ex)
             {
                 Console.WriteLine($"Erreur lors de la récupération du fichier : {ex.Message}");
-                return []; 
+                return [];
             }
         }
 

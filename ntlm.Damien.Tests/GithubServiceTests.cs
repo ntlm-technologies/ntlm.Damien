@@ -1,6 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static System.Net.WebRequestMethods;
-
 namespace ntlm.Damien.Tests
 {
 
@@ -120,8 +117,8 @@ namespace ntlm.Damien.Tests
 
             // When
             await github.AddRepositoriesToTeamAsync(
-                "ntlm.dev", 
-                Octokit.TeamPermissionLegacy.Push, 
+                "ntlm.dev",
+                Octokit.TeamPermissionLegacy.Push,
                 "ntlm"
                 );
         }

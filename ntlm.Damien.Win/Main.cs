@@ -4,7 +4,6 @@ namespace ntlm.Damien.Win
     using Octokit;
     using System.IO;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
     using System.Windows.Forms;
 
@@ -53,7 +52,7 @@ namespace ntlm.Damien.Win
 
             basePath.Text = GetFromRegistry(nameof(basePath));
             token.Text = GetFromRegistry(nameof(token));
-            branches.Text = GetFromRegistry(nameof(branches), 
+            branches.Text = GetFromRegistry(nameof(branches),
                 string.Join(',', Github.Branches)
                 );
 

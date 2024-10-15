@@ -3,7 +3,6 @@
 
     using LibGit2Sharp;
     using LibGit2Sharp.Handlers;
-    using Microsoft.Extensions.Configuration;
     using Octokit;
     using System;
     using System.Collections.Generic;
@@ -49,10 +48,10 @@
         /// 
         /// Will try to checkout dev if exists. I not, dev2 if exists, etc.
         /// </summary>
-        public string[] Branches { get; set; } = 
+        public string[] Branches { get; set; } =
             [
-            "to-dotnet-8", 
-            "dev", 
+            "to-dotnet-8",
+            "dev",
             "test"
             ];
 
@@ -561,7 +560,7 @@
                 {
                     Warn($"Erreur : {ex.Message}");
                 }
-                
+
             }
             return user;
         }
@@ -591,7 +590,7 @@
                     {
                         Warn($"Erreur : {ex.Message}");
                     }
-                    
+
                 }
                 teamRepositories[teamName] = repos;
                 return repos;
@@ -916,6 +915,72 @@
         public string[] GetClientExtraRepositories(string client)
             => (ClientSettingsRepository + client + ".txt")
                 .GetRepositoryListFromFile(Token);
+
+        #endregion
+
+
+        /// <summary>
+        /// Closes all the issues of all the repositories of the organization.
+        /// </summary>
+        /// <param name="repositories"></param>
+        /// <returns></returns>
+        public async Task CloseAllIssues()
+        {
+            var repositories = await GetRepositoriesAsync();
+            foreach (var repo in repositories)
+                await CloseIssues(repo.Name);
+        }
+
+        /// <summary>
+        /// Closes all the issues.
+        /// </summary>
+        /// <param name="repositories"></param>
+        /// <returns></returns>
+        public async Task CloseIssues(params string[] repositories)
+        {
+            var client = GetGitHubClient();
+
+            foreach (var repo in repositories)
+            {
+
+                try
+                {
+                    // Récupérer toutes les issues ouvertes
+                    var issues = await client.Issue.GetAllForRepository(Organization, repo, new RepositoryIssueRequest
+                    {
+                        State = ItemStateFilter.Open
+                    });
+
+                    // Parcourir chaque issue et les fermer
+                    foreach (var issue in issues)
+                    {
+                        if (issue.State == ItemState.Open)
+                        {
+                            var issueUpdate = new IssueUpdate
+                            {
+                                State = ItemState.Closed
+                            };
+
+                            await client.Issue.Update(Organization, repo, issue.Number, issueUpdate);
+                            Log($"Issue #{issue.Number} fermée.");
+                        }
+                    }
+
+                    Log("Toutes les issues ouvertes ont été fermées.");
+                }
+                catch (Exception ex)
+                {
+                    Warn($"Erreur: {ex.Message}");
+                }
+
+
+            }
+        }
+
+
+        #region Issues
+
+
 
         #endregion
 

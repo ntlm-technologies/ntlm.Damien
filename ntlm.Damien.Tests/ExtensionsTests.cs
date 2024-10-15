@@ -1,7 +1,6 @@
 ﻿namespace ntlm.Damien.Tests
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json.Linq;
 
     [TestClass]
     public class ExtensionsTests
