@@ -36,7 +36,15 @@ namespace ntlm.Damien.Win
 
         private async void Teamsbtn_Click(object sender, EventArgs e)
         {
-            await Main.Github.ApplyPermissionsAsync(Main.CancellationTokenSource.Token);
+            Main.Work();
+
+            await Task.Run(async () =>
+            {
+                await Main.Github.ApplyPermissionsAsync(Main.CancellationTokenSource.Token);
+
+            });
+
+            Main.Done();
         }
 
         private async void Secretsbtn_Click(object sender, EventArgs e)

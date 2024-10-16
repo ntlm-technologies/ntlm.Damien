@@ -9,7 +9,7 @@ namespace ntlm.Damien.Win
 
     public partial class Main : Form
     {
-        public readonly CancellationTokenSource CancellationTokenSource = new();
+        public CancellationTokenSource CancellationTokenSource = new();
 
         /// <summary>
         /// Github service handling the clone operations.
@@ -199,7 +199,14 @@ namespace ntlm.Damien.Win
 
         private void Cancel_Click(object sender, EventArgs e)
         {
+            Cancel();
+        }
+
+        public void Cancel()
+        {
+
             CancellationTokenSource?.Cancel();
+            CancellationTokenSource = new();
         }
 
         public const string RegistryKey = @"Software\ntlm.Damien";
