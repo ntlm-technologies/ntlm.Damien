@@ -9,34 +9,51 @@ namespace ntlm.Damien.Win
 
     public partial class Main : Form
     {
-        private readonly CancellationTokenSource cancellationTokenSource = new();
+        public readonly CancellationTokenSource CancellationTokenSource = new();
 
         /// <summary>
         /// Github service handling the clone operations.
         /// </summary>
         public GithubService Github { get; private set; }
 
+        /// <summary>
+        /// Secret service .
+        /// </summary>
+        public SecretService Secrets { get; private set; }
+
         public GithubService InitGithub()
         {
-            var gs = Github = new GithubService()
+            var gs = new GithubService()
             {
                 Logger = new TextBoxWriter(eventConsole)
             };
-            Github.ProgressChanged += ProgressChanged;
+            gs.ProgressChanged += ProgressChanged;
             return gs;
         }
 
-
+        public SecretService InitSecrets()
+        {
+            var secrets = new SecretService(Github, new FtpService()
+            {
+                Logger = new TextBoxWriter(eventConsole)
+            })
+            {
+                Logger = new TextBoxWriter(eventConsole)
+            };
+            secrets.ProgressChanged += ProgressChanged;
+            secrets.Ftp.ProgressChanged += ProgressChanged;
+            return secrets;
+        }
 
         public Main()
         {
-            InitializeComponent();
 
+            InitializeComponent();
             Github = InitGithub();
+            Secrets = InitSecrets();
 
             userName.Visible = false;
             mainPanel.Visible = false;
-            teams.Visible = false;
             avatar.Visible = false;
 
 
@@ -116,7 +133,7 @@ namespace ntlm.Damien.Win
             Github.Branches = branches.Text.Split(',').Select(b => b.Trim()).ToArray();
             await Github.CloneClientsAsync(
                 clients.CheckedItems.Cast<string>().ToArray(),
-                cancellationTokenSource.Token
+                CancellationTokenSource.Token
                 );
             Done();
             ShowWarningsVisibility();
@@ -144,11 +161,11 @@ namespace ntlm.Damien.Win
             }
         }
 
-        private void Done()
+        public void Done()
         {
             Cursor = Cursors.Default;
             connect.Enabled = true;
-            teams.Enabled = true;
+            admin.Enabled = true;
             clone.Enabled = true;
             token.Enabled = true;
             basePath.Enabled = true;
@@ -157,13 +174,16 @@ namespace ntlm.Damien.Win
             branches.Enabled = true;
             clients.Enabled = true;
             fetch.Enabled = true;
+            if (Admin != null)
+                foreach (var item in Admin.Controls.OfType<Control>())
+                    item.Enabled = true;
         }
 
-        private void Work()
+        public void Work()
         {
             Cursor = Cursors.WaitCursor;
             connect.Enabled = false;
-            teams.Enabled = false;
+            admin.Enabled = false;
             clone.Enabled = false;
             token.Enabled = false;
             basePath.Enabled = false;
@@ -172,11 +192,14 @@ namespace ntlm.Damien.Win
             branches.Enabled = false;
             clients.Enabled = false;
             fetch.Enabled = false;
+            if (Admin != null)
+                foreach (var item in Admin.Controls.OfType<Control>())
+                    item.Enabled = false;
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
-            cancellationTokenSource?.Cancel();
+            CancellationTokenSource?.Cancel();
         }
 
         public const string RegistryKey = @"Software\ntlm.Damien";
@@ -259,6 +282,7 @@ namespace ntlm.Damien.Win
         {
             mainPanel.Visible = false;
             Github = InitGithub();
+            Secrets = InitSecrets();
 
             token.Enabled = false;
             connect.Enabled = false;
@@ -269,7 +293,7 @@ namespace ntlm.Damien.Win
             {
                 await BindClients();
                 mainPanel.Visible = true;
-                teams.Visible =
+                admin.Visible =
                     ((await Github.GetUserTeamsAsync()).IsNtlm())
                     ;
                 var user = await Github.GetUser();
@@ -283,7 +307,7 @@ namespace ntlm.Damien.Win
             {
                 MessageBox.Show("Token invalide.");
                 mainPanel.Visible = false;
-                teams.Visible = false;
+                admin.Visible = false;
             }
             token.Enabled = true;
             connect.Enabled = true;
@@ -328,11 +352,28 @@ namespace ntlm.Damien.Win
             }
         }
 
-        private async void Teams_Click(object sender, EventArgs e)
+        //public async Task ApplyPermissionsAsync()
+        //{
+        //    Work();
+        //    await Github.ApplyPermissionsAsync(CancellationTokenSource.Token);
+        //    Done();
+        //}
+
+        //public async Task DowloadSecretsAsync()
+        //{
+        //    Work();
+        //    await Secrets.Handle(CancellationTokenSource.Token);
+        //    Done();
+        //}
+
+
+        private void Admin_Click(object sender, EventArgs e)
         {
-            Work();
-            await Github.ApplyPermissionsAsync(cancellationTokenSource.Token);
-            Done();
+            Admin ??= new Admin(this);
+            Admin.Show();
         }
+
+        public Admin? Admin { get; private set; }
+
     }
 }

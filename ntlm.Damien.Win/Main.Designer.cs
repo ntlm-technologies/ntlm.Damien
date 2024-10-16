@@ -58,8 +58,8 @@
             mainPanel = new Panel();
             avatar = new PictureBox();
             userName = new Label();
-            teams = new Button();
             clients = new CheckedListBox();
+            admin = new Button();
             ((System.ComponentModel.ISupportInitialize)tokenQuestionMark).BeginInit();
             ((System.ComponentModel.ISupportInitialize)basePathQuestionMark).BeginInit();
             ((System.ComponentModel.ISupportInitialize)branchesQuestionMark).BeginInit();
@@ -254,9 +254,9 @@
             // 
             // mainPanel
             // 
+            mainPanel.Controls.Add(admin);
             mainPanel.Controls.Add(avatar);
             mainPanel.Controls.Add(userName);
-            mainPanel.Controls.Add(teams);
             mainPanel.Controls.Add(clients);
             mainPanel.Controls.Add(progressBar1);
             mainPanel.Controls.Add(eventConsole);
@@ -297,18 +297,6 @@
             userName.TabIndex = 23;
             userName.Text = "label5";
             // 
-            // teams
-            // 
-            teams.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            teams.ForeColor = Color.Red;
-            teams.Location = new Point(524, 8);
-            teams.Name = "teams";
-            teams.Size = new Size(99, 33);
-            teams.TabIndex = 22;
-            teams.Text = "Équipes";
-            teams.UseVisualStyleBackColor = true;
-            teams.Click += Teams_Click;
-            // 
             // clients
             // 
             clients.FormattingEnabled = true;
@@ -317,11 +305,23 @@
             clients.Size = new Size(392, 92);
             clients.TabIndex = 21;
             // 
+            // admin
+            // 
+            admin.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            admin.ForeColor = Color.Red;
+            admin.Location = new Point(524, 10);
+            admin.Name = "admin";
+            admin.Size = new Size(99, 29);
+            admin.TabIndex = 25;
+            admin.Text = "Admin";
+            admin.UseVisualStyleBackColor = true;
+            admin.Click += Admin_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(651, 600);
+            ClientSize = new Size(651, 604);
             Controls.Add(mainPanel);
             Controls.Add(connect);
             Controls.Add(tokenQuestionMark);
@@ -330,7 +330,6 @@
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
-            MinimizeBox = false;
             Name = "Main";
             Text = "Ntlm Github Cloner";
             Load += Main_Load;
@@ -374,8 +373,8 @@
         private Button connect;
         private Panel mainPanel;
         private CheckedListBox clients;
-        private Button teams;
         private Label userName;
         private PictureBox avatar;
+        private Button admin;
     }
 }

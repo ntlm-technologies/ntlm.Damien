@@ -13,7 +13,7 @@
     /// <summary>
     /// Represents a github service to clone repositories to local drive.
     /// </summary>
-    public class GithubService(string basePath, string? token)
+    public class GithubService(string basePath, string? token) : BaseService
     {
 
         #region Init
@@ -70,49 +70,8 @@
 
         #endregion
 
-        #region Progress
 
-        public event EventHandler<int> ProgressChanged = delegate { };
-
-        protected virtual void OnProgressChanged(object sender, int progress)
-        {
-            ProgressChanged?.Invoke(sender, progress);
-        }
-
-        public event EventHandler<string> Warned = delegate { };
-
-        #endregion
-
-        #region Log
-
-        /// <summary>
-        /// The warnings.
-        /// </summary>
-        public static List<string> Warnings { get; } = [];
-
-        /// <summary>
-        /// Warns.
-        /// </summary>
-        /// <param name="text"></param>
-        public void Warn(string text)
-        {
-            Log(text);
-            Warnings.Add(text);
-        }
-
-        /// <summary>
-        /// Log progress.
-        /// </summary>
-        /// <param name="text"></param>
-        public void Log(string text)
-            => Logger?.WriteLine(text);
-
-        /// <summary>
-        /// Logger.
-        /// </summary>
-        public TextWriter Logger { get; set; } = Console.Out;
-
-        #endregion
+    
 
         #region Clone
 
@@ -764,6 +723,13 @@
             params string[] repositories
             )
         {
+
+            Warnings.Clear();
+
+            OnProgressChanged(this, 0);
+            
+            int i = 0;
+            
             foreach (var repo in repositories)
             {
                 var permission = getPermission(repo);
@@ -772,6 +738,9 @@
                     await AddRepositoriesToTeamAsync(team, permission.Value, repo);
                 else
                     await RemoveRepositoriesFromTeamAsync(team, repo);
+                i++;
+                OnProgressChanged(this, (i * 100) / repositories.Length);
+
             }
         }
 
