@@ -1,7 +1,13 @@
 # Todo
 
+- Bug : 
+	- Secrets
+	- Annuler
+	- Secrets
+	- > ne se passe rien
 - Placer une copie de release dans chaque repository.
-- Cancel des admin ne marche pas : thread ?
+
+
 
 # Info
 

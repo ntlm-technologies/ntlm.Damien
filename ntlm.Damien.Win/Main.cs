@@ -204,7 +204,6 @@ namespace ntlm.Damien.Win
 
         public void Cancel()
         {
-
             CancellationTokenSource?.Cancel();
             CancellationTokenSource = new();
         }
@@ -377,6 +376,7 @@ namespace ntlm.Damien.Win
         private void Admin_Click(object sender, EventArgs e)
         {
             Admin ??= new Admin(this);
+            if (Admin.IsDisposed) Admin = new Admin(this);
             Admin.Show();
         }
 

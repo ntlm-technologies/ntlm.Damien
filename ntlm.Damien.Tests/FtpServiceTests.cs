@@ -24,7 +24,7 @@ namespace ntlm.Damien.Tests
             var list = ftp.DownloadReleaseFiles(directories);
         
             // Then
-            Assert.AreEqual(2, list.Length);
+            Assert.AreEqual(2, list?.Length);
         }
 
 

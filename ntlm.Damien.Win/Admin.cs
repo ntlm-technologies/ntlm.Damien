@@ -61,8 +61,7 @@ namespace ntlm.Damien.Win
                 Main.Secrets.Ftp.Username = username.Text;
                 Main.Secrets.Ftp.Password = password.Text;
 
-                int p = 21;
-                int.TryParse(this.port.Text, out p);
+                _ = int.TryParse(port.Text, out int p);
                 Main.Secrets.Ftp.Port = p;
 
                 await Main.Secrets.Handle(Main.CancellationTokenSource.Token);

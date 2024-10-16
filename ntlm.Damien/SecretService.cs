@@ -4,19 +4,13 @@
     /// <summary>
     /// Handles secrets.
     /// </summary>
-    public class SecretService : BaseService
+    public class SecretService(
+        GithubService git,
+        FtpService ftp
+            ) : BaseService
     {
 
         public const string SecretRepository = "ntlm.Damien.Secrets";
-
-        public SecretService(
-            GithubService git,
-            FtpService ftp
-            )
-        {
-            Git = git;
-            Ftp = ftp;
-        }
 
         /// <summary>
         /// Handles the secrets. Saves them in each local repository and the ntlm.Damien.Secrets repository.
@@ -42,15 +36,21 @@
             var repositories = await Git.GetRepositoriesAsync();
 
             // The repositories and their release files
-            var ri = Ftp.DownloadReleaseFiles(ct, repositories
+            var ri = Ftp.DownloadReleaseFiles(repositories
                 .Select(x => x.Name)
-                .ToArray()
+                .ToArray(),
+                ct
                 );
+
+            if (ri != null)
+            {
+                // Placer dans les repositories locaux
+            }
 
         }
 
 
-        public GithubService Git { get; }
-        public FtpService Ftp { get; }
+        public GithubService Git { get; } = git;
+        public FtpService Ftp { get; } = ftp;
     }
 }

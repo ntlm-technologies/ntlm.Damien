@@ -22,17 +22,20 @@
         public int Port { get; set; }
         public string? UriSuffix { get; set; }
 
+
         /// <summary>
         /// Download release files from the specified repositories.
         /// </summary>
-        /// <param name="repositories"></param>
-        /// <param name="host"></param>
-        /// <param name="ftpUsername"></param>
-        /// <param name="ftpPassword"></param>
-        /// <param name="localDownloadDirectory"></param>
-        /// <param name="port"></param>
         /// <returns></returns>
-        public RepositoryInfo[] DownloadReleaseFiles(CancellationToken ct, string[] repositories)
+        public RepositoryInfo[]? DownloadReleaseFiles(string[] repositories)
+            => DownloadReleaseFiles(repositories, CancellationToken.None);
+
+
+        /// <summary>
+        /// Download release files from the specified repositories.
+        /// </summary>
+        /// <returns></returns>
+        public RepositoryInfo[]? DownloadReleaseFiles(string[] repositories, CancellationToken ct)
         {
             OnProgressChanged(this, 0);
 
@@ -40,7 +43,7 @@
                 LocalDirectory == null ||
                 Username == null ||
                 Password == null
-                ) return Array.Empty<RepositoryInfo>();
+                ) return [];
             if (!Directory.Exists(LocalDirectory))
                 Directory.CreateDirectory(LocalDirectory);
 
@@ -51,8 +54,11 @@
             {
 
 
+
                 try
                 {
+                    ct.ThrowIfCancellationRequested();
+
                     string uri = $"ftp://{Host}:{Port}/{repository}{UriSuffix}/";
 
                     // Utilisation de FtpWebRequest qui est obsolète mais supporté pour FTP
@@ -66,8 +72,6 @@
 
                     try
                     {
-
-                        ct.ThrowIfCancellationRequested();
 
                         using FtpWebResponse response = (FtpWebResponse)request.GetResponse();
                         using StreamReader reader = new(response.GetResponseStream());
@@ -125,6 +129,7 @@
                 catch (OperationCanceledException)
                 {
                     Log("Le téléchargement des secrets a été annulé par l'utilsiateur.");
+                    return null ;
                 }
                 catch (Exception ex)
                 {
@@ -134,7 +139,7 @@
             return [.. list];
         }
 
-        private DateTime GetFileDate(string ftpFileUrl, string ftpUsername, string ftpPassword)
+        private static DateTime GetFileDate(string ftpFileUrl, string ftpUsername, string ftpPassword)
         {
 #pragma warning disable SYSLIB0014
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(ftpFileUrl);
@@ -142,14 +147,12 @@
             request.Method = WebRequestMethods.Ftp.GetDateTimestamp; // Méthode pour obtenir la date de modification
             request.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
 
-            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
-            {
-                return response.LastModified; // Retourne la date de modification du fichier
-            }
+            using FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+            return response.LastModified; // Retourne la date de modification du fichier
         }
 
 
-        private void DownloadFile(string ftpFileUrl, string localFilePath, string ftpUsername, string ftpPassword)
+        private static void DownloadFile(string ftpFileUrl, string localFilePath, string ftpUsername, string ftpPassword)
         {
 #pragma warning disable SYSLIB0014
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(ftpFileUrl);
@@ -158,12 +161,10 @@
             request.Method = WebRequestMethods.Ftp.DownloadFile;
             request.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
 
-            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
-            using (Stream responseStream = response.GetResponseStream())
-            using (FileStream outputStream = new(localFilePath, FileMode.Create))
-            {
-                responseStream.CopyTo(outputStream);
-            }
+            using FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+            using Stream responseStream = response.GetResponseStream();
+            using FileStream outputStream = new(localFilePath, FileMode.Create);
+            responseStream.CopyTo(outputStream);
 
         }
 

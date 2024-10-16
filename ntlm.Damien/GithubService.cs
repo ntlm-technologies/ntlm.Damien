@@ -166,26 +166,34 @@
 
             int i = 0;
 
-            try
-            {
-                foreach (var repo in repos)
+
+            await Task.Run(() => {
+
+                try
                 {
-                    ct.ThrowIfCancellationRequested();
+                    foreach (var repo in repos)
+                    {
+                        ct.ThrowIfCancellationRequested();
 
-                    await Task.Run(() => Clone(repo), ct);
+                        Clone(repo);
 
-                    i++;
-                    OnProgressChanged(this, (i * 100) / repos.Length);
+                        i++;
+                        OnProgressChanged(this, (i * 100) / repos.Length);
+                    }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                Log("Clonage annulé par l'utilisateur.");
-            }
-            catch (Exception ex)
-            {
-                Log($"Erreur lors du clonage : {ex.Message}");
-            }
+                catch (OperationCanceledException)
+                {
+                    Log("Clonage annulé par l'utilisateur.");
+                }
+                catch (Exception ex)
+                {
+                    Log($"Erreur lors du clonage : {ex.Message}");
+                }
+
+
+            }, ct);
+
+          
             Log("Terminé.");
         }
 
