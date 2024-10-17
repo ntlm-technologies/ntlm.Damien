@@ -37,4 +37,8 @@
 	  </EmbeddedResource>
 	</ItemGroup>
 
+	<Target Name="PostPublish" AfterTargets="Publish">
+		<Exec Command="dotnet run --project &quot;C:\Applications\Ntlm\ntlm.Damien\ntlm.Damien.Publish\ntlm.Damien.Publish.csproj&quot;" />
+	</Target>
+
 </Project>
