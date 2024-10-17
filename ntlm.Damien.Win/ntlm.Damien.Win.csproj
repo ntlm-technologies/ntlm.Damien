@@ -10,6 +10,7 @@
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<PublishSingleFile>true</PublishSingleFile>
 		<PublishTrimmed>false</PublishTrimmed>
+		<AssemblyName>NtlmGithubManager</AssemblyName>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Content Include="ntlm.ico" />
