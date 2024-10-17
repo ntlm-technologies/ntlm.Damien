@@ -11,10 +11,7 @@
     public class FtpService : BaseService
     {
 
-        /// <summary>
-        /// Only files modified after this date will be downloaded.
-        /// </summary>
-        public readonly DateTime StartDate = new(2024, 10, 16);
+        public Settings Settings { get; set; } = new Settings();
         public string? Host { get; set; }
         public string? Username { get; set; }
         public string? Password { get; set; }
@@ -84,7 +81,7 @@
                                 // Récupérer la date du fichier
                                 DateTime fileDate = GetFileDate(ftpFileUrl, Username, Password);
                                 Log($"Fichier : {line}, Date de dépôt : {fileDate}");
-                                if (fileDate > StartDate)
+                                if (fileDate > Settings.DownloadReleaseSettingsNewerThan)
                                 {
                                     var fileDirectory = Path.GetDirectoryName(localFilePath);
 

@@ -30,6 +30,12 @@
         /// Github repository to store client's settings.
         /// </summary>
         public string? ClientSettingsRepository { get; set; }
+
+        /// <summary>
+        /// Only files modified after this date will be downloaded.
+        /// Because as of october 2024 a lot of *.release.json are deprecated.
+        /// </summary>
+        public DateTime DownloadReleaseSettingsNewerThan { get; set; } = DateTime.MinValue;
     }
 
 }
