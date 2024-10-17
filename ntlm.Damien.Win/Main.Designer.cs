@@ -56,10 +56,10 @@
             clientsToolTip = new ToolTip(components);
             connect = new Button();
             mainPanel = new Panel();
+            admin = new Button();
             avatar = new PictureBox();
             userName = new Label();
             clients = new CheckedListBox();
-            admin = new Button();
             ((System.ComponentModel.ISupportInitialize)tokenQuestionMark).BeginInit();
             ((System.ComponentModel.ISupportInitialize)basePathQuestionMark).BeginInit();
             ((System.ComponentModel.ISupportInitialize)branchesQuestionMark).BeginInit();
@@ -278,6 +278,18 @@
             mainPanel.Size = new Size(627, 549);
             mainPanel.TabIndex = 22;
             // 
+            // admin
+            // 
+            admin.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            admin.ForeColor = Color.Red;
+            admin.Location = new Point(524, 10);
+            admin.Name = "admin";
+            admin.Size = new Size(99, 29);
+            admin.TabIndex = 25;
+            admin.Text = "Admin";
+            admin.UseVisualStyleBackColor = true;
+            admin.Click += Admin_Click;
+            // 
             // avatar
             // 
             avatar.Location = new Point(131, 1);
@@ -305,18 +317,6 @@
             clients.Size = new Size(392, 92);
             clients.TabIndex = 21;
             // 
-            // admin
-            // 
-            admin.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            admin.ForeColor = Color.Red;
-            admin.Location = new Point(524, 10);
-            admin.Name = "admin";
-            admin.Size = new Size(99, 29);
-            admin.TabIndex = 25;
-            admin.Text = "Admin";
-            admin.UseVisualStyleBackColor = true;
-            admin.Click += Admin_Click;
-            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -331,7 +331,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "Main";
-            Text = "Ntlm Github Cloner";
+            Text = "Ntlm Github Manager";
             Load += Main_Load;
             ((System.ComponentModel.ISupportInitialize)tokenQuestionMark).EndInit();
             ((System.ComponentModel.ISupportInitialize)basePathQuestionMark).EndInit();

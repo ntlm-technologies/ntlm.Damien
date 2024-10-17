@@ -48,22 +48,22 @@
             teamslbl.AutoSize = true;
             teamslbl.Location = new Point(12, 9);
             teamslbl.Name = "teamslbl";
-            teamslbl.Size = new Size(238, 20);
+            teamslbl.Size = new Size(245, 20);
             teamslbl.TabIndex = 0;
-            teamslbl.Text = "Application des droits aux équipes";
+            teamslbl.Text = "Application des droits aux équipes :";
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Location = new Point(12, 91);
             label2.Name = "label2";
-            label2.Size = new Size(191, 20);
+            label2.Size = new Size(198, 20);
             label2.TabIndex = 1;
-            label2.Text = "Téléchargement des secrets";
+            label2.Text = "Téléchargement des secrets :";
             // 
             // teamsbtn
             // 
-            teamsbtn.Location = new Point(12, 32);
+            teamsbtn.Location = new Point(182, 32);
             teamsbtn.Name = "teamsbtn";
             teamsbtn.Size = new Size(94, 29);
             teamsbtn.TabIndex = 2;
@@ -73,7 +73,7 @@
             // 
             // secretsbtn
             // 
-            secretsbtn.Location = new Point(90, 255);
+            secretsbtn.Location = new Point(182, 225);
             secretsbtn.Name = "secretsbtn";
             secretsbtn.Size = new Size(94, 29);
             secretsbtn.TabIndex = 3;
@@ -150,7 +150,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(298, 298);
+            ClientSize = new Size(291, 269);
             Controls.Add(label5);
             Controls.Add(port);
             Controls.Add(label4);
@@ -167,7 +167,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "Admin";
-            Text = "Admin";
+            Text = "Ntlm Github Manager";
             FormClosed += Admin_FormClosed;
             ResumeLayout(false);
             PerformLayout();

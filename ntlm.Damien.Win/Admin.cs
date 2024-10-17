@@ -31,7 +31,7 @@ namespace ntlm.Damien.Win
 
         private void Admin_FormClosed(object sender, EventArgs e)
         {
-            Main.CancellationTokenSource?.Cancel();
+            Main.Cancel();
         }
 
         private async void Teamsbtn_Click(object sender, EventArgs e)
