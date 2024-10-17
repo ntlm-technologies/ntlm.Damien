@@ -131,7 +131,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Log($"Erreur lors du téléchargement des secrts : {ex.Message}");
+                    Log($"Erreur lors du téléchargement des secrets : {ex.Message}");
                 }
             }
             return [.. list];
