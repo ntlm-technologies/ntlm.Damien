@@ -37,7 +37,7 @@ Il suffit de créer des équipes {client}.dev ou {client}.admin puis de relancer
 
 # Publish
 
-- Publier ntlm.Damien.Data.
+- Publier ntlm.Damien.Win.
 - Zipper C:\Deploy\ntlm\ntlm.Damien
 
 ## Obsolète
