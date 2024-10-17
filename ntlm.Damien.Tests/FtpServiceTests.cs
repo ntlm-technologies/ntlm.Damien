@@ -18,7 +18,8 @@ namespace ntlm.Damien.Tests
                 LocalDirectory = @"C:\deploy\damien",
                 Port = 21
             };
-            string[] directories = ["lgi.time.test", "lgi.people.test"];
+
+            string[] directories = ["lgi.time"];
 
             // When
             var list = ftp.DownloadReleaseFiles(directories);
