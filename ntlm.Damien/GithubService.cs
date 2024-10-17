@@ -18,20 +18,6 @@
 
         #region Init
 
-        /// <summary>
-        /// NTLM Organization.
-        /// </summary>
-        public const string Organization = "ntlm-technologies";
-
-        /// <summary>
-        /// Github's url.
-        /// </summary>
-        public const string GithubUrl = "https://github.com/";
-
-        /// <summary>
-        /// Github repository to store client's settings.
-        /// </summary>
-        public const string ClientSettingsRepository = "https://raw.githubusercontent.com/ntlm-technologies/ntlm.Damien.Data/refs/heads/main/";
 
         public GithubService(string basePath) : this(basePath, null)
         {
@@ -62,6 +48,11 @@
         public string? Token { get; set; } = token;
 
         /// <summary>
+        /// Settings.
+        /// </summary>
+        public Settings Settings { get; } = new Settings();
+
+        /// <summary>
         /// Local directory.
         /// </summary>
         public string BasePath { get; set; } = basePath;
@@ -71,7 +62,7 @@
         #endregion
 
 
-    
+
 
         #region Clone
 
@@ -331,15 +322,8 @@
         /// <param name="repo"></param>
         /// <returns></returns>
         public virtual string TransformUrl(string repo) =>
-            $"{GithubUrl}{Organization}/{repo}";
-
-        /// <summary>
-        /// Transforms the directory.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public virtual string TransformDirectory(string repoName) => repoName;
-
+            $"{Settings.GithubUrl}{Settings.Organization}/{repo}";
+        
         /// <summary>
         /// Returns the name of a repository from its url.
         /// </summary>
@@ -367,7 +351,7 @@
                 try
                 {
                     var client = GetGitHubClient();
-                    teams = [.. (await client.Organization.Team.GetAll(Organization))];
+                    teams = [.. (await client.Organization.Team.GetAll(Settings.Organization))];
                 }
                 catch (Exception ex)
                 {
@@ -409,11 +393,11 @@
                 try
                 {
                     // Récupérer toutes les équipes de l'organisation
-                    var organizationTeams = await client.Organization.Team.GetAll(Organization);
+                    var organizationTeams = await client.Organization.Team.GetAll(Settings.Organization);
 
                     // Utilisation de HttpClient pour effectuer des requêtes API manuelles
                     using var httpClient = new HttpClient();
-                    httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Organization, "1.0"));
+                    httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Settings.Organization, "1.0"));
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
 
                     foreach (var team in organizationTeams)
@@ -432,7 +416,7 @@
                     }
 
                     // Afficher les équipes
-                    Log($"L'utilisateur {userName} appartient aux équipes suivantes dans l'organisation {Organization} :");
+                    Log($"L'utilisateur {userName} appartient aux équipes suivantes dans l'organisation {Settings.Organization} :");
                     foreach (var team in list)
                     {
                         Log($"- {team.Name}");
@@ -469,7 +453,7 @@
                 try
                 {
                     // Récupération des équipes de l'organisation
-                    var teams = await client.Organization.Team.GetAll(Organization);
+                    var teams = await client.Organization.Team.GetAll(Settings.Organization);
 
                     // Filtrer les équipes auxquelles appartient l'utilisateur
                     foreach (var team in teams)
@@ -620,7 +604,7 @@
                         // Ajouter le repository à l'équipe avec les permissions spécifiées
                         await client.Organization.Team.AddRepository(
                             team.Id,
-                            Organization,
+                            Settings.Organization,
                             repoName,
                             permissionRequest
                         );
@@ -672,7 +656,7 @@
                         // Ajouter le repository à l'équipe avec les permissions spécifiées
                         await client.Organization.Team.RemoveRepository(
                             team.Id,
-                            Organization,
+                            Settings.Organization,
                             repoName
                         );
 
@@ -706,7 +690,7 @@
 
                 try
                 {
-                    repositories = [.. (await client.Repository.GetAllForOrg(Organization))];
+                    repositories = [.. (await client.Repository.GetAllForOrg(Settings.Organization))];
 
                 }
                 catch (Exception ex)
@@ -890,7 +874,7 @@
         /// <param name="client"></param>
         /// <returns></returns>
         public string[] GetClientExtraRepositories(string client)
-            => (ClientSettingsRepository + client + ".txt")
+            => (Settings.ClientSettingsRepository + client + ".txt")
                 .GetRepositoryListFromFile(Token);
 
         #endregion
@@ -923,7 +907,7 @@
                 try
                 {
                     // Récupérer toutes les issues ouvertes
-                    var issues = await client.Issue.GetAllForRepository(Organization, repo, new RepositoryIssueRequest
+                    var issues = await client.Issue.GetAllForRepository(Settings.Organization, repo, new RepositoryIssueRequest
                     {
                         State = ItemStateFilter.Open
                     });
@@ -938,7 +922,7 @@
                                 State = ItemState.Closed
                             };
 
-                            await client.Issue.Update(Organization, repo, issue.Number, issueUpdate);
+                            await client.Issue.Update(Settings.Organization, repo, issue.Number, issueUpdate);
                             Log($"Issue #{issue.Number} fermée.");
                         }
                     }
