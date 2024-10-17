@@ -380,6 +380,8 @@ namespace ntlm.Damien.Win
             Admin.Show();
         }
 
+        public string GetBasePath() => basePath.Text;
+
         public Admin? Admin { get; private set; }
 
     }

@@ -7,6 +7,21 @@
     {
 
         [TestMethod]
+        public void GetSettingsDirectories()
+        {
+            // Given
+            var path = @"c:\apps";
+            var repo = "ntlm.test";
+
+            // When
+            var settings = repo.GetSettingsDirectories(path);
+
+            // Then
+            Assert.IsTrue(settings.Contains(@"c:\apps\ntlm\ntlm.test\ntlm.test.configuration"));
+        }
+
+
+        [TestMethod]
         public void GetClient()
         {
             // Given

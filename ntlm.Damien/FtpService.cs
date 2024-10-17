@@ -53,8 +53,6 @@
             foreach (var repository in repositories)
             {
 
-
-
                 try
                 {
                     ct.ThrowIfCancellationRequested();
@@ -103,7 +101,7 @@
                                             );
 
                                         DownloadFile(ftpFileUrl, filePath, Username, Password);
-                                        list.Add(new RepositoryInfo(repository) { ReleaseFileName = localFilePath });
+                                        list.Add(new RepositoryInfo(repository, filePath));
                                         Log($"Le fichier {line} a été téléchargé.");
                                     }
 
@@ -168,11 +166,29 @@
 
         }
 
-
-        public class RepositoryInfo(string name)
+        /// <summary>
+        /// DTO class for repository information.
+        /// </summary>
+        /// <param name="name"></param>
+        public class RepositoryInfo(string name, string releaseFileName)
         {
-            public string? Name { get; set; } = name;
-            public string? ReleaseFileName { get; set; }
+            /// <summary>
+            /// Name of the repository.
+            /// </summary>
+            public string Name { get; set; } = name;
+
+            /// <summary>
+            /// Local file path.
+            /// </summary>
+            public string ReleaseFileName { get; set; } = releaseFileName;
+
+            /// <summary>
+            /// If the repository information is valid.
+            /// </summary>
+            /// <returns></returns>
+            public bool IsValid() => 
+                !string.IsNullOrWhiteSpace(ReleaseFileName) &&
+                !string.IsNullOrWhiteSpace(Name);
         }
 
     }

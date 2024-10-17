@@ -63,7 +63,7 @@ namespace ntlm.Damien.Win
 
                 _ = int.TryParse(port.Text, out int p);
                 Main.Secrets.Ftp.Port = p;
-
+                Main.Github.BasePath = Main.GetBasePath();
                 await Main.Secrets.Handle(Main.CancellationTokenSource.Token);
 
             });

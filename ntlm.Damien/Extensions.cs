@@ -6,6 +6,41 @@
     {
 
         /// <summary>
+        /// Returns the possible directories to find settings.
+        /// </summary>
+        /// <param name="repository"></param>
+        /// <param name="basePath"></param>
+        /// <returns></returns>
+        public static string[] GetSettingsDirectories(
+            this string repository,
+            string basePath
+            ) => GithubService
+                .SettingsFolders
+                .Select(x => Path.Combine(
+                            basePath,
+                            repository.GetClient(),
+                            repository,
+                            $"{repository}.{x}"
+                            )).ToArray();
+
+
+        /// <summary>
+        /// Returns the repository path.
+        /// </summary>
+        /// <param name="repository"></param>
+        /// <param name="basePath"></param>
+        /// <returns></returns>
+        public static string GetRepositoryPath(
+            this string repository,
+            string basePath
+            )
+            => Path.Combine(
+                    basePath,
+                    repository.GetClient(),
+                    repository
+                    );
+
+        /// <summary>
         /// If the client matches one of the teams.
         /// </summary>
         /// <param name="client"></param>

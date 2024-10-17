@@ -18,6 +18,16 @@
 
         #region Init
 
+        /// <summary>
+        /// The possible folders in a solution where the settings can be stored
+        /// </summary>
+        public static readonly string[] SettingsFolders = [
+            "setting", 
+            "settings",
+            "configuration",
+            "configurations",
+            "config"
+            ];
 
         public GithubService(string basePath) : this(basePath, null)
         {
@@ -97,11 +107,7 @@
                 string repoName = GetRepositoryNameFromUrl(tUrl);
                 if (repoName.Equals("ntlm.damien", StringComparison.CurrentCultureIgnoreCase))
                     return;
-                string repoPath = Path.Combine(
-                    BasePath,
-                    repoName.GetClient(),
-                    repoName
-                    );
+                string repoPath = repoName.GetRepositoryPath(BasePath);
 
                 // Cloning
                 Log($"Clonage de {repoName}...");
