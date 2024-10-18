@@ -50,20 +50,3 @@ jobs:
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install GitHub CLI
-        run: sudo apt-get install gh
-
-      - name: List release assets
-        run: |
-          echo "Listing all assets for the release..."
-          gh release view ${{ github.ref }} --json assets --jq '.assets[] | {name, id}'
-
-      - name: Remove Source Code assets
-        run: |
-          ASSET_IDS=$(gh release view ${{ github.ref }} --json assets --jq '.assets[] | select(.name | test("Source code")) | .id')
-          for ASSET_ID in $ASSET_IDS; do
-            gh release delete-asset ${{ github.ref }} $ASSET_ID --yes
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Passer le token pour authentification
