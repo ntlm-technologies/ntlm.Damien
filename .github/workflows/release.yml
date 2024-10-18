@@ -1,93 +1,31 @@
-name: Create Release
-
-on:
-  push:
-    branches:
-      - main
+# À partir de l'étape 8 pour le débogage
 
 jobs:
   release:
     runs-on: windows-latest
 
     steps:
-      # 1. Checkout du dépôt ntlm.Damien
-      - name: Checkout repository content
-        uses: actions/checkout@v4  # Cloner le dépôt ntlm.Damien
-
-      # 2. Configurer .NET
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
-
-      # 3. Construire le projet
-      - name: Build project
-        run: dotnet publish ./ntlm.Damien.Win/ntlm.Damien.Win.csproj --configuration Release --output ./publish
-
-      # 4. Vérification du contenu publié
-      - name: Verify build output
-        run: |
-          echo "Listing contents of the publish directory:"
-          Get-ChildItem ./publish
-
-      # 5. Créer la release GitHub
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: 'v1.0.${{ github.run_number }}'
-          release_name: 'Release v1.0.${{ github.run_number }}'
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # 6. Journalisation de l'URL d'upload
-      - name: Log upload_url
-        run: |
-          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
-
-      # 7. Télécharger le fichier EXE dans la release
-      - name: Upload EXE to Release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./publish/NtlmGithubManager.exe
-          asset_name: NtlmGithubManager.exe
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       # 8. Checkout du dépôt ntlm-technologies/lgi
       - name: Checkout LGI repository
         uses: actions/checkout@v4
         with:
           repository: 'ntlm-technologies/lgi'  # Cloner le dépôt LGI
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}  # Utiliser le PAT que vous avez généré
           path: './lgi'
 
-      # 9. Récupérer le lien de téléchargement de l'EXE (en PowerShell)
-      - name: Get download link of the EXE
+      # 9. Simuler une modification du README.md (remplacez le lien EXE par autre chose pour les tests)
+      - name: Update README.md with a test link
         run: |
-          $asset_url = (gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | select(.name == "NtlmGithubManager.exe") | .browser_download_url')
-          echo "Download link: $asset_url"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        id: get_url
+          sed -i 's|Téléchargez .*|Téléchargez ici un lien test: https://example.com|' ./lgi/README.md
 
-      # 10. Mise à jour du README.md avec le nouveau lien
-      - name: Update README.md with the new link
-        run: |
-          sed -i 's|https://github.com/ntlm-technologies/ntlm.Damien.Release/raw/refs/heads/main/NtlmGithubManager.zip|${{ steps.get_url.outputs.asset_url }}|' ./lgi/README.md
-
-      # 11. Committer et pousser le README.md mis à jour
+      # 10. Committer et pousser le README.md modifié (test)
       - name: Commit and push updated README.md
         run: |
           git config --global user.email "mambojoel@gmail.com"
           git config --global user.name "Nicolas Taret"
           cd lgi
           git add README.md
-          git commit -m "Update README.md with link to the latest release of NtlmGithubManager.exe"
+          git commit -m "Update README.md with test link"
           git push
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}  # Utiliser PAT pour les permissions d'écriture
