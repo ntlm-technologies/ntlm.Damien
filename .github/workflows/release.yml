@@ -58,20 +58,16 @@ jobs:
           msiexec /i gh-cli.msi /quiet
           gh --version  # Vérification de l'installation
 
-      - name: List release assets
+      - name: List release assets with debug info
         run: |
           echo "Listing all assets for the release..."
-          gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | {name, id}'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Mappez GITHUB_TOKEN à GH_TOKEN pour authentification
-
-      - name: Remove Source Code assets (PowerShell)
-        run: |
           $asset_ids = gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | select(.name | test("Source code")) | .id'
+          echo "Assets found: $asset_ids"  # Debug : Afficher les IDs récupérés
           $asset_ids_array = $asset_ids -split "`n"
           foreach ($id in $asset_ids_array) {
+            echo "Attempting to delete asset with ID: $id"  # Debug : Afficher l'ID à supprimer
             gh release delete-asset v1.0.${{ github.run_number }} $id --yes
           }
-        shell: pwsh  # Spécifier PowerShell pour Windows
+        shell: pwsh
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Utiliser GH_TOKEN pour la suppression des assets
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Mappez GITHUB_TOKEN à GH_TOKEN pour authentification
