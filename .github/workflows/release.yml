@@ -53,7 +53,7 @@ jobs:
 
       # Installation de la CLI GitHub sur Windows
       - name: Install GitHub CLI
-        uses: actions/setup-gh-cli@v1
+        uses: actions/setup-gh@v1  # Utilisation de la CLI officielle
 
       - name: List release assets
         run: |
