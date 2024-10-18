@@ -23,13 +23,14 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1.1.0
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: 'v1.0.${{ github.run_number }}'
           release_name: 'Release v1.0.${{ github.run_number }}'
           draft: false
           prerelease: false
-          token: ${{ github.token }}  # Utilisation directe du token GitHub
+          token: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Upload EXE to Release
         uses: actions/upload-release-asset@v1
