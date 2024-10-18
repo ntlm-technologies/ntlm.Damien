@@ -3,7 +3,7 @@ name: Create Release
 on:
   push:
     branches:
-      - main  # Ou la branche que vous utilisez
+      - main
 
 jobs:
   release:
@@ -11,28 +11,28 @@ jobs:
 
     steps:
       - name: Checkout repository content
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Mise à jour vers v4
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4  # Mise à jour vers v4
         with:
           dotnet-version: '8.x'
 
       - name: Build project
-        run: dotnet publish --configuration Release --output ./publish
+        run: dotnet publish <votre_projet>.csproj --configuration Release  # Ajuster le projet à publier
 
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: 'v1.0.${{ github.run_number }}'
-          release_name: 'Release v1.0.${{ github.run_number }}'
+          name: 'Release v1.0.${{ github.run_number }}'
           draft: false
           prerelease: false
-          token: ${{ secrets.PAT_TOKEN }}  # Utilisation du PAT ici
+          token: ${{ secrets.PAT_TOKEN }}  # Ou réessayez avec ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload EXE to Release
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v2  # Mise à jour vers v2
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./publish/NtlmGithubManager.exe
