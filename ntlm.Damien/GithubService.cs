@@ -47,6 +47,7 @@
         public string[] Branches { get; set; } =
             [
             "to-dotnet-8",
+            "to-dotnet-4.5.1",
             "dev",
             "test"
             ];
