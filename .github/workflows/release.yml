@@ -48,3 +48,5 @@ jobs:
           asset_path: ./publish/NtlmGithubManager.exe
           asset_name: NtlmGithubManager.exe
           asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Passer explicitement le GITHUB_TOKEN ici
