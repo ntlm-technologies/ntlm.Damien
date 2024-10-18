@@ -11,20 +11,22 @@ jobs:
 
     steps:
       - name: Checkout repository content
-        uses: actions/checkout@v4  # Mise à jour vers v4
+        uses: actions/checkout@v4
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4  # Mise à jour vers v4
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
-      - name: Build project
-        run: dotnet publish ntlm.Damien.Win.csproj --configuration Release  # Ajuster le projet à publier
-
-      - name: Verify if build files exist
+      - name: List project files  # Étape de diagnostic
         run: |
-          echo "Checking if build files exist..."
-          ls -la ./publish
+          echo "Listing files in the current directory:"
+          ls -la
+          echo "Listing files in the src directory:"
+          ls -la ./src  # Si votre projet est dans un sous-répertoire
+
+      - name: Build project
+        run: dotnet publish ./ntlm.Damien.Win.csproj --configuration Release  # Ajuster le chemin du projet
 
       - name: Create GitHub Release
         id: create_release
@@ -34,11 +36,10 @@ jobs:
           name: 'Release v1.0.${{ github.run_number }}'
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}  # Ou réessayez avec ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload EXE to Release
         uses: actions/upload-release-asset@v1
-        continue-on-error: true  # Continue même en cas d'erreur
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./publish/NtlmGithubManager.exe
