@@ -34,6 +34,8 @@ jobs:
           release_name: 'Release v1.0.${{ github.run_number }}'
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Passer explicitement le token GitHub
 
       - name: Log upload_url  # Ajouter un log pour vérifier l'URL d'upload
         run: |
