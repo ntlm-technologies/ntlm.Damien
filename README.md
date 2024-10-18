@@ -1,8 +1,8 @@
-# Info
+# Introduction
 
-Outil de gestion des dépôts Github pour les clients de NTLM.
+Cette application windows permet de cloner l'ensemble des dépôts Github d'un client de NTLM.
 
-## Fonctionnalités
+# Fonctionnalités
 
 ## Fonctionnalités clientes
 
