@@ -1,17 +1,12 @@
-# Todo
-
-- Bug : 
-	- Secrets
-	- Annuler
-	- Secrets
-	- > ne se passe rien
-- Placer une copie de release dans chaque repository.
-
-
-
 # Info
 
-## Clonage
+Outil de gestion des dépôts Github pour les clients de NTLM.
+
+## Fonctionnalités
+
+## Fonctionnalités clientes
+
+### Clonage
 
 - Un `Client` représente un client comme LGI, BellesLettres, etc. 
 - Les dépôts sont nommés ainsi : {client}.{projet}
@@ -19,7 +14,9 @@
 - Après la validation du token, l'application découvre les équipes auxquelles appartient l'utilisateur.
 - Ces équipes ont une liste de dépôts. Ainsi l'application à l'utilisateur propose pour le clonage les clients de ces dépôts.
 
-## Équipes
+## Fonctionnalités NTLM
+
+### Admin : Équipes
 
 - Cette fonctionnalité permet de distribuer les dépôts dans chaque équipe.
 - Elle n'est disponible que pour les utilisateurs appartenant à une équipe ntlm.
@@ -35,20 +32,8 @@ Il s'agit donc de relancer la routine quand de nouveaux dépôts sont créés.
 
 Il suffit de créer des équipes {client}.dev ou {client}.admin puis de relancer la routine pour peupler de nouvelles équipes.  
 
-# Publish
+### Admin : Secrets
 
-- Publier ntlm.Damien.Win.
-- Zipper C:\Deploy\ntlm\ntlm.Damien
-
-## Obsolète
-
-Pour publier un unique .exe : 
-dotnet publish -c Release -r win-x64 --self-contained
-
-# Token
-
-mambojoel
-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
-
-mambojoel2
-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
+- Cette fonctionnalité télécharges les *.release.json via FTP.
+- Elle les dépose dans un dépôt ntlm.Damien.Secrets.
+- Elle place une copie dans leurs dépôts respectifs.
