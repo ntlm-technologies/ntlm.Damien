@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout repository content
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Utilisation de l'action standard pour cloner le dépôt
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v4  # Utilisation de l'action standard pour configurer .NET
         with:
           dotnet-version: '8.x'
 
@@ -24,22 +24,24 @@ jobs:
       - name: Verify build output
         run: |
           echo "Listing contents of the publish directory:"
-          Get-ChildItem ./publish
+          Get-ChildItem ./publish  # Lister les fichiers publiés pour vérification
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v1  # Action officielle pour créer une release
         with:
           tag_name: 'v1.0.${{ github.run_number }}'
           release_name: 'Release v1.0.${{ github.run_number }}'
           draft: false
-          prerelease: false
-          token: ${{ secrets.PAT_TOKEN }}  # Utiliser un PAT ici
+          prerelease: false  # Supprimer le token ici, le GITHUB_TOKEN est utilisé automatiquement
+
+      - name: Log upload_url  # Ajouter un log pour vérifier l'URL d'upload
+        run: echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
 
       - name: Upload EXE to Release
-        uses: svenstaro/upload-release-action@v2
+        uses: actions/upload-release-asset@v1  # Utilisation de l'action standard pour uploader l'asset
         with:
-          repo_token: ${{ secrets.PAT_TOKEN }}  # Utiliser le PAT pour l'upload
-          file: ./publish/NtlmGithubManager.exe
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  # Utiliser l'URL d'upload renvoyée par create_release
+          asset_path: ./publish/NtlmGithubManager.exe
           asset_name: NtlmGithubManager.exe
-          tag: 'v1.0.${{ github.run_number }}'
+          asset_content_type: application/octet-stream
