@@ -61,15 +61,17 @@ jobs:
       - name: List release assets
         run: |
           echo "Listing all assets for the release..."
-          gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | {name, id}'  # Utilisation du tag de la release
+          gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | {name, id}'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Mappez GITHUB_TOKEN à GH_TOKEN pour authentification
 
-      - name: Remove Source Code assets
+      - name: Remove Source Code assets (PowerShell)
         run: |
-          ASSET_IDS=$(gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | select(.name | test("Source code")) | .id')
-          for ASSET_ID in $ASSET_IDS; do
-            gh release delete-asset v1.0.${{ github.run_number }} $ASSET_ID --yes
-          done
+          $asset_ids = gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | select(.name | test("Source code")) | .id'
+          $asset_ids_array = $asset_ids -split "`n"
+          foreach ($id in $asset_ids_array) {
+            gh release delete-asset v1.0.${{ github.run_number }} $id --yes
+          }
+        shell: pwsh  # Spécifier PowerShell pour Windows
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Utiliser GH_TOKEN pour la suppression des assets
