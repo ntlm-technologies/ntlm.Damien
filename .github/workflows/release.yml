@@ -58,16 +58,10 @@ jobs:
           msiexec /i gh-cli.msi /quiet
           gh --version  # Vérification de l'installation
 
-      - name: List release assets with debug info
+      - name: List all release assets
         run: |
           echo "Listing all assets for the release..."
-          $asset_ids = gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | select(.name | test("Source code")) | .id'
-          echo "Assets found: $asset_ids"  # Debug : Afficher les IDs récupérés
-          $asset_ids_array = $asset_ids -split "`n"
-          foreach ($id in $asset_ids_array) {
-            echo "Attempting to delete asset with ID: $id"  # Debug : Afficher l'ID à supprimer
-            gh release delete-asset v1.0.${{ github.run_number }} $id --yes
-          }
+          gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | {name, id}'  # Lister tous les assets sans filtrage
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Mappez GITHUB_TOKEN à GH_TOKEN pour authentification
