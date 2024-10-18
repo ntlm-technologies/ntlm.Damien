@@ -1,4 +1,4 @@
-name: Create Issue Test
+name: Create Release
 
 on:
   push:
@@ -6,19 +6,40 @@ on:
       - main
 
 jobs:
-  test-github-token:
-    runs-on: ubuntu-latest
+  release:
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository content
         uses: actions/checkout@v4
 
-      - name: Create a test issue using GITHUB_TOKEN
-        uses: peter-evans/create-issue-from-file@v4
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
         with:
-          title: "Test issue for GITHUB_TOKEN"
-          content-filepath: ./test-issue.md
-          token: ${{ secrets.GITHUB_TOKEN }}
+          dotnet-version: '8.x'
 
-      - name: Verify token
-        run: echo "Testing GITHUB_TOKEN access"
+      - name: Build project
+        run: dotnet publish ./ntlm.Damien.Win/ntlm.Damien.Win.csproj --configuration Release --output ./publish
+
+      - name: Verify build output
+        run: |
+          echo "Listing contents of the publish directory:"
+          Get-ChildItem ./publish
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1  # Utiliser l'action officielle de création de release
+        with:
+          tag_name: 'v1.0.${{ github.run_number }}'
+          release_name: 'Release v1.0.${{ github.run_number }}'
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}  # Utiliser le GITHUB_TOKEN ici
+
+      - name: Upload EXE to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./publish/NtlmGithubManager.exe
+          asset_name: NtlmGithubManager.exe
+          asset_content_type: application/octet-stream
