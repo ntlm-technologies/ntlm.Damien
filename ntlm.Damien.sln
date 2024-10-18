@@ -10,9 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Info", "Info", "{D075C802-C659-45D7-877C-C78AB8F5152A}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		LICENSE.md = LICENSE.md
 		README.md = README.md
 		.github\workflows\release.yml = .github\workflows\release.yml
-		test-issue.md = test-issue.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ntlm.Damien.Tests", "ntlm.Damien.Tests\ntlm.Damien.Tests.csproj", "{7B0FF906-5616-4224-9E09-D8BA5B3F978D}"
