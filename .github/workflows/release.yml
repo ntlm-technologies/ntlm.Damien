@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout repository content
-        uses: actions/checkout@v4  # Utilisation de l'action standard pour cloner le dépôt
+        uses: actions/checkout@v4  # Action à jour
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4  # Utilisation de l'action standard pour configurer .NET
+        uses: actions/setup-dotnet@v4  # Action à jour
         with:
           dotnet-version: '8.x'
 
@@ -24,29 +24,29 @@ jobs:
       - name: Verify build output
         run: |
           echo "Listing contents of the publish directory:"
-          Get-ChildItem ./publish  # Lister les fichiers publiés pour vérification
+          Get-ChildItem ./publish
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1  # Action officielle pour créer une release
+        uses: actions/create-release@v3  # Utilisation de la version mise à jour
         with:
           tag_name: 'v1.0.${{ github.run_number }}'
           release_name: 'Release v1.0.${{ github.run_number }}'
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Passer explicitement le token GitHub
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log upload_url  # Ajouter un log pour vérifier l'URL d'upload
+      - name: Log upload_url
         run: |
-          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"  # Afficher l'URL d'upload
+          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
 
       - name: Upload EXE to Release
-        uses: actions/upload-release-asset@v1  # Utilisation de l'action standard pour uploader l'asset
+        uses: actions/upload-release-asset@v2  # Utilisation de la version mise à jour
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}  # Utiliser l'URL d'upload renvoyée par create_release
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./publish/NtlmGithubManager.exe
           asset_name: NtlmGithubManager.exe
           asset_content_type: application/octet-stream
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Passer explicitement le GITHUB_TOKEN ici
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
