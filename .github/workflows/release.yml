@@ -36,6 +36,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./publish/your_application.exe  # Assurez-vous que ce chemin est correct
+          asset_path: ./publish/NtlmGithubManager.exe  # Assurez-vous que ce chemin est correct
           asset_name: NtlmGithubManager.exe  # Nom sous lequel le fichier apparaîtra dans la Release
           asset_content_type: application/octet-stream
