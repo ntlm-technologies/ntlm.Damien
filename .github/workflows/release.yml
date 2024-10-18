@@ -34,7 +34,7 @@ jobs:
           name: 'Release v1.0.${{ github.run_number }}'
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Upload EXE to Release
         uses: actions/upload-release-asset@v1
