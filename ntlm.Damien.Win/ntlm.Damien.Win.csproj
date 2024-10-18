@@ -27,9 +27,6 @@
 	<ItemGroup>
 	  <Content Include="ntlm.ico" />
 	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\ntlm.Damien\ntlm.Damien.csproj" />
