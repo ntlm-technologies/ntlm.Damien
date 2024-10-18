@@ -8,14 +8,14 @@ on:
 jobs:
   release:
     runs-on: windows-latest
-
+    
     steps:
       - name: Checkout repository content
         uses: actions/checkout@v4
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
-        with:
+        with: 
           dotnet-version: '8.x'
 
       - name: Build project
@@ -37,9 +37,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload EXE to Release
-        uses: svenstaro/upload-release-action@v2
+        uses: actions/upload-release-asset@v1  # Upload le fichier dans la release.
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}  # Utilisation du token pour l'upload
-          file: ./publish/NtlmGithubManager.exe  # Chemin vers le fichier à uploader
-          asset_name: NtlmGithubManager.exe
-          tag: 'v1.0.${{ github.run_number }}'  # Tag de la release
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  # URL pour uploader l'asset.
+          asset_path: ./publish/NtlmGithubManager.exe  # Chemin vers l'exécutable.
+          asset_name: NtlmGithubManager.exe  # Nom sous lequel le fichier sera listé.
+          asset_content_type: application/octet-stream  # Type de contenu (binaire).
