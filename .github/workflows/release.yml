@@ -83,8 +83,8 @@ jobs:
       # 11. Committer et pousser le README.md mis à jour
       - name: Commit and push updated README.md
         run: |
-          git config --global user.email "votre.email@example.com"
-          git config --global user.name "Votre Nom"
+          git config --global user.email "mambojoel@gmail.com"
+          git config --global user.name "Nicolas Taret"
           cd lgi
           git add README.md
           git commit -m "Update README.md with link to the latest release of NtlmGithubManager.exe"
