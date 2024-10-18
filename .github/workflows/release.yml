@@ -24,7 +24,7 @@ jobs:
       - name: Verify build output
         run: |
           echo "Listing contents of the publish directory:"
-          Get-ChildItem D:\a\ntlm.Damien\ntlm.Damien\publish
+          Get-ChildItem ./publish  # Lister le contenu du répertoire relatif ./publish
 
       - name: Create GitHub Release
         id: create_release
@@ -40,6 +40,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: D:/a/ntlm.Damien/ntlm.Damien/publish/NtlmGithubManager.exe  # Chemin complet vers l'exécutable
+          asset_path: ./publish/NtlmGithubManager.exe  # Utiliser un chemin relatif au répertoire de travail actuel
           asset_name: NtlmGithubManager.exe
           asset_content_type: application/octet-stream
