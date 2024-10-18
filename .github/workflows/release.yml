@@ -18,15 +18,15 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      - name: List project files  # Étape de diagnostic
+      - name: List project files
         run: |
           echo "Listing files in the current directory:"
-          ls -la
+          Get-ChildItem
           echo "Listing files in the src directory:"
-          ls -la ./src  # Si votre projet est dans un sous-répertoire
+          Get-ChildItem ./src  # Si votre projet est dans un sous-répertoire
 
       - name: Build project
-        run: dotnet publish ./ntlm.Damien.Win.csproj --configuration Release  # Ajuster le chemin du projet
+        run: dotnet publish ./ntlm.Damien.Win.csproj --configuration Release
 
       - name: Create GitHub Release
         id: create_release
