@@ -22,8 +22,8 @@ jobs:
         run: |
           echo "Listing files in the current directory:"
           Get-ChildItem
-          echo "Listing files in the src directory:"
-          Get-ChildItem ./src  # Si votre projet est dans un sous-répertoire
+          echo "Listing files in the directory:"
+          Get-ChildItem ./  # Si votre projet est dans un sous-répertoire
 
       - name: Build project
         run: dotnet publish ./ntlm.Damien.Win.csproj --configuration Release
