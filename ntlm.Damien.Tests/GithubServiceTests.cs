@@ -7,7 +7,6 @@ namespace ntlm.Damien.Tests
     {
 
         public static readonly string Token = "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";
-        public static readonly string Token2 = "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";
         public static readonly string Directory = Environment.CurrentDirectory;
         public static readonly string Organization = "ntlm-technologies";
 
@@ -30,7 +29,7 @@ namespace ntlm.Damien.Tests
         public async Task GetUserTeams()
         {
             // Given
-            var github = new GithubService(Directory, Token2);
+            var github = new GithubService(Directory, Token);
 
             // When
             var teams = await github.GetUserTeamsAsync();

@@ -7,14 +7,14 @@ on:
 
 jobs:
   release:
-    runs-on: windows-latest  # Environnement Windows
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository content
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Action à jour pour cloner le dépôt
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v4  # Action à jour pour configurer .NET
         with:
           dotnet-version: '8.x'
 
@@ -28,7 +28,7 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v1  # Dernière version stable
         with:
           tag_name: 'v1.0.${{ github.run_number }}'
           release_name: 'Release v1.0.${{ github.run_number }}'
@@ -42,7 +42,7 @@ jobs:
           echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
 
       - name: Upload EXE to Release
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1  # Dernière version stable
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./publish/NtlmGithubManager.exe
@@ -50,18 +50,3 @@ jobs:
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Étape pour installer la CLI GitHub manuellement sur Windows
-      - name: Install GitHub CLI
-        run: |
-          curl -sSL https://github.com/cli/cli/releases/download/v2.33.0/gh_2.33.0_windows_amd64.msi -o gh-cli.msi
-          msiexec /i gh-cli.msi /quiet
-          gh --version  # Vérification de l'installation
-
-      - name: List all release assets
-        run: |
-          echo "Listing all assets for the release..."
-          gh release view v1.0.${{ github.run_number }} --json assets --jq '.assets[] | {name, id}'  # Lister tous les assets sans filtrage
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Mappez GITHUB_TOKEN à GH_TOKEN pour authentification
