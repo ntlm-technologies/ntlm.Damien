@@ -1,6 +1,8 @@
 ﻿namespace ntlm.Damien
 {
     using Microsoft.Extensions.Configuration;
+    using System.Reflection;
+    using System.Text;
 
     /// <summary>
     /// Settings
@@ -9,17 +11,31 @@
     {
         public Settings()
         {
-            new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .Build()
-                .Bind(this);
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "ntlm.Damien.Settings.json";
+
+            using Stream? stream = assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Ressource intégrée '{resourceName}' introuvable.");
+            if (stream != null)
+            {
+                using StreamReader reader = new (stream);
+                string jsonContent = reader.ReadToEnd();
+
+                var configuration = new ConfigurationBuilder()
+                    .AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(jsonContent)))
+                    .Build();
+
+                configuration.Bind(this);
+            }
+            else
+            {
+                throw new Exception($"Ressource intégrée '{resourceName}' introuvable.");
+            }
         }
 
         /// <summary>
         /// Organization name in Github.
         /// </summary>
-        public string Organization { get; set; } = "nntlm-technologies";
+        public string Organization { get; set; } = "ntlm-technologies";
 
         /// <summary>
         /// Github's url.
