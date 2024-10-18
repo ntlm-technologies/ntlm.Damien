@@ -1,31 +1,52 @@
-# À partir de l'étape 8 pour le débogage
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   release:
     runs-on: windows-latest
 
     steps:
-      # 8. Checkout du dépôt ntlm-technologies/lgi
-      - name: Checkout LGI repository
-        uses: actions/checkout@v4
+      - name: Checkout repository content
+        uses: actions/checkout@v4  # Action à jour pour cloner le dépôt
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4  # Action à jour pour configurer .NET
         with:
-          repository: 'ntlm-technologies/lgi'  # Cloner le dépôt LGI
-          token: ${{ secrets.PAT_TOKEN }}  # Utiliser le PAT que vous avez généré
-          path: './lgi'
+          dotnet-version: '8.x'
 
-      # 9. Simuler une modification du README.md (remplacez le lien EXE par autre chose pour les tests)
-      - name: Update README.md with a test link
-        run: |
-          sed -i 's|Téléchargez .*|Téléchargez ici un lien test: https://example.com|' ./lgi/README.md
+      - name: Build project
+        run: dotnet publish ./ntlm.Damien.Win/ntlm.Damien.Win.csproj --configuration Release --output ./publish
 
-      # 10. Committer et pousser le README.md modifié (test)
-      - name: Commit and push updated README.md
+      - name: Verify build output
         run: |
-          git config --global user.email "mambojoel@gmail.com"
-          git config --global user.name "Nicolas Taret"
-          cd lgi
-          git add README.md
-          git commit -m "Update README.md with test link"
-          git push
+          echo "Listing contents of the publish directory:"
+          Get-ChildItem ./publish
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1  # Dernière version stable
+        with:
+          tag_name: 'v1.0.${{ github.run_number }}'
+          release_name: 'Release v1.0.${{ github.run_number }}'
+          draft: false
+          prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}  # Utiliser PAT pour les permissions d'écriture
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log upload_url
+        run: |
+          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
+
+      - name: Upload EXE to Release
+        uses: actions/upload-release-asset@v1  # Dernière version stable
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./publish/NtlmGithubManager.exe
+          asset_name: NtlmGithubManager.exe
+          asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
