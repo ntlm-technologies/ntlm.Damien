@@ -19,7 +19,7 @@ jobs:
           dotnet-version: '8.x'  # Spécifiez la version de .NET que vous utilisez
 
       - name: Build project
-        run: dotnet publish --configuration Release --output bin/Release/net8.0-windows/publish  # Répertoire de sortie explicite
+        run: dotnet publish --configuration Release --output ./publish  # Répertoire temporaire dans l'environnement GitHub Actions
 
       - name: Create GitHub Release
         id: create_release
@@ -36,4 +36,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: bin/Release/net8.0-w
+          asset_path: ./publish/your_application.exe  # Assurez-vous que ce chemin est correct
+          asset_name: NtlmGithubManager.exe  # Nom sous lequel le fichier apparaîtra dans la Release
+          asset_content_type: application/octet-stream
