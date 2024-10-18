@@ -7,14 +7,14 @@ on:
 
 jobs:
   release:
-    runs-on: windows-latest
+    runs-on: windows-latest  # Assurez-vous que cela utilise un environnement Windows
 
     steps:
       - name: Checkout repository content
-        uses: actions/checkout@v4  # Action à jour pour cloner le dépôt
+        uses: actions/checkout@v4
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4  # Action à jour pour configurer .NET
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
@@ -28,7 +28,7 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1  # Dernière version stable
+        uses: actions/create-release@v1
         with:
           tag_name: 'v1.0.${{ github.run_number }}'
           release_name: 'Release v1.0.${{ github.run_number }}'
@@ -42,7 +42,7 @@ jobs:
           echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
 
       - name: Upload EXE to Release
-        uses: actions/upload-release-asset@v1  # Dernière version stable
+        uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./publish/NtlmGithubManager.exe
@@ -50,3 +50,21 @@ jobs:
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Installation de la CLI GitHub sur Windows
+      - name: Install GitHub CLI
+        uses: actions/setup-gh-cli@v1
+
+      - name: List release assets
+        run: |
+          echo "Listing all assets for the release..."
+          gh release view ${{ github.ref }} --json assets --jq '.assets[] | {name, id}'
+
+      - name: Remove Source Code assets
+        run: |
+          ASSET_IDS=$(gh release view ${{ github.ref }} --json assets --jq '.assets[] | select(.name | test("Source code")) | .id')
+          for ASSET_ID in $ASSET_IDS; do
+            gh release delete-asset ${{ github.ref }} $ASSET_ID --yes
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Passer le token pour authentification
