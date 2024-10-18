@@ -50,3 +50,11 @@ jobs:
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove Source Code assets
+        run: |
+          echo "Removing source code files..."
+          gh release delete-asset ${{ steps.create_release.outputs.upload_url }} Source\ code\ \(zip\) --repo ${{ github.repository }}
+          gh release delete-asset ${{ steps.create_release.outputs.upload_url }} Source\ code\ \(tar.gz\) --repo ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Passer le token pour authentification
