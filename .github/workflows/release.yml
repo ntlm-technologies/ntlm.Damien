@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    runs-on: windows-latest  # Assurez-vous que cela utilise un environnement Windows
+    runs-on: windows-latest  # Environnement Windows
 
     steps:
       - name: Checkout repository content
@@ -51,9 +51,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Installation de la CLI GitHub sur Windows
+      # Étape pour installer la CLI GitHub manuellement sur Windows
       - name: Install GitHub CLI
-        uses: actions/setup-gh@v1  # Utilisation de la CLI officielle
+        run: |
+          curl -sSL https://github.com/cli/cli/releases/download/v2.33.0/gh_2.33.0_windows_amd64.msi -o gh-cli.msi
+          msiexec /i gh-cli.msi /quiet
+          gh --version  # Vérification de l'installation
 
       - name: List release assets
         run: |
