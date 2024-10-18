@@ -19,7 +19,12 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build project
-        run: dotnet publish ./ntlm.Damien.Win/ntlm.Damien.Win.csproj --configuration Release
+        run: dotnet publish ./ntlm.Damien.Win/ntlm.Damien.Win.csproj --configuration Release --output ./publish  # Spécifie explicitement le répertoire de sortie
+
+      - name: Verify build output
+        run: |
+          echo "Listing contents of the publish directory:"
+          Get-ChildItem ./publish
 
       - name: Create GitHub Release
         id: create_release
@@ -35,6 +40,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./publish/NtlmGithubManager.exe
+          asset_path: ./publish/NtlmGithubManager.exe  # Chemin mis à jour vers le fichier généré dans ./publish
           asset_name: NtlmGithubManager.exe
           asset_content_type: application/octet-stream
