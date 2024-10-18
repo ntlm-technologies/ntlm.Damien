@@ -62,6 +62,8 @@ jobs:
         run: |
           echo "Listing all assets for the release..."
           gh release view ${{ github.ref }} --json assets --jq '.assets[] | {name, id}'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Mappez GITHUB_TOKEN à GH_TOKEN pour authentification
 
       - name: Remove Source Code assets
         run: |
@@ -70,4 +72,4 @@ jobs:
             gh release delete-asset ${{ github.ref }} $ASSET_ID --yes
           done
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Passer le token pour authentification
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Utiliser GH_TOKEN pour la suppression des assets
