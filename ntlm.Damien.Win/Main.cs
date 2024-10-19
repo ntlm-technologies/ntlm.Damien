@@ -1,26 +1,65 @@
 namespace ntlm.Damien.Win
 {
     using Microsoft.Win32;
+    using Octokit;
+    using System.IO;
     using System.Linq;
+    using System.Net.Http;
+    using System.Windows.Forms;
 
     public partial class Main : Form
     {
-        private CancellationTokenSource cancellationTokenSource = new();
+        public CancellationTokenSource CancellationTokenSource = new();
 
         /// <summary>
         /// Github service handling the clone operations.
         /// </summary>
-        public GithubService Github { get; } = new GithubService();
+        public GithubService Github { get; private set; }
+
+        /// <summary>
+        /// Secret service .
+        /// </summary>
+        public SecretService Secrets { get; private set; }
+
+        public GithubService InitGithub()
+        {
+            var gs = new GithubService()
+            {
+                Logger = new TextBoxWriter(eventConsole)
+            };
+            gs.ProgressChanged += ProgressChanged;
+            return gs;
+        }
+
+        public SecretService InitSecrets()
+        {
+            var secrets = new SecretService(Github, new FtpService()
+            {
+                Logger = new TextBoxWriter(eventConsole)
+            })
+            {
+                Logger = new TextBoxWriter(eventConsole)
+            };
+            secrets.ProgressChanged += ProgressChanged;
+            secrets.Ftp.ProgressChanged += ProgressChanged;
+            return secrets;
+        }
 
         public Main()
         {
+
             InitializeComponent();
+            Github = InitGithub();
+            Secrets = InitSecrets();
 
+            userName.Visible = false;
             mainPanel.Visible = false;
-            teams.Visible = false;
+            avatar.Visible = false;
 
-            Github.Logger = new TextBoxWriter(eventConsole);
-            Github.ProgressChanged += ProgressChanged;
+
+            avatar.SizeMode = PictureBoxSizeMode.StretchImage; // Ajuste l'image exactement aux dimensions spécifiées
+            avatar.BorderStyle = BorderStyle.FixedSingle; // Ajout d'une bordure pour visualiser les dimensions
+            avatar.Dock = DockStyle.None; // Empêche le PictureBox de prendre toute la place du formulaire
 
             HandleCloneVisibility();
 
@@ -30,8 +69,12 @@ namespace ntlm.Damien.Win
 
             basePath.Text = GetFromRegistry(nameof(basePath));
             token.Text = GetFromRegistry(nameof(token));
-            branches.Text = GetFromRegistry(nameof(branches), "to-dotnet-8, dev, test");
+            branches.Text = GetFromRegistry(nameof(branches),
+                string.Join(',', Github.Settings.PreferedBranches)
+                );
 
+            if (!string.IsNullOrWhiteSpace(token.Text))
+                connect.PerformClick();
 
             Image reducedQuestionMark = ResizeImage(SystemIcons.Question.ToBitmap(), 20, 20);
 
@@ -77,11 +120,12 @@ namespace ntlm.Damien.Win
             clone.Enabled = !string.IsNullOrWhiteSpace(basePath.Text);
         }
 
-        private async void clone_Click(object sender, EventArgs e)
+        private async void Clone_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
             SaveToRegistry(nameof(token), token.Text);
             SaveToRegistry(nameof(branches), branches.Text);
+            SaveToRegistry(nameof(basePath), basePath.Text);
             Work();
             Github.BasePath = basePath.Text;
             Github.Token = token.Text;
@@ -89,7 +133,7 @@ namespace ntlm.Damien.Win
             Github.Branches = branches.Text.Split(',').Select(b => b.Trim()).ToArray();
             await Github.CloneClientsAsync(
                 clients.CheckedItems.Cast<string>().ToArray(),
-                cancellationTokenSource.Token
+                CancellationTokenSource.Token
                 );
             Done();
             ShowWarningsVisibility();
@@ -117,11 +161,11 @@ namespace ntlm.Damien.Win
             }
         }
 
-        private void Done()
+        public void Done()
         {
             Cursor = Cursors.Default;
             connect.Enabled = true;
-            teams.Enabled = true;
+            admin.Enabled = true;
             clone.Enabled = true;
             token.Enabled = true;
             basePath.Enabled = true;
@@ -130,13 +174,16 @@ namespace ntlm.Damien.Win
             branches.Enabled = true;
             clients.Enabled = true;
             fetch.Enabled = true;
+            if (Admin != null)
+                foreach (var item in Admin.Controls.OfType<Control>())
+                    item.Enabled = true;
         }
 
-        private void Work()
+        public void Work()
         {
             Cursor = Cursors.WaitCursor;
             connect.Enabled = false;
-            teams.Enabled = false;
+            admin.Enabled = false;
             clone.Enabled = false;
             token.Enabled = false;
             basePath.Enabled = false;
@@ -145,11 +192,20 @@ namespace ntlm.Damien.Win
             branches.Enabled = false;
             clients.Enabled = false;
             fetch.Enabled = false;
+            if (Admin != null)
+                foreach (var item in Admin.Controls.OfType<Control>())
+                    item.Enabled = false;
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
-            cancellationTokenSource?.Cancel();
+            Cancel();
+        }
+
+        public void Cancel()
+        {
+            CancellationTokenSource?.Cancel();
+            CancellationTokenSource = new();
         }
 
         public const string RegistryKey = @"Software\ntlm.Damien";
@@ -228,34 +284,69 @@ namespace ntlm.Damien.Win
             SaveToRegistry(nameof(fetch), fetch.Checked.ToString());
         }
 
-        private async void connect_Click(object sender, EventArgs e)
+        private async void Connect_Click(object sender, EventArgs e)
         {
+            mainPanel.Visible = false;
+            Github = InitGithub();
+            Secrets = InitSecrets();
+
             token.Enabled = false;
             connect.Enabled = false;
             Cursor = Cursors.WaitCursor;
             var r = await Github.ValidateToken(token.Text);
+            SaveToRegistry(nameof(token), token.Text);
             if (r)
             {
                 await BindClients();
                 mainPanel.Visible = true;
-                teams.Visible = true;
+                admin.Visible =
+                    ((await Github.GetUserTeamsAsync()).IsOwner(Github.Settings))
+                    ;
+                var user = await Github.GetUser();
+                userName.Text = user?.Login;
+                userName.Visible = true;
+                LoadAvatar(user);
+                avatar.Visible = true;
+                mainPanel.Visible = true;
             }
             else
             {
+                MessageBox.Show("Token invalide.");
                 mainPanel.Visible = false;
-                teams.Visible = false;
+                admin.Visible = false;
             }
             token.Enabled = true;
             connect.Enabled = true;
             Cursor = Cursors.Default;
         }
 
+        private async void LoadAvatar(User? user)
+        {
+            if (user == null) return;
+            try
+            {
+                var httpClient = new HttpClient();
+
+                // Télécharger les données de l'image avec HttpClient
+                var imageBytes = await httpClient.GetByteArrayAsync(user.AvatarUrl);
+
+                // Convertir les données en un flux d'image
+                using var ms = new System.IO.MemoryStream(imageBytes);
+                avatar.Image = Image.FromStream(ms);
+            }
+            catch (Exception)
+            {
+                //MessageBox.Show($"Erreur lors du chargement de l'image : {ex.Message}");
+            }
+        }
+
+
         private async Task BindClients()
         {
             clients.Items.Clear();
             var clientList = await Github.GetClientsAsync();
             var teamList = await Github.GetTeamsAsync();
-            var isNtlm = teamList.Any(t => t.IsNtlm());
+            var isNtlm = teamList.Any(t => t.IsOwner(Github.Settings));
             foreach (var client in clientList)
             {
                 if (isNtlm || client.HasTeam(teamList))
@@ -267,11 +358,31 @@ namespace ntlm.Damien.Win
             }
         }
 
-        private async void teams_Click(object sender, EventArgs e)
+        //public async Task ApplyPermissionsAsync()
+        //{
+        //    Work();
+        //    await Github.ApplyPermissionsAsync(CancellationTokenSource.Token);
+        //    Done();
+        //}
+
+        //public async Task DowloadSecretsAsync()
+        //{
+        //    Work();
+        //    await Secrets.Handle(CancellationTokenSource.Token);
+        //    Done();
+        //}
+
+
+        private void Admin_Click(object sender, EventArgs e)
         {
-            Work();
-            await Github.ApplyPermissionsAsync(cancellationTokenSource.Token);
-            Done();
+            Admin ??= new Admin(this);
+            if (Admin.IsDisposed) Admin = new Admin(this);
+            Admin.Show();
         }
+
+        public string GetBasePath() => basePath.Text;
+
+        public Admin? Admin { get; private set; }
+
     }
 }

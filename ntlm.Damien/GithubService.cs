@@ -3,9 +3,9 @@
 
     using LibGit2Sharp;
     using LibGit2Sharp.Handlers;
-    using Microsoft.Extensions.Configuration;
     using Octokit;
     using System;
+    using System.Collections.Generic;
     using System.Net.Http.Headers;
     using L = LibGit2Sharp;
     using O = Octokit;
@@ -13,31 +13,21 @@
     /// <summary>
     /// Represents a github service to clone repositories to local drive.
     /// </summary>
-    public class GithubService
+    public class GithubService(string basePath, string? token) : BaseService
     {
 
         #region Init
 
         /// <summary>
-        /// NTLM Organization.
+        /// The possible folders in a solution where the settings can be stored
         /// </summary>
-        public const string Organization = "ntlm-technologies";
-
-        /// <summary>
-        /// Github's url.
-        /// </summary>
-        public const string GithubUrl = "https://github.com/";
-
-        /// <summary>
-        /// Github repository to store client's settings.
-        /// </summary>
-        public const string ClientSettingsRepository = "https://raw.githubusercontent.com/ntlm-technologies/ntlm.Damien.Data/refs/heads/main/";
-
-        public GithubService(string basePath, string? token)
-        {
-            BasePath = basePath;
-            Token = token;
-        }
+        public static readonly string[] SettingsFolders = [
+            "setting", 
+            "settings",
+            "configuration",
+            "configurations",
+            "config"
+            ];
 
         public GithubService(string basePath) : this(basePath, null)
         {
@@ -54,66 +44,30 @@
         /// 
         /// Will try to checkout dev if exists. I not, dev2 if exists, etc.
         /// </summary>
-        public string[] Branches { get; set; } = ["to-dotnet-8", "dev", "test"];
+        public string[] Branches { get; set; } = [];
 
 
         /// <summary>
         /// Github personal access token.
         /// </summary>
-        public string? Token { get; set; }
+        public string? Token { get; set; } = token;
+
+        /// <summary>
+        /// Settings.
+        /// </summary>
+        public Settings Settings { get; } = new Settings();
 
         /// <summary>
         /// Local directory.
         /// </summary>
-        public string BasePath { get; set; }
+        public string BasePath { get; set; } = basePath;
 
 
 
         #endregion
 
-        #region Progress
 
-        public event EventHandler<int> ProgressChanged = delegate { };
 
-        protected virtual void OnProgressChanged(object sender, int progress)
-        {
-            ProgressChanged?.Invoke(sender, progress);
-        }
-
-        public event EventHandler<string> Warned = delegate { };
-
-        #endregion
-
-        #region Log
-
-        /// <summary>
-        /// The warnings.
-        /// </summary>
-        public static List<string> Warnings { get; } = [];
-
-        /// <summary>
-        /// Warns.
-        /// </summary>
-        /// <param name="text"></param>
-        public void Warn(string text)
-        {
-            Log(text);
-            Warnings.Add(text);
-        }
-
-        /// <summary>
-        /// Log progress.
-        /// </summary>
-        /// <param name="text"></param>
-        public void Log(string text)
-            => Logger?.WriteLine(text);
-
-        /// <summary>
-        /// Logger.
-        /// </summary>
-        public TextWriter Logger { get; set; } = Console.Out;
-
-        #endregion
 
         #region Clone
 
@@ -140,17 +94,15 @@
         /// Clones a repository to local directory.
         /// </summary>
         /// <param name="urls">Urls of Github directories.</param>
-        public void Clone(string url)
+        public void Clone(string repo)
         {
-            var tUrl = TransformUrl(url);
+            var tUrl = TransformUrl(repo);
             try
             {
                 string repoName = GetRepositoryNameFromUrl(tUrl);
-                string repoPath = Path.Combine(
-                    BasePath,
-                    repoName.GetClient(),
-                    repoName
-                    );
+                if (repoName.Equals("ntlm.damien", StringComparison.CurrentCultureIgnoreCase))
+                    return;
+                string repoPath = repoName.GetRepositoryPath(BasePath);
 
                 // Cloning
                 Log($"Clonage de {repoName}...");
@@ -166,14 +118,16 @@
                     cloneOptions.FetchOptions.CredentialsProvider = GetCredentialsHandler();
 
                     L.Repository.Clone(tUrl, repoPath, cloneOptions);
-                    Checkout(repoPath);
                     Log($"Cloné avec succès : {repoName}");
                 }
+                Checkout(repoPath);
 
             }
             catch (Exception ex)
             {
                 Warn($"Erreur lors du clonage de {tUrl}: {ex.Message}");
+                if (ex.InnerException != null)
+                    Warn($"Détails : {ex.InnerException.Message}");
             }
 
         }
@@ -195,8 +149,8 @@
         /// <summary>
         /// Clones a list repositories to local directory.
         /// </summary>
-        /// <param name="urls">Urls of Github directories.</param>
-        public async Task CloneAsync(string[] urls, CancellationToken ct)
+        /// <param name="repos">Urls of Github directories.</param>
+        public async Task CloneAsync(string[] repos, CancellationToken ct)
         {
             Warnings.Clear();
 
@@ -204,26 +158,34 @@
 
             int i = 0;
 
-            try
-            {
-                foreach (var url in urls)
+
+            await Task.Run(() => {
+
+                try
                 {
-                    ct.ThrowIfCancellationRequested();
+                    foreach (var repo in repos)
+                    {
+                        ct.ThrowIfCancellationRequested();
 
-                    await Task.Run(() => Clone(url));
+                        Clone(repo);
 
-                    i++;
-                    OnProgressChanged(this, (i * 100) / urls.Length);
+                        i++;
+                        OnProgressChanged(this, (i * 100) / repos.Length);
+                    }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                Log("Clonage annulé par l'utilisateur.");
-            }
-            catch (Exception ex)
-            {
-                Log($"Erreur lors du clonage : {ex.Message}");
-            }
+                catch (OperationCanceledException)
+                {
+                    Log("Clonage annulé par l'utilisateur.");
+                }
+                catch (Exception ex)
+                {
+                    Log($"Erreur lors du clonage : {ex.Message}");
+                }
+
+
+            }, ct);
+
+          
             Log("Terminé.");
         }
 
@@ -252,7 +214,7 @@
                     repo.Stashes.Add(repo.Config.BuildSignature(DateTimeOffset.Now), "Sauvegarde temporaire");
                 }
 
-                foreach (var branchName in Branches)
+                foreach (var branchName in Branches.Where(x => !string.IsNullOrWhiteSpace(x)))
                 {
                     // Vérifier si la branche existe localement
                     var branch = repo.Branches[branchName];
@@ -260,7 +222,9 @@
                     if (branch == null)
                     {
                         // Si la branche n'existe pas localement, vérifiez si elle existe sur le dépôt distant
-                        var remoteBranch = repo.Branches[$"origin/{branchName}"];
+                        var remoteBranch = repo
+                            .Branches
+                            .FirstOrDefault(x => x.FriendlyName == $"origin/{branchName}");
                         if (remoteBranch != null)
                         {
                             // Créer la branche locale à partir de la branche distante
@@ -359,15 +323,8 @@
         /// <param name="repo"></param>
         /// <returns></returns>
         public virtual string TransformUrl(string repo) =>
-            $"{GithubUrl}{Organization}/{repo}";
-
-        /// <summary>
-        /// Transforms the directory.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public virtual string TransformDirectory(string repoName) => repoName;
-
+            $"{Settings.GithubUrl}{Settings.Organization}/{repo}";
+        
         /// <summary>
         /// Returns the name of a repository from its url.
         /// </summary>
@@ -392,8 +349,16 @@
 
             if (teams == null)
             {
-                var client = GetGitHubClient();
-                teams = (await client.Organization.Team.GetAll(Organization)).ToArray();
+                try
+                {
+                    var client = GetGitHubClient();
+                    teams = [.. (await client.Organization.Team.GetAll(Settings.Organization))];
+                }
+                catch (Exception ex)
+                {
+                    Warn($"Erreur lors de l'importation des équipes : {ex.Message}");
+                    throw;
+                }
             }
             return teams;
         }
@@ -404,15 +369,14 @@
         /// <returns></returns>
         public GitHubClient GetGitHubClient()
         {
-            if (gitHubClient == null)
+            gitHubClient ??= new GitHubClient(new O.ProductHeaderValue("ntlm.Damien"))
             {
-                gitHubClient = new GitHubClient(new O.ProductHeaderValue("ntlm.Damien"))
-                {
-                    Credentials = new O.Credentials(Token)
-                };
-            }
+                Credentials = new O.Credentials(Token)
+            };
             return gitHubClient;
         }
+
+        private Team[]? userTeams;
 
         /// <summary>
         /// Returns the teams of a user.
@@ -421,86 +385,172 @@
         /// <returns></returns>
         public async Task<Team[]> GetUserTeamsAsync(string userName)
         {
-            var userTeams = new List<Team>();
-
-            var client = GetGitHubClient();
-
-            try
+            if (userTeams == null)
             {
-                // Récupérer toutes les équipes de l'organisation
-                var organizationTeams = await client.Organization.Team.GetAll(Organization);
+                var list = new List<Team>();
 
-                // Utilisation de HttpClient pour effectuer des requêtes API manuelles
-                using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Organization, "1.0"));
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+                var client = GetGitHubClient();
 
-                foreach (var team in organizationTeams)
+                try
                 {
-                    // Construire l'URL pour vérifier l'appartenance de l'utilisateur à une équipe
-                    var requestUrl = $"https://api.github.com/teams/{team.Id}/memberships/{userName}";
+                    // Récupérer toutes les équipes de l'organisation
+                    var organizationTeams = await client.Organization.Team.GetAll(Settings.Organization);
 
-                    // Envoyer la requête GET pour vérifier l'appartenance de l'utilisateur
-                    var response = await httpClient.GetAsync(requestUrl);
+                    // Utilisation de HttpClient pour effectuer des requêtes API manuelles
+                    using var httpClient = new HttpClient();
+                    httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Settings.Organization, "1.0"));
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
 
-                    // Vérifier si la réponse indique que l'utilisateur est membre de l'équipe
-                    if (response.IsSuccessStatusCode)
+                    foreach (var team in organizationTeams)
                     {
-                        userTeams.Add(team);
+                        // Construire l'URL pour vérifier l'appartenance de l'utilisateur à une équipe
+                        var requestUrl = $"https://api.github.com/teams/{team.Id}/memberships/{userName}";
+
+                        // Envoyer la requête GET pour vérifier l'appartenance de l'utilisateur
+                        var response = await httpClient.GetAsync(requestUrl);
+
+                        // Vérifier si la réponse indique que l'utilisateur est membre de l'équipe
+                        if (response.IsSuccessStatusCode)
+                        {
+                            list.Add(team);
+                        }
+                    }
+
+                    // Afficher les équipes
+                    Log($"L'utilisateur {userName} appartient aux équipes suivantes dans l'organisation {Settings.Organization} :");
+                    foreach (var team in list)
+                    {
+                        Log($"- {team.Name}");
                     }
                 }
-
-                // Afficher les équipes
-                Log($"L'utilisateur {userName} appartient aux équipes suivantes dans l'organisation {Organization} :");
-                foreach (var team in userTeams)
+                catch (Exception ex)
                 {
-                    Log($"- {team.Name}");
+                    Warn($"Erreur : {ex.Message}");
                 }
-            }
-            catch (Exception ex)
-            {
-                Warn($"Erreur : {ex.Message}");
+
+                userTeams = [.. list];
             }
 
-            return userTeams.ToArray();
+
+            return userTeams;
         }
+
+
+        /// <summary>
+        /// Returns the teams of a user from its token.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<Team[]> GetUserTeamsAsync()
+        {
+            if (userTeams == null && Token != null)
+            {
+                var list = new List<Team>();
+
+                var client = GetGitHubClient();
+
+                var userLogin = (await GetUser())?.Login;
+
+                try
+                {
+                    // Récupération des équipes de l'organisation
+                    var teams = await client.Organization.Team.GetAll(Settings.Organization);
+
+                    // Filtrer les équipes auxquelles appartient l'utilisateur
+                    foreach (var team in teams)
+                    {
+                        var allMembers = await client.Organization.Team.GetAllMembers(team.Id);
+
+                        // Vérification si l'utilisateur appartient à l'équipe
+                        if (allMembers.Any(member => member.Login.Equals(userLogin, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            list.Add(team);
+                        }
+                    }
+
+                    Log($"Vous appartenez {(teams.Count > 1 ? "aux équipes" : "à l'équipe")} suivante{(teams.Count > 1 ? "s" : "")}:");
+                    foreach (var team in list)
+                        Log($" - {team.Name}");
+                }
+                catch (Exception ex)
+                {
+                    Warn($"Erreur : {ex.Message}");
+                }
+
+                userTeams = [.. list];
+            }
+            else
+            {
+                userTeams = [];
+            }
+
+
+            return userTeams;
+        }
+
+        private User? user;
+
+        /// <summary>
+        /// Returns the user name.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<User?> GetUser()
+        {
+            if (user == null)
+            {
+                var client = GetGitHubClient();
+
+                try
+                {
+                    // Récupération de l'utilisateur courant basé sur le token
+                    user = await client.User.Current();
+
+                    Log($"Bienvenue {user.Login} !");
+                }
+                catch (Exception ex)
+                {
+                    Warn($"Erreur : {ex.Message}");
+                }
+
+            }
+            return user;
+        }
+
+
+        private readonly Dictionary<string, string[]> teamRepositories = [];
 
         /// <summary>
         /// Returns the repositories of a team.
         /// </summary>
         /// <param name="teamName"></param>
         /// <returns></returns>
-        public async Task<O.Repository[]> GetTeamRepositoriesAsync(string teamName)
+        public async Task<string[]> GetTeamRepositoriesAsync(string teamName)
         {
-            O.Repository[] repositories = Array.Empty<O.Repository>();
-
-            var client = GetGitHubClient();
-
-            try
+            if (!teamRepositories.TryGetValue(teamName, out string[]? value))
             {
                 var team = await GetTeam(teamName);
-
+                string[] repos = [];
                 if (team != null)
                 {
-                    Log($"Équipe : {team.Name}");
-
-                    // Récupérer les dépôts associés à l'équipe
-                    repositories = (await client.Organization.Team.GetAllRepositories(team.Id)).ToArray();
-
-                    // Afficher les dépôts et leurs permissions
-                    foreach (var repo in repositories)
+                    var client = GetGitHubClient();
+                    try
                     {
-                        // Affiche le nom du dépôt et les permissions de l'équipe
-                        Log($"  - Dépôt : {repo.Name} (Permissions : {repo.Permissions})");
+                        repos = (await client.Organization.Team.GetAllRepositories(team.Id)).Select(x => x.Name).ToArray();
                     }
-                }
-            }
-            catch (Exception ex)
-            {
-                Warn($"Erreur : {ex.Message}");
-            }
+                    catch (Exception ex)
+                    {
+                        Warn($"Erreur : {ex.Message}");
+                    }
 
-            return repositories;
+                }
+                teamRepositories[teamName] = repos;
+                return repos;
+            }
+            else
+            {
+                return value;
+            }
         }
 
         /// <summary>
@@ -555,7 +605,7 @@
                         // Ajouter le repository à l'équipe avec les permissions spécifiées
                         await client.Organization.Team.AddRepository(
                             team.Id,
-                            Organization,
+                            Settings.Organization,
                             repoName,
                             permissionRequest
                         );
@@ -585,6 +635,7 @@
             params string[] repositories)
         {
             var client = GetGitHubClient();
+            var teamRepos = await GetTeamRepositoriesAsync(teamName);
 
             try
             {
@@ -592,14 +643,12 @@
 
                 if (team == null)
                 {
-                    Warn($"Équipe avec le slug '{teamName}' introuvable.");
+                    Warn($"Équipe '{teamName}' introuvable.");
                     return;
                 }
 
-                Log($"Retrait des dépôts à l'équipe : {team.Name}");
-
                 // Pour chaque repository, ajouter l'équipe avec les permissions spécifiées
-                foreach (var repoName in repositories)
+                foreach (var repoName in repositories.Where(x => teamRepos.Contains(x)))
                 {
                     try
                     {
@@ -608,7 +657,7 @@
                         // Ajouter le repository à l'équipe avec les permissions spécifiées
                         await client.Organization.Team.RemoveRepository(
                             team.Id,
-                            Organization,
+                            Settings.Organization,
                             repoName
                         );
 
@@ -642,7 +691,7 @@
 
                 try
                 {
-                    repositories = (await client.Repository.GetAllForOrg(Organization)).ToArray();
+                    repositories = [.. (await client.Repository.GetAllForOrg(Settings.Organization))];
 
                 }
                 catch (Exception ex)
@@ -667,6 +716,13 @@
             params string[] repositories
             )
         {
+
+            Warnings.Clear();
+
+            OnProgressChanged(this, 0);
+            
+            int i = 0;
+            
             foreach (var repo in repositories)
             {
                 var permission = getPermission(repo);
@@ -675,6 +731,9 @@
                     await AddRepositoriesToTeamAsync(team, permission.Value, repo);
                 else
                     await RemoveRepositoriesFromTeamAsync(team, repo);
+                i++;
+                OnProgressChanged(this, (i * 100) / repositories.Length);
+
             }
         }
 
@@ -686,14 +745,12 @@
         /// <returns></returns>
         public async Task<Client[]> GetClientsAsync()
         {
-            if (clients == null)
-            {
-                clients = (await GetRepositoriesAsync())
+            clients ??= (await GetRepositoriesAsync())
                 .Select(x =>
                 {
-                    if (x.Name.Contains("."))
+                    if (x.Name.Contains('.'))
                         return x.Name.Split('.')[0];
-                    else if (x.Name.Contains("-"))
+                    else if (x.Name.Contains('-'))
                         return x.Name.Split('-')[0];
                     else
                         return null;
@@ -707,7 +764,6 @@
                     ExtraRepositories = GetClientExtraRepositories(x)
                 })
                 .ToArray();
-            }
             return clients;
         }
 
@@ -770,14 +826,14 @@
         /// <param name="clients"></param>
         /// <param name="teams"></param>
         /// <returns></returns>
-        private async Task ApplyPermissionsToRepositoryAsync(string repo)
+        public async Task ApplyPermissionsToRepositoryAsync(string repo)
         {
             var clients = await GetClientsAsync();
             var teams = await GetTeamsAsync();
 
             foreach (var client in clients
                 .Where(x => x.HasTeam(teams))
-                .Where(x => !x.IsNtlm())
+                .Where(x => !x.IsOwner(Settings))
                 )
             {
                 // Clients repositories.
@@ -819,8 +875,74 @@
         /// <param name="client"></param>
         /// <returns></returns>
         public string[] GetClientExtraRepositories(string client)
-            => (ClientSettingsRepository + client + ".txt")
+            => (Settings.ClientSettingsRepository + client + ".txt")
                 .GetRepositoryListFromFile(Token);
+
+        #endregion
+
+
+        /// <summary>
+        /// Closes all the issues of all the repositories of the organization.
+        /// </summary>
+        /// <param name="repositories"></param>
+        /// <returns></returns>
+        public async Task CloseAllIssues()
+        {
+            var repositories = await GetRepositoriesAsync();
+            foreach (var repo in repositories)
+                await CloseIssues(repo.Name);
+        }
+
+        /// <summary>
+        /// Closes all the issues.
+        /// </summary>
+        /// <param name="repositories"></param>
+        /// <returns></returns>
+        public async Task CloseIssues(params string[] repositories)
+        {
+            var client = GetGitHubClient();
+
+            foreach (var repo in repositories)
+            {
+
+                try
+                {
+                    // Récupérer toutes les issues ouvertes
+                    var issues = await client.Issue.GetAllForRepository(Settings.Organization, repo, new RepositoryIssueRequest
+                    {
+                        State = ItemStateFilter.Open
+                    });
+
+                    // Parcourir chaque issue et les fermer
+                    foreach (var issue in issues)
+                    {
+                        if (issue.State == ItemState.Open)
+                        {
+                            var issueUpdate = new IssueUpdate
+                            {
+                                State = ItemState.Closed
+                            };
+
+                            await client.Issue.Update(Settings.Organization, repo, issue.Number, issueUpdate);
+                            Log($"Issue #{issue.Number} fermée.");
+                        }
+                    }
+
+                    Log("Toutes les issues ouvertes ont été fermées.");
+                }
+                catch (Exception ex)
+                {
+                    Warn($"Erreur: {ex.Message}");
+                }
+
+
+            }
+        }
+
+
+        #region Issues
+
+
 
         #endregion
 

@@ -1,0 +1,13 @@
+{
+  "Organization": "ntlm-technologies",
+  "GithubUrl": "https://github.com/",
+  "ClientSettingsRepository": "https://raw.githubusercontent.com/ntlm-technologies/ntlm.Damien.Data/refs/heads/main/",
+  "DownloadReleaseSettingsNewerThan": "2024-10-16T00:00:00Z",
+  "Owner" :  "ntlm",
+  "PreferedBranches": [
+    "to-dotnet-8",
+    "to-dotnet-4.5.1",
+    "dev",
+    "test"
+  ]
+}

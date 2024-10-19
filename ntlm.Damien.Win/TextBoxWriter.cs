@@ -6,14 +6,9 @@
     using System.Text;
     using System.Windows.Forms;
 
-    public class TextBoxWriter : TextWriter
+    public class TextBoxWriter(TextBox textBox) : TextWriter
     {
-        private readonly TextBox _textBox;
-
-        public TextBoxWriter(TextBox textBox)
-        {
-            _textBox = textBox;
-        }
+        private readonly TextBox _textBox = textBox;
 
         // Propriété obligatoire à surcharger pour la classe TextWriter
         public override Encoding Encoding => System.Text.Encoding.UTF8;

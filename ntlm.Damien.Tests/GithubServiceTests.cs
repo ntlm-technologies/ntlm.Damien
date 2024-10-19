@@ -1,6 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static System.Net.WebRequestMethods;
-
 namespace ntlm.Damien.Tests
 {
 
@@ -9,23 +6,46 @@ namespace ntlm.Damien.Tests
     public class GithubServiceTests
     {
 
-        public static readonly string Token = "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";
+        public static readonly string Token = "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";
         public static readonly string Directory = Environment.CurrentDirectory;
         public static readonly string Organization = "ntlm-technologies";
 
+
         [TestMethod]
-        public async Task ApplyPermissionsAsync_Full()
+        public async Task GetUser()
         {
             // Given
             var github = new GithubService(Directory, Token);
 
             // When
-            await github.ApplyPermissionsAsync(
-                "ntlm",
-                "ntlm.Nancy",
-                "lgi.Products",
-                "LesBellesLettres.Export"
-                );
+            var user = await github.GetUser();
+
+            // Then
+            Assert.IsNotNull(user);
+        }
+
+
+        [TestMethod]
+        public async Task GetUserTeams()
+        {
+            // Given
+            var github = new GithubService(Directory, Token);
+
+            // When
+            var teams = await github.GetUserTeamsAsync();
+
+            // Then
+            Assert.IsNotNull(teams);
+        }
+
+        [TestMethod]
+        public async Task ApplyPermissionsToRepositoryAsync()
+        {
+            // Given
+            var github = new GithubService(Directory, Token);
+
+            // When
+            await github.ApplyPermissionsToRepositoryAsync("waybis-common");
         }
 
 
@@ -96,8 +116,8 @@ namespace ntlm.Damien.Tests
 
             // When
             await github.AddRepositoriesToTeamAsync(
-                "ntlm.dev", 
-                Octokit.TeamPermissionLegacy.Push, 
+                "ntlm.dev",
+                Octokit.TeamPermissionLegacy.Push,
                 "ntlm"
                 );
         }
@@ -136,7 +156,7 @@ namespace ntlm.Damien.Tests
             var github = new GithubService(Directory, Token);
 
             // When
-            github.Clone("ntlm.def");
+            github.Clone("lgi.people");
 
             // Then
             Assert.AreEqual(0, GithubService.Warnings.Count);

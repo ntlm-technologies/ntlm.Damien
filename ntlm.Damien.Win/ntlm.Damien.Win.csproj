@@ -10,12 +10,22 @@
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<PublishSingleFile>true</PublishSingleFile>
 		<PublishTrimmed>false</PublishTrimmed>
+		<AssemblyName>NtlmGithubManager</AssemblyName>
+	</PropertyGroup>
+	<PropertyGroup>
+		<!-- Configuration pour créer un seul fichier -->
+		<PublishSingleFile>true</PublishSingleFile>
+		<!-- Configuration pour inclure les bibliothèques natives -->
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <IsPublishable>True</IsPublishable>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <IsPublishable>True</IsPublishable>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Content Include="ntlm.ico" />
-	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,5 +46,7 @@
 	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	</ItemGroup>
+
+
 
 </Project>

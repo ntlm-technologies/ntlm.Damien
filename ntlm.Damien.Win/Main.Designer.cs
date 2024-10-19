@@ -56,13 +56,16 @@
             clientsToolTip = new ToolTip(components);
             connect = new Button();
             mainPanel = new Panel();
-            teams = new Button();
+            admin = new Button();
+            avatar = new PictureBox();
+            userName = new Label();
             clients = new CheckedListBox();
             ((System.ComponentModel.ISupportInitialize)tokenQuestionMark).BeginInit();
             ((System.ComponentModel.ISupportInitialize)basePathQuestionMark).BeginInit();
             ((System.ComponentModel.ISupportInitialize)branchesQuestionMark).BeginInit();
             ((System.ComponentModel.ISupportInitialize)clientsQuestionMark).BeginInit();
             mainPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)avatar).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -86,7 +89,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(11, 6);
+            label2.Location = new Point(11, 55);
             label2.Name = "label2";
             label2.Size = new Size(85, 20);
             label2.TabIndex = 2;
@@ -94,9 +97,9 @@
             // 
             // browseBasePath
             // 
-            browseBasePath.Location = new Point(524, 2);
+            browseBasePath.Location = new Point(525, 49);
             browseBasePath.Name = "browseBasePath";
-            browseBasePath.Size = new Size(99, 29);
+            browseBasePath.Size = new Size(99, 33);
             browseBasePath.TabIndex = 4;
             browseBasePath.Text = "Parcourir";
             browseBasePath.UseVisualStyleBackColor = true;
@@ -105,22 +108,22 @@
             // clone
             // 
             clone.Enabled = false;
-            clone.Location = new Point(131, 200);
+            clone.Location = new Point(131, 249);
             clone.Name = "clone";
-            clone.Size = new Size(99, 29);
+            clone.Size = new Size(99, 33);
             clone.TabIndex = 5;
             clone.Text = "Cloner";
             clone.UseVisualStyleBackColor = true;
-            clone.Click += clone_Click;
+            clone.Click += Clone_Click;
             // 
             // eventConsole
             // 
-            eventConsole.Location = new Point(4, 235);
+            eventConsole.Location = new Point(4, 288);
             eventConsole.Multiline = true;
             eventConsole.Name = "eventConsole";
             eventConsole.ReadOnly = true;
             eventConsole.ScrollBars = ScrollBars.Vertical;
-            eventConsole.Size = new Size(619, 276);
+            eventConsole.Size = new Size(619, 223);
             eventConsole.TabIndex = 6;
             eventConsole.WordWrap = false;
             // 
@@ -134,7 +137,7 @@
             // fetch
             // 
             fetch.AutoSize = true;
-            fetch.Location = new Point(131, 70);
+            fetch.Location = new Point(131, 119);
             fetch.Name = "fetch";
             fetch.Size = new Size(250, 24);
             fetch.TabIndex = 8;
@@ -144,7 +147,7 @@
             // 
             // basePath
             // 
-            basePath.Location = new Point(131, 3);
+            basePath.Location = new Point(131, 52);
             basePath.Name = "basePath";
             basePath.Size = new Size(392, 27);
             basePath.TabIndex = 9;
@@ -153,9 +156,9 @@
             // cancel
             // 
             cancel.Enabled = false;
-            cancel.Location = new Point(236, 200);
+            cancel.Location = new Point(236, 249);
             cancel.Name = "cancel";
-            cancel.Size = new Size(99, 29);
+            cancel.Size = new Size(99, 33);
             cancel.TabIndex = 10;
             cancel.Text = "Annuler";
             cancel.UseVisualStyleBackColor = true;
@@ -171,9 +174,9 @@
             // 
             // basePathQuestionMark
             // 
-            basePathQuestionMark.Location = new Point(96, 5);
+            basePathQuestionMark.Location = new Point(96, 54);
             basePathQuestionMark.Name = "basePathQuestionMark";
-            basePathQuestionMark.Size = new Size(29, 21);
+            basePathQuestionMark.Size = new Size(29, 25);
             basePathQuestionMark.TabIndex = 12;
             basePathQuestionMark.TabStop = false;
             // 
@@ -190,9 +193,9 @@
             showWarnings.Enabled = false;
             showWarnings.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             showWarnings.ForeColor = Color.DarkOrange;
-            showWarnings.Location = new Point(341, 200);
+            showWarnings.Location = new Point(341, 249);
             showWarnings.Name = "showWarnings";
-            showWarnings.Size = new Size(182, 29);
+            showWarnings.Size = new Size(182, 33);
             showWarnings.TabIndex = 13;
             showWarnings.Text = "Avertissement";
             showWarnings.UseVisualStyleBackColor = false;
@@ -200,16 +203,16 @@
             // 
             // branchesQuestionMark
             // 
-            branchesQuestionMark.Location = new Point(96, 39);
+            branchesQuestionMark.Location = new Point(96, 88);
             branchesQuestionMark.Name = "branchesQuestionMark";
-            branchesQuestionMark.Size = new Size(29, 21);
+            branchesQuestionMark.Size = new Size(29, 25);
             branchesQuestionMark.TabIndex = 16;
             branchesQuestionMark.TabStop = false;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(28, 39);
+            label3.Location = new Point(28, 88);
             label3.Name = "label3";
             label3.Size = new Size(68, 20);
             label3.TabIndex = 15;
@@ -217,7 +220,7 @@
             // 
             // branches
             // 
-            branches.Location = new Point(131, 37);
+            branches.Location = new Point(131, 86);
             branches.Name = "branches";
             branches.Size = new Size(392, 27);
             branches.TabIndex = 17;
@@ -225,7 +228,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(37, 100);
+            label4.Location = new Point(37, 149);
             label4.Name = "label4";
             label4.Size = new Size(53, 20);
             label4.TabIndex = 19;
@@ -233,9 +236,9 @@
             // 
             // clientsQuestionMark
             // 
-            clientsQuestionMark.Location = new Point(96, 99);
+            clientsQuestionMark.Location = new Point(96, 148);
             clientsQuestionMark.Name = "clientsQuestionMark";
-            clientsQuestionMark.Size = new Size(29, 21);
+            clientsQuestionMark.Size = new Size(29, 25);
             clientsQuestionMark.TabIndex = 20;
             clientsQuestionMark.TabStop = false;
             // 
@@ -247,11 +250,13 @@
             connect.TabIndex = 21;
             connect.Text = "Connecter";
             connect.UseVisualStyleBackColor = true;
-            connect.Click += connect_Click;
+            connect.Click += Connect_Click;
             // 
             // mainPanel
             // 
-            mainPanel.Controls.Add(teams);
+            mainPanel.Controls.Add(admin);
+            mainPanel.Controls.Add(avatar);
+            mainPanel.Controls.Add(userName);
             mainPanel.Controls.Add(clients);
             mainPanel.Controls.Add(progressBar1);
             mainPanel.Controls.Add(eventConsole);
@@ -273,22 +278,41 @@
             mainPanel.Size = new Size(627, 549);
             mainPanel.TabIndex = 22;
             // 
-            // teams
+            // admin
             // 
-            teams.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            teams.ForeColor = Color.Red;
-            teams.Location = new Point(529, 200);
-            teams.Name = "teams";
-            teams.Size = new Size(94, 29);
-            teams.TabIndex = 22;
-            teams.Text = "Equipes";
-            teams.UseVisualStyleBackColor = true;
-            teams.Click += teams_Click;
+            admin.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            admin.ForeColor = Color.Red;
+            admin.Location = new Point(524, 10);
+            admin.Name = "admin";
+            admin.Size = new Size(99, 29);
+            admin.TabIndex = 25;
+            admin.Text = "Admin";
+            admin.UseVisualStyleBackColor = true;
+            admin.Click += Admin_Click;
+            // 
+            // avatar
+            // 
+            avatar.Location = new Point(131, 1);
+            avatar.Name = "avatar";
+            avatar.Size = new Size(45, 45);
+            avatar.TabIndex = 24;
+            avatar.TabStop = false;
+            // 
+            // userName
+            // 
+            userName.AutoSize = true;
+            userName.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            userName.ForeColor = Color.RoyalBlue;
+            userName.Location = new Point(182, 14);
+            userName.Name = "userName";
+            userName.Size = new Size(51, 20);
+            userName.TabIndex = 23;
+            userName.Text = "label5";
             // 
             // clients
             // 
             clients.FormattingEnabled = true;
-            clients.Location = new Point(131, 99);
+            clients.Location = new Point(131, 148);
             clients.Name = "clients";
             clients.Size = new Size(392, 92);
             clients.TabIndex = 21;
@@ -297,7 +321,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(651, 600);
+            ClientSize = new Size(651, 604);
             Controls.Add(mainPanel);
             Controls.Add(connect);
             Controls.Add(tokenQuestionMark);
@@ -306,9 +330,8 @@
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
-            MinimizeBox = false;
             Name = "Main";
-            Text = "Ntlm Github Cloner";
+            Text = "Ntlm Github Manager";
             Load += Main_Load;
             ((System.ComponentModel.ISupportInitialize)tokenQuestionMark).EndInit();
             ((System.ComponentModel.ISupportInitialize)basePathQuestionMark).EndInit();
@@ -316,6 +339,7 @@
             ((System.ComponentModel.ISupportInitialize)clientsQuestionMark).EndInit();
             mainPanel.ResumeLayout(false);
             mainPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)avatar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -349,6 +373,8 @@
         private Button connect;
         private Panel mainPanel;
         private CheckedListBox clients;
-        private Button teams;
+        private Label userName;
+        private PictureBox avatar;
+        private Button admin;
     }
 }

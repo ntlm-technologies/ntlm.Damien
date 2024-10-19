@@ -1,11 +1,25 @@
 ﻿namespace ntlm.Damien.Tests
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json.Linq;
 
     [TestClass]
     public class ExtensionsTests
     {
+
+        [TestMethod]
+        public void GetSettingsDirectories()
+        {
+            // Given
+            var path = @"c:\apps";
+            var repo = "ntlm.test";
+
+            // When
+            var settings = repo.GetSettingsDirectories(path);
+
+            // Then
+            Assert.IsTrue(settings.Contains(@"c:\apps\ntlm\ntlm.test\ntlm.test.configuration"));
+        }
+
 
         [TestMethod]
         public void GetClient()
@@ -30,7 +44,7 @@
             var urls = url.GetRepositoryListFromFile(GithubServiceTests.Token);
 
             // Then
-            Assert.IsTrue(urls.Count() > 0);
+            Assert.IsTrue(urls.Length > 0);
         }
 
 
