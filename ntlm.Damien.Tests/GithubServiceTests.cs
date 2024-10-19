@@ -12,8 +12,8 @@ namespace ntlm.Damien.Tests
         public static string Token {
             get
             {
-                throw new TokenNotProvidedException();
-                //return "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";
+                //throw new TokenNotProvidedException();
+                return "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";
             }
         }
         public static readonly string Directory = Environment.CurrentDirectory;

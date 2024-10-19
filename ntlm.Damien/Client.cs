@@ -30,11 +30,6 @@
         public string WriteTeam => $"{Name}.write";
 
         /// <summary>
-        /// Name of the team with triage role.
-        /// </summary>
-        public string TriageTeam => $"{Name}.triage";
-
-        /// <summary>
         /// Name of the team with admin role.
         /// </summary>
         public string AdminTeam => $"{Name}.admin";
@@ -42,7 +37,7 @@
         /// <summary>
         /// Teams of the client.
         /// </summary>
-        public string[] Teams => [ReadTeam, WriteTeam, TriageTeam, AdminTeam];
+        public string[] Teams => [ReadTeam, WriteTeam, AdminTeam];
 
 
         public override string ToString() => Name;
