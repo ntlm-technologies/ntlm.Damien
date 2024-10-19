@@ -13,7 +13,7 @@ namespace ntlm.Damien.Tests
             get
             {
                 //throw new TokenNotProvidedException();
-                return "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";
+                return "your_github_personal_access_token";
             }
         }
         public static readonly string Directory = Environment.CurrentDirectory;

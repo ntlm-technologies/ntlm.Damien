@@ -643,10 +643,7 @@
                 var team = await GetTeam(teamName);
 
                 if (team == null)
-                {
-                    Warn($"Équipe '{teamName}' introuvable.");
                     return;
-                }
 
                 // Pour chaque repository, ajouter l'équipe avec les permissions spécifiées
                 foreach (var repoName in repositories.Where(x => teamRepos.Contains(x)))
