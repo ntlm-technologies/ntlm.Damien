@@ -839,24 +839,24 @@
                 // Clients repositories.
                 if (repo.IsClient(client.Name))
                 {
-                    await AddRepositoriesToTeamAsync(client.DevTeam, TeamPermissionLegacy.Push, repo);
+                    await AddRepositoriesToTeamAsync(client.WriteTeam, TeamPermissionLegacy.Push, repo);
                     await AddRepositoriesToTeamAsync(client.AdminTeam, TeamPermissionLegacy.Admin, repo);
                 }
                 else
                 {
-                    await RemoveRepositoriesFromTeamAsync(client.DevTeam, repo);
+                    await RemoveRepositoriesFromTeamAsync(client.WriteTeam, repo);
                     await RemoveRepositoriesFromTeamAsync(client.AdminTeam, repo);
                 }
 
                 // Extra repositories.
                 if (client.ExtraRepositories.Any(x => x == repo))
                 {
-                    await AddRepositoriesToTeamAsync(client.DevTeam, TeamPermissionLegacy.Pull, repo);
+                    await AddRepositoriesToTeamAsync(client.WriteTeam, TeamPermissionLegacy.Pull, repo);
                     await AddRepositoriesToTeamAsync(client.AdminTeam, TeamPermissionLegacy.Pull, repo);
                 }
                 else
                 {
-                    await RemoveRepositoriesFromTeamAsync(client.DevTeam, repo);
+                    await RemoveRepositoriesFromTeamAsync(client.WriteTeam, repo);
                     await RemoveRepositoriesFromTeamAsync(client.AdminTeam, repo);
                 }
 
