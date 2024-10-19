@@ -101,7 +101,7 @@
             try
             {
                 string repoName = GetRepositoryNameFromUrl(tUrl);
-                if (repoName.Equals("ntlm.damien", StringComparison.CurrentCultureIgnoreCase))
+                if (repoName.Equals(Settings.DamienRepository, StringComparison.CurrentCultureIgnoreCase))
                     return;
                 string repoPath = repoName.GetRepositoryPath(BasePath);
 
@@ -370,7 +370,7 @@
         /// <returns></returns>
         public GitHubClient GetGitHubClient()
         {
-            gitHubClient ??= new GitHubClient(new O.ProductHeaderValue("ntlm.Damien"))
+            gitHubClient ??= new GitHubClient(new O.ProductHeaderValue(Settings.DamienRepository))
             {
                 Credentials = new O.Credentials(Token)
             };

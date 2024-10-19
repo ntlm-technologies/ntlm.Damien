@@ -10,10 +10,12 @@
     public class Settings
     {
 
+        public const string DamienRepository = "ntlm.Damien";
+
         public Settings()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "ntlm.Damien.Settings.json";
+            var resourceName = $"{DamienRepository}.Settings.json";
 
             using Stream? stream = assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Ressource intégrée '{resourceName}' introuvable.");
             if (stream != null)
@@ -48,6 +50,12 @@
         /// Organization name in Github.
         /// </summary>
         public string Organization { get; set; } = "ntlm-technologies";
+
+        /// <summary>
+        /// Repository that holds secrets.
+        /// ie: *.release.json files.
+        /// </summary>
+        public string SecretRepository { get; set; } = "ntlm.Damien.Secrets";   
 
         /// <summary>
         /// Github's url.

@@ -1,6 +1,8 @@
 ﻿using LibGit2Sharp;
 using System.Diagnostics;
 
+namespace ntlm.Damien.ClearVsFolder;
+
 class Program
 {
     static void Main()
@@ -29,7 +31,7 @@ class Program
 
     static void ProcessGitRepository(string repoPath)
     {
-        if (repoPath.EndsWith("ntlm.Damien"))
+        if (repoPath.EndsWith(Settings.DamienRepository))
             return;
 
         Console.WriteLine($"Traitement du repository: {repoPath}");
