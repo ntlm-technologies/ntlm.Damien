@@ -13,13 +13,13 @@
             {
                 Host = "185.50.52.242",
                 Username = "ftp-ntlm",
-                Password = "SkV8pvF!cmk73\\+~",
+                Password = "password",
                 Port = 21,
                 UriSuffix = ".test"
             };
             var git = new GithubService(
                 @"C:\deploy\damien",
-                "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"
+                "token"
                 );
             return new SecretService(git, ftp);
         }
