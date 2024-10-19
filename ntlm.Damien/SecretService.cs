@@ -13,8 +13,6 @@ namespace ntlm.Damien
             ) : BaseService
     {
 
-        public const string SecretRepository = "ntlm.Damien.Secrets";
-
         /// <summary>
         /// Handles the secrets. Saves them in each local repository and the ntlm.Damien.Secrets repository.
         /// </summary>
@@ -33,7 +31,7 @@ namespace ntlm.Damien
             Ftp.LocalDirectory = @$"{Git.BasePath}\ntlm\ntlm.Damien.Secrets";
 
             // Clone the secret repository
-            Git.Clone(SecretRepository);
+            Git.Clone(Git.Settings.SecretRepository);
 
             // The repositories
             var repositories = await Git.GetRepositoriesAsync();

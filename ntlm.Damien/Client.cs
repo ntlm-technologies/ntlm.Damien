@@ -20,14 +20,25 @@
         public string[] ExtraRepositories { get; set; } = [];
 
         /// <summary>
-        /// Name of the dev team.
+        /// Name of the team with read role.
         /// </summary>
-        public string DevTeam => $"{Name}.dev";
+        public string ReadTeam => $"{Name}.read";
 
         /// <summary>
-        /// Name of the admin team.
+        /// Name of the team with write role.
+        /// </summary>
+        public string WriteTeam => $"{Name}.write";
+
+        /// <summary>
+        /// Name of the team with admin role.
         /// </summary>
         public string AdminTeam => $"{Name}.admin";
+
+        /// <summary>
+        /// Teams of the client.
+        /// </summary>
+        public string[] Teams => [ReadTeam, WriteTeam, AdminTeam];
+
 
         public override string ToString() => Name;
 

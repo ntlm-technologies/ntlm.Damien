@@ -47,7 +47,17 @@
         /// <param name="teams"></param>
         /// <returns></returns>
         public static bool HasTeam(this Client client, IEnumerable<Team> teams)
-            => teams.Any(t => t.Name == client.DevTeam || t.Name == client.AdminTeam);
+            => client.HasTeam(teams.Select(x => x.Name));
+
+        /// <summary>
+        /// If the client matches one of the teams.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="teams"></param>
+        /// <returns></returns>
+        public static bool HasTeam(this Client client, IEnumerable<string> teams)
+            => teams.Any(x => client.Teams.Any(y => y == x));
+
 
         /// <summary>
         /// If the team exists.

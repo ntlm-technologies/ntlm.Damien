@@ -7,6 +7,7 @@
     using System;
     using System.Collections.Generic;
     using System.Net.Http.Headers;
+    using System.Net.WebSockets;
     using L = LibGit2Sharp;
     using O = Octokit;
 
@@ -100,7 +101,7 @@
             try
             {
                 string repoName = GetRepositoryNameFromUrl(tUrl);
-                if (repoName.Equals("ntlm.damien", StringComparison.CurrentCultureIgnoreCase))
+                if (repoName.Equals(Settings.DamienRepository, StringComparison.CurrentCultureIgnoreCase))
                     return;
                 string repoPath = repoName.GetRepositoryPath(BasePath);
 
@@ -369,7 +370,7 @@
         /// <returns></returns>
         public GitHubClient GetGitHubClient()
         {
-            gitHubClient ??= new GitHubClient(new O.ProductHeaderValue("ntlm.Damien"))
+            gitHubClient ??= new GitHubClient(new O.ProductHeaderValue(Settings.DamienRepository))
             {
                 Credentials = new O.Credentials(Token)
             };
@@ -642,10 +643,7 @@
                 var team = await GetTeam(teamName);
 
                 if (team == null)
-                {
-                    Warn($"Équipe '{teamName}' introuvable.");
                     return;
-                }
 
                 // Pour chaque repository, ajouter l'équipe avec les permissions spécifiées
                 foreach (var repoName in repositories.Where(x => teamRepos.Contains(x)))
@@ -740,6 +738,13 @@
         private Client[]? clients;
 
         /// <summary>
+        /// Returns the owner from the clients.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Client> GetOwner()
+            => (await GetClientsAsync()).FirstOrDefault(x => x.IsOwner(Settings)) ?? new Client(Settings.Owner);
+
+        /// <summary>
         /// Returns the client of ntlm-technologies from the name of a repositories.
         /// </summary>
         /// <returns></returns>
@@ -830,6 +835,7 @@
         {
             var clients = await GetClientsAsync();
             var teams = await GetTeamsAsync();
+            var owner = await GetOwner();
 
             foreach (var client in clients
                 .Where(x => x.HasTeam(teams))
@@ -839,32 +845,36 @@
                 // Clients repositories.
                 if (repo.IsClient(client.Name))
                 {
-                    await AddRepositoriesToTeamAsync(client.DevTeam, TeamPermissionLegacy.Push, repo);
+                    await AddRepositoriesToTeamAsync(client.ReadTeam, TeamPermissionLegacy.Push, repo);
+                    await AddRepositoriesToTeamAsync(client.WriteTeam, TeamPermissionLegacy.Pull, repo);
                     await AddRepositoriesToTeamAsync(client.AdminTeam, TeamPermissionLegacy.Admin, repo);
                 }
                 else
                 {
-                    await RemoveRepositoriesFromTeamAsync(client.DevTeam, repo);
+                    await RemoveRepositoriesFromTeamAsync(client.ReadTeam, repo);
+                    await RemoveRepositoriesFromTeamAsync(client.WriteTeam, repo);
                     await RemoveRepositoriesFromTeamAsync(client.AdminTeam, repo);
                 }
 
                 // Extra repositories.
                 if (client.ExtraRepositories.Any(x => x == repo))
                 {
-                    await AddRepositoriesToTeamAsync(client.DevTeam, TeamPermissionLegacy.Pull, repo);
+                    await AddRepositoriesToTeamAsync(client.WriteTeam, TeamPermissionLegacy.Pull, repo);
                     await AddRepositoriesToTeamAsync(client.AdminTeam, TeamPermissionLegacy.Pull, repo);
                 }
                 else
                 {
-                    await RemoveRepositoriesFromTeamAsync(client.DevTeam, repo);
+                    await RemoveRepositoriesFromTeamAsync(client.ReadTeam, repo);
+                    await RemoveRepositoriesFromTeamAsync(client.WriteTeam, repo);
                     await RemoveRepositoriesFromTeamAsync(client.AdminTeam, repo);
                 }
 
             }
 
             // NTLM admin and dev access.
-            await AddRepositoriesToTeamAsync("ntlm.admin", TeamPermissionLegacy.Admin, repo);
-            await AddRepositoriesToTeamAsync("ntlm.dev", TeamPermissionLegacy.Push, repo);
+            await AddRepositoriesToTeamAsync(owner.ReadTeam, TeamPermissionLegacy.Pull, repo);
+            await AddRepositoriesToTeamAsync(owner.WriteTeam, TeamPermissionLegacy.Push, repo);
+            await AddRepositoriesToTeamAsync(owner.AdminTeam, TeamPermissionLegacy.Admin, repo);
 
         }
 

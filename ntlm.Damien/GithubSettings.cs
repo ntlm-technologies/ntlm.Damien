@@ -37,7 +37,7 @@
         /// - If Clients are empty 
         ///   both are cloned in base directory.
         /// 
-        /// - If Clients = ["ntlm", "lgi"] 
+        /// - If Clients = ["lenormant", "lgi"] 
         /// lgi.Wines is cloned in lgi, ntlm.Wines is cloned in ntlm.
         /// </summary>
         public string[] Clients { get; set; } = [];

@@ -150,13 +150,16 @@ namespace ntlm.Damien.Win
 
         private void ProgressChanged(object? sender, int progress)
         {
-            ShowWarningsVisibility();
             if (InvokeRequired)
             {
-                Invoke(new Action(() => progressBar1.Value = progress));
+                Invoke(new Action(() => {
+                    ShowWarningsVisibility();
+                    progressBar1.Value = progress;
+                }));
             }
             else
             {
+                ShowWarningsVisibility();
                 progressBar1.Value = progress;
             }
         }
