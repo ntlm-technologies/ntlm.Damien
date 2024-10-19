@@ -20,6 +20,35 @@
             Assert.IsTrue(settings.Contains(@"c:\apps\ntlm\ntlm.test\ntlm.test.configuration"));
         }
 
+        [TestMethod]
+        public void HasTeam_true()
+        {
+            // Given
+            var client = new Client("ntlm");
+            string[] teams = ["ntlm.read"];
+
+            // When
+            var hasteam = client.HasTeam(teams);
+
+            // Then
+            Assert.IsTrue(hasteam);
+        }
+
+        [TestMethod]
+        public void HasTeam_false()
+        {
+            // Given
+            var client = new Client("ntlm");
+            string[] teams = ["lgi.read"];
+
+            // When
+            var hasteam = client.HasTeam(teams);
+
+            // Then
+            Assert.IsFalse(hasteam);
+        }
+
+
 
         [TestMethod]
         public void GetClient()

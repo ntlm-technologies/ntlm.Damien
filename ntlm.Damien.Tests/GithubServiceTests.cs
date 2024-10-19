@@ -6,7 +6,16 @@ namespace ntlm.Damien.Tests
     public class GithubServiceTests
     {
 
-        public static readonly string Token = "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";
+        /// <summary>
+        /// Grab a token from Github.
+        /// </summary>
+        public static string Token {
+            get
+            {
+                //throw new TokenNotProvidedException();
+                return "your_github_personal_access_token";
+            }
+        }
         public static readonly string Directory = Environment.CurrentDirectory;
         public static readonly string Organization = "ntlm-technologies";
 
