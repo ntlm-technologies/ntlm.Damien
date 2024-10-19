@@ -9,6 +9,7 @@
     /// </summary>
     public class Settings
     {
+
         public Settings()
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -17,7 +18,7 @@
             using Stream? stream = assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Ressource intégrée '{resourceName}' introuvable.");
             if (stream != null)
             {
-                using StreamReader reader = new (stream);
+                using StreamReader reader = new(stream);
                 string jsonContent = reader.ReadToEnd();
 
                 var configuration = new ConfigurationBuilder()
@@ -31,6 +32,17 @@
                 throw new Exception($"Ressource intégrée '{resourceName}' introuvable.");
             }
         }
+
+        /// <summary>
+        /// The owner. Teams of the owner are prefixed with this value.
+        /// ie: ntlm.write, ntlm.admin, etc.
+        /// </summary>
+        public string Owner { get; set; } = "ntlm";
+
+        /// <summary>
+        /// The prefered branches to checkout to.
+        /// </summary>
+        public string[] PreferedBranches { get; set; } = [];
 
         /// <summary>
         /// Organization name in Github.

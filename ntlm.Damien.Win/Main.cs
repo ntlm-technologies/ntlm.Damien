@@ -70,7 +70,7 @@ namespace ntlm.Damien.Win
             basePath.Text = GetFromRegistry(nameof(basePath));
             token.Text = GetFromRegistry(nameof(token));
             branches.Text = GetFromRegistry(nameof(branches),
-                string.Join(',', Github.Branches)
+                string.Join(',', Github.Settings.PreferedBranches)
                 );
 
             if (!string.IsNullOrWhiteSpace(token.Text))
@@ -300,7 +300,7 @@ namespace ntlm.Damien.Win
                 await BindClients();
                 mainPanel.Visible = true;
                 admin.Visible =
-                    ((await Github.GetUserTeamsAsync()).IsNtlm())
+                    ((await Github.GetUserTeamsAsync()).IsOwner(Github.Settings))
                     ;
                 var user = await Github.GetUser();
                 userName.Text = user?.Login;
@@ -346,7 +346,7 @@ namespace ntlm.Damien.Win
             clients.Items.Clear();
             var clientList = await Github.GetClientsAsync();
             var teamList = await Github.GetTeamsAsync();
-            var isNtlm = teamList.Any(t => t.IsNtlm());
+            var isNtlm = teamList.Any(t => t.IsOwner(Github.Settings));
             foreach (var client in clientList)
             {
                 if (isNtlm || client.HasTeam(teamList))

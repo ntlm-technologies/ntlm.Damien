@@ -63,8 +63,8 @@
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static bool IsNtlm(this string name)
-            => name.IsClient("ntlm");
+        public static bool IsOwner(this string name, Settings settings)
+            => name.IsClient(settings.Owner);
 
 
         /// <summary>
@@ -148,28 +148,21 @@
         /// </summary>
         /// <param name="team"></param>
         /// <returns></returns>
-        public static bool IsNtlm(this IEnumerable<Team> teams) => teams.Any(x => x.IsNtlm());
+        public static bool IsOwner(this IEnumerable<Team> teams, Settings settings) => teams.Any(x => x.IsOwner(settings));
 
         /// <summary>
         /// If the team is an ntlm team.
         /// </summary>
         /// <param name="team"></param>
         /// <returns></returns>
-        public static bool IsNtlm(this Team team) => team.Name.IsNtlm();
-
-        /// <summary>
-        /// If the repository is an ntlm repository.
-        /// </summary>
-        /// <param name="repo"></param>
-        /// <returns></returns>
-        public static bool IsNtlm(this Repository repo) => repo.Name.IsNtlm();
+        public static bool IsOwner(this Team team, Settings settings) => team.Name.IsOwner(settings);
 
         /// <summary>
         /// If the client is an ntlm repository.
         /// </summary>
         /// <param name="repo"></param>
         /// <returns></returns>
-        public static bool IsNtlm(this Client client) => client.Name.IsNtlm();
+        public static bool IsOwner(this Client client, Settings settings) => client.Name.IsOwner(settings);
 
         private static readonly char[] separator = ['\r', '\n'];
 

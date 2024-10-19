@@ -44,13 +44,7 @@
         /// 
         /// Will try to checkout dev if exists. I not, dev2 if exists, etc.
         /// </summary>
-        public string[] Branches { get; set; } =
-            [
-            "to-dotnet-8",
-            "to-dotnet-4.5.1",
-            "dev",
-            "test"
-            ];
+        public string[] Branches { get; set; } = [];
 
 
         /// <summary>
@@ -220,7 +214,7 @@
                     repo.Stashes.Add(repo.Config.BuildSignature(DateTimeOffset.Now), "Sauvegarde temporaire");
                 }
 
-                foreach (var branchName in Branches)
+                foreach (var branchName in Branches.Where(x => !string.IsNullOrWhiteSpace(x)))
                 {
                     // Vérifier si la branche existe localement
                     var branch = repo.Branches[branchName];
@@ -839,7 +833,7 @@
 
             foreach (var client in clients
                 .Where(x => x.HasTeam(teams))
-                .Where(x => !x.IsNtlm())
+                .Where(x => !x.IsOwner(Settings))
                 )
             {
                 // Clients repositories.
