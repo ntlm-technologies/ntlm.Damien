@@ -88,20 +88,20 @@ namespace ntlm.Damien.Tests
 
 
 
-        [TestMethod]
-        public async Task ApplyPermissionsAsync()
-        {
-            // Given
-            var github = new GithubService(Directory, Token);
+        //[TestMethod]
+        //public async Task ApplyPermissionsAsync()
+        //{
+        //    // Given
+        //    var github = new GithubService(Directory, Token);
 
-            // When
-            await github.ApplyPermissionsAsync("ntlm.dev",
-                x => Octokit.TeamPermissionLegacy.Pull,
-                "ntlm.dev",
-                "ntlm",
-                "ntlm.Nancy"
-                );
-        }
+        //    // When
+        //    await github.ApplyPermissionsAsync("ntlm.dev",
+        //        x => Octokit.TeamPermissionLegacy.Pull,
+        //        "ntlm.dev",
+        //        "ntlm",
+        //        "ntlm.Nancy"
+        //        );
+        //}
 
 
         [TestMethod]
@@ -126,7 +126,7 @@ namespace ntlm.Damien.Tests
             // When
             await github.AddRepositoriesToTeamAsync(
                 "ntlm.dev",
-                Octokit.TeamPermissionLegacy.Push,
+                GithubPermission.Write,
                 "ntlm"
                 );
         }

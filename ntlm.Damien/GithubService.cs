@@ -581,7 +581,7 @@
                 return;
 
             // Configuration du client GitHub avec le PAT
-            var client = GetGitHubClient();
+            //var client = GetGitHubClient();
 
             try
             {
@@ -714,39 +714,39 @@
             return repositories;
         }
 
-        /// <summary>
-        /// Aplies permissions to a team for specific repositories.
-        /// </summary>
-        /// <param name="team"></param>
-        /// <param name="getPermission"></param>
-        /// <param name="repositories"></param>
-        /// <returns></returns>
-        public async Task ApplyPermissionsAsync(
-            string team,
-            Func<string, TeamPermissionLegacy?> getPermission,
-            params string[] repositories
-            )
-        {
+        ///// <summary>
+        ///// Aplies permissions to a team for specific repositories.
+        ///// </summary>
+        ///// <param name="team"></param>
+        ///// <param name="getPermission"></param>
+        ///// <param name="repositories"></param>
+        ///// <returns></returns>
+        //public async Task ApplyPermissionsAsync(
+        //    string team,
+        //    Func<string, TeamPermissionLegacy?> getPermission,
+        //    params string[] repositories
+        //    )
+        //{
 
-            Warnings.Clear();
+        //    Warnings.Clear();
 
-            OnProgressChanged(this, 0);
+        //    OnProgressChanged(this, 0);
             
-            int i = 0;
+        //    int i = 0;
             
-            foreach (var repo in repositories)
-            {
-                var permission = getPermission(repo);
+        //    foreach (var repo in repositories)
+        //    {
+        //        var permission = getPermission(repo);
 
-                if (permission != null)
-                    await AddRepositoriesToTeamAsync(team, permission.Value, repo);
-                else
-                    await RemoveRepositoriesFromTeamAsync(team, repo);
-                i++;
-                OnProgressChanged(this, (i * 100) / repositories.Length);
+        //        if (permission != null)
+        //            await AddRepositoriesToTeamAsync(team, permission.Value, repo);
+        //        else
+        //            await RemoveRepositoriesFromTeamAsync(team, repo);
+        //        i++;
+        //        OnProgressChanged(this, (i * 100) / repositories.Length);
 
-            }
-        }
+        //    }
+        //}
 
         private Client[]? clients;
 
