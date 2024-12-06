@@ -25,6 +25,11 @@
         public string ReadTeam => $"{Name}.read";
 
         /// <summary>
+        /// Name of the team with triage role.
+        /// </summary>
+        public string TriageTeam => $"{Name}.triage";
+
+        /// <summary>
         /// Name of the team with write role.
         /// </summary>
         public string WriteTeam => $"{Name}.write";

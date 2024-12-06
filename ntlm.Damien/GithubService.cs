@@ -8,6 +8,8 @@
     using System.Collections.Generic;
     using System.Net.Http.Headers;
     using System.Net.WebSockets;
+    using System.Text.Json;
+    using System.Text;
     using L = LibGit2Sharp;
     using O = Octokit;
 
@@ -571,7 +573,7 @@
         /// <returns></returns>
         public async Task AddRepositoriesToTeamAsync(
             string teamName,
-            TeamPermissionLegacy permission,
+            string permission,
             params string[] repositories)
         {
             var teams = await GetTeamsAsync();
@@ -601,15 +603,24 @@
                         Log($"Ajout du dépôt : {repoName} à l'équipe {team.Name} avec la permission '{permission}'.");
 
                         // Créer l'objet RepositoryPermissionRequest avec les permissions spécifiées
-                        var permissionRequest = new RepositoryPermissionRequest(permission);
 
                         // Ajouter le repository à l'équipe avec les permissions spécifiées
-                        await client.Organization.Team.AddRepository(
-                            team.Id,
-                            Settings.Organization,
-                            repoName,
-                            permissionRequest
+                        using var httpClient = new HttpClient();
+                        httpClient.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.32.3");
+                        httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
+                        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+                        httpClient.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+
+                        var url = $"https://api.github.com/orgs/{Settings.Organization}/teams/{team.Slug}/repos/{Settings.Organization}/{repoName}";
+
+                        var requestBody = new { permission }; 
+                        var content = new StringContent(
+                            JsonSerializer.Serialize(requestBody),
+                            Encoding.UTF8,
+                            "application/json"
                         );
+
+                        var response = await httpClient.PutAsync(url, content);
 
 
                         Log($"Dépôt {repoName} ajouté avec succès.");
@@ -625,6 +636,7 @@
                 Warn($"Erreur : {ex.Message}");
             }
         }
+
 
         /// <summary>
         /// Removes repositories from a team.
@@ -846,13 +858,15 @@
                 // Clients repositories.
                 if (repo.IsClient(client.Name))
                 {
-                    await AddRepositoriesToTeamAsync(client.ReadTeam, TeamPermissionLegacy.Push, repo);
-                    await AddRepositoriesToTeamAsync(client.WriteTeam, TeamPermissionLegacy.Pull, repo);
-                    await AddRepositoriesToTeamAsync(client.AdminTeam, TeamPermissionLegacy.Admin, repo);
+                    await AddRepositoriesToTeamAsync(client.ReadTeam, GithubPermission.Read, repo);
+                    await AddRepositoriesToTeamAsync(client.TriageTeam, GithubPermission.Triage, repo);
+                    await AddRepositoriesToTeamAsync(client.WriteTeam, GithubPermission.Write, repo);
+                    await AddRepositoriesToTeamAsync(client.AdminTeam, GithubPermission.Admin, repo);
                 }
                 else
                 {
                     await RemoveRepositoriesFromTeamAsync(client.ReadTeam, repo);
+                    await RemoveRepositoriesFromTeamAsync(client.TriageTeam, repo);
                     await RemoveRepositoriesFromTeamAsync(client.WriteTeam, repo);
                     await RemoveRepositoriesFromTeamAsync(client.AdminTeam, repo);
                 }
@@ -860,12 +874,13 @@
                 // Extra repositories.
                 if (client.ExtraRepositories.Any(x => x == repo))
                 {
-                    await AddRepositoriesToTeamAsync(client.WriteTeam, TeamPermissionLegacy.Pull, repo);
-                    await AddRepositoriesToTeamAsync(client.AdminTeam, TeamPermissionLegacy.Pull, repo);
+                    await AddRepositoriesToTeamAsync(client.WriteTeam, GithubPermission.Read, repo);
+                    await AddRepositoriesToTeamAsync(client.AdminTeam, GithubPermission.Read, repo);
                 }
                 else
                 {
                     await RemoveRepositoriesFromTeamAsync(client.ReadTeam, repo);
+                    await RemoveRepositoriesFromTeamAsync(client.TriageTeam, repo);
                     await RemoveRepositoriesFromTeamAsync(client.WriteTeam, repo);
                     await RemoveRepositoriesFromTeamAsync(client.AdminTeam, repo);
                 }
@@ -873,9 +888,10 @@
             }
 
             // NTLM admin and dev access.
-            await AddRepositoriesToTeamAsync(owner.ReadTeam, TeamPermissionLegacy.Pull, repo);
-            await AddRepositoriesToTeamAsync(owner.WriteTeam, TeamPermissionLegacy.Push, repo);
-            await AddRepositoriesToTeamAsync(owner.AdminTeam, TeamPermissionLegacy.Admin, repo);
+            await AddRepositoriesToTeamAsync(owner.ReadTeam, GithubPermission.Read, repo);
+            await AddRepositoriesToTeamAsync(owner.TriageTeam, GithubPermission.Triage, repo);
+            await AddRepositoriesToTeamAsync(owner.WriteTeam, GithubPermission.Write, repo);
+            await AddRepositoriesToTeamAsync(owner.AdminTeam, GithubPermission.Admin, repo);
 
         }
 
