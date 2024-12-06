@@ -13,7 +13,7 @@ namespace ntlm.Damien.Tests
             get
             {
                 //throw new TokenNotProvidedException();
-                return "your_github_personal_access_token";
+                return Environment.GetEnvironmentVariable("ntlm_Secrets_NtlmDamienGithubKey") ?? throw new Exception("Configure your Github PAT in an environment variable called ntlm_Secrets_NtlmDamienGithubKey");
             }
         }
         public static readonly string Directory = Environment.CurrentDirectory;
